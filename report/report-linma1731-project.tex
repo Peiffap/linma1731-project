@@ -15,7 +15,9 @@
 [1994/12/01]% LaTeX date must December 1994 or later
 \documentclass[final]{aomart}
 \usepackage[english]{babel}
+
 \usepackage{mathtools,amssymb,amsthm}
+\usepackage{bm}
 
 %    Some definitions useful in producing this sort of documentation:
 \chardef\bslash=`\\ % p. 424, TeXbook
@@ -50,7 +52,7 @@
 \newtheorem*[{}\it]{notation}{Notation}
 \newtheorem{step}{Step}
 
-%\numberwithin{equation}{section}
+\numberwithin{equation}{section}
 
 \newcommand{\thmref}[1]{Theorem~\ref{#1}}
 \newcommand{\secref}[1]{\S\ref{#1}}
@@ -79,18 +81,19 @@
 \newcommand{\loglike}{\ell} % log-likelihood
 \newcommand{\e}{\mathrm{e}} % euler's constant
 \newcommand{\pdf}{f} % probability density function
-\newcommand{\htheta}{\hat{\theta}}
-
-\DeclareMathOperator{\per}{per}
+\newcommand{\htheta}{\wh{\theta}} % estimator (abuse of notation)
+\newcommand{\hTheta}{\wh{\Theta}} % estimator
+\DeclareMathOperator{\newdiff}{d} % use \dif instead
+\newcommand{\dif}{\newdiff\!} % differential operator
+\newcommand{\fisher}{\mathcal{I}} % fisher information matrix
+\DeclareMathOperator{\var}{var}
 \DeclareMathOperator{\cov}{cov}
-\DeclareMathOperator{\non}{non}
-\DeclareMathOperator{\cf}{cf}
-\DeclareMathOperator{\add}{add}
-\DeclareMathOperator{\Cham}{Cham}
-\DeclareMathOperator{\IM}{Im}
-\DeclareMathOperator{\esssup}{ess\,sup}
-\DeclareMathOperator{\meas}{meas}
-\DeclareMathOperator{\seg}{seg}
+\DeclareMathOperator{\dom}{dom}
+
+\makeatletter
+\DeclareRobustCommand{\expe}{\mathbf{E}\@ifstar\@firstofone\@expe}
+\newcommand{\@expe}[1]{\left[#1\right]}
+\makeatother
 
 %    \interval is used to provide better spacing after a [ that
 %    is used as a closing delimiter.
@@ -112,8 +115,8 @@
 
 %\setcounter{tocdepth}{5}
 
-\title[Fish schools tracking]{LINMA1731 Project\\
-Fish Schools Tracking}
+\title[Fish schools tracking]{LINMA1731 -- Project 2019\\
+Fish schools tracking}
 
 \author{Gilles Peiffer}
 \address{Université catholique de Louvain, Ottignies-Louvain-la-Neuve, Belgium}
@@ -138,7 +141,7 @@ Fish Schools Tracking}
 
 \begin{abstract}
 	In this paper we solve the first part of the project for the class ``Stochastic process: Estimation and prediction'' given during the Fall term of 2019.
-	The average speed of each fish in a school of fish is approximated by a Gamma-distributed random variable, and various methods for estimating this quantity are given; a numerical simulation is also included.
+	The average speed of each fish in a school of fish is approximated by a gamma-distributed random variable with a shape parameter \(k\) and a scale parameter \(s\), and various methods for estimating this quantity are given; a numerical simulation is also included.
 \end{abstract}
 
 \maketitle
@@ -154,47 +157,94 @@ The parameters are the same for every fish and are time invariant.
 The aim of this first part is to identify these two parameters using empirical observations \(v_i\).
 
 \section{Maximum likelihood estimation}
-Let \(v_i\) be i.\,i.\,d. realisations of a random variable following a Gamma distribution \(\Gamma(k, s)\) (with \(i = 1,\ldots,N)\).
+Let \(v_i\) be i.i.d. realisations of a random variable following a Gamma distribution \(\Gamma(k, s)\) (with \(i = 1,\ldots, N)\).
 We first assume that the shape parameter \(k\) is known.
 
 We start by deriving the maximum likelihood estimator of \(\theta \coloneqq s\) based on \(N\) observations.
+Since the estimand $\theta$ is a deterministic quantity, we use Fisher estimation. % TODO is this correct?
 In order to do this, let us restate the probability density function of \(V_i \sim \Gamma(k, s)\):
 \begin{equation}
-\pdf_{V_i}(k, s; v_i) = \frac{1}{\Gamma(k) s^k} v_i^{k-1} \e^{-\frac{v_i}{s}}\,, \quad i = 1, \ldots, N\,.
+\pdf_{V_i}(v_i; k, s) = \frac{1}{\Gamma(k) s^k} v_i^{k-1} \e^{-\frac{v_i}{s}}\,, \quad i = 1, \ldots, N\,.
 \end{equation}
-With this in mind, we can find the likelihood \(\like(k, \theta; v_1, \ldots, v_N)\) is given by
+With this in mind, we can find that the likelihood \(\like(v_1, \ldots, v_N; k, \theta)\) is given by
 \begin{align}
-\like(k,\theta; v_1, \ldots, v_N) &= \prod_{i=1}^{N} \pdf_{V_i}(k,\theta; v_i)\\
+\like(v_1, \ldots, v_N; k, \theta) &= \prod_{i=1}^{N} \pdf_{V_i}(v_i; k,\theta)\\
 &= \prod_{i=1}^{N} \frac{1}{\Gamma(k) \theta^k} v_i^{k-1} \e^{-\frac{v_i}{\theta}}\,.
 \end{align}
-In order to alleviate notation, we compute instead the log-likelihood, which is generally easier to work with:
+In order to alleviate notation, we compute instead the log-likelihood, which is generally easier to work with\footnote{This is possible because the values of \(\theta\) which maximize the log-likelihood also maximize the likelihood.}:
 \begin{align}
-\ell(k,\theta; v_1, \ldots, v_N) &\triangleq \ln \like(k, \theta; v_1, \ldots, v_N)\\
+\ell(v_1, \ldots, v_N; k, \theta) &\coloneqq \ln \like(v_1, \ldots, v_N; k, \theta)\\
 &= \ln\Bigg(\prod_{i=1}^{N} \frac{1}{\Gamma(k) \theta^k} v_i^{k-1} \e^{-\frac{v_i}{\theta}} \Bigg)\\
 & = \sum_{i=1}^{N} \ln\Bigg(\frac{1}{\Gamma(k) \theta^k} v_i^{k-1} \e^{-\frac{v_i}{\theta}}\Bigg)\\
 & = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{v_i}{\theta} - N \big(k \ln \theta + \ln \Gamma(k)\big)\,.
 \end{align}
-Now, in order to obtain the maximum likelihood estimator \(\wh{\Theta}_\theta\) (which we will abusively write as \(\htheta\) for the rest of this paper), we must derive the log-likelihood with respect to the estimand \(\theta\), and set it equal to zero:
+Now, in order to obtain the maximum likelihood estimate \(\htheta\), we must differentiate the log-likelihood with respect to the estimand \(\theta\), and set it equal to zero:
 \begin{align}
-\eval{\frac{\partial \ell(k, \theta; v_1, \ldots, v_N)}{\partial \theta}}_{\theta = \htheta} &= -\frac{kN}{\htheta} + \frac{\sum_{i=1}^{N} v_i}{\htheta^2} = 0\\
-\iff \htheta &= \frac{\sum_{i=1}^{N} v_i}{kN} = \frac{\widebar{v_i}}{k}\,.
+\eval{\frac{\partial \ell(v_1, \ldots, v_N; k, \theta)}{\partial \theta}}_{\theta = \htheta} &= -\frac{kN}{\htheta} + \frac{\sum_{i=1}^{N} v_i}{\htheta^2} = 0\\
+\iff \htheta &= \frac{\sum_{i=1}^{N} v_i}{kN} = \frac{\widebar{v}}{k}\,.\\
+\intertext{This then allows us to find the maximum-likelihood estimator \(\hTheta\), given by}
+\hTheta &= \frac{\sum_{i=1}^{N} V_i}{kN} = \frac{\widebar{V}}{k}\,.\label{eq:mlestimator}
 \end{align}
 
 \section{Properties of the estimator}
 We now wish to show some of the properties of this estimator.
 \subsection{Asymptotically unbiased}
+\begin{defn}[Unbiased estimator]
+The Fisher estimator \(\hTheta = g(Z)\) of \(\theta\) is \emph{unbiased} if
+\begin{equation}
+m_{\hTheta; \theta} \coloneqq \expe{g(Z); \theta} = \theta\,, \quad \textnormal{for all } \theta\,,
+\end{equation}
+where
+\begin{equation}
+\expe{g(Z); \theta} \coloneqq \int_{\dom Z} g(Z) \pdf_Z(z; \theta) \dif z\,.
+\end{equation}
+\end{defn}
 \begin{prop}
-The maximum likelihood estimator is asymptotically unbiased.
+The maximum likelihood estimator derived in \eqref{eq:mlestimator} is asymptotically unbiased, that is,
+\begin{equation}
+\lim_{N \to +\infty} \expe{g(V_1, \ldots, V_n); \theta} = \theta\,.
+\end{equation}
 \end{prop}
 \begin{proof}
-The proof is trivial and left as an exercise to the reader.
+We wish to prove that
+\begin{equation}
+\lim_{N \to +\infty} \expe{\frac{\widebar{V}}{k}} = \theta\,.
+\end{equation}
+We recall that \(\expe{V_i} = k \theta\) for \(V_i \sim \Gamma(k, \theta)\)
+and that the expected value operator is linear to obtain that
+\begin{equation}
+\expe{\frac{\widebar{V}}{k}} = \frac{\expe{\frac{1}{N} \sum_{i=1}^N V_i}}{k} = \frac{\frac{1}{N} \sum_{i=1}^N \expe{V_i}}{k} = \frac{\frac{1}{N} N k \theta}{k} = \theta\,.
+\end{equation}
+This proves that the maximum likelihood estimator of \eqref{eq:mlestimator} is unbiased,
+hence it is also asymptotically unbiased.
 \end{proof}
 \subsection{Efficiency}
+\begin{thm}[Cramér--Rao inequality]
+If \(Z = (Z_1, \ldots, Z_N)^T\) with i.i.d. random variables \(Z_k\) and if its probability density function given by \(\pdf_Z(z; \theta) = \prod_{k=1}^{N} \pdf_{Z_k}(z_k; \theta)\) satisfies the following regularity condition:
+\begin{equation}
+\expe{\frac{\partial \pdf_Z(z; \theta)}{\partial \theta}} = \int_{-\infty}^{+\infty} \frac{\partial \pdf_Z(z; \theta)}{\partial \theta} \pdf_Z(z; \theta) \dif z \,, \quad \forall \theta\,,
+\end{equation}
+then the covariance of any unbiased estimator \(\hTheta\) satisfies the \emph{Cramér--Rao inequality}
+\begin{equation}
+\cov \hTheta \ge \fisher^{-1}(\theta)\,,
+\end{equation}
+where \(\fisher(\theta)\) is the \(N \times N\) \emph{Fisher information matrix},
+defined by
+\begin{equation}
+\big[\fisher(\theta)\big]_{i, j} \coloneqq -\expe{\frac{\partial^2 \ln \pdf_Z(z; \theta)}{\partial \theta_i \partial \theta_j}}\,.
+\end{equation}
+\end{thm}
+\begin{defn}[Efficient estimator]
+An estimator is said to be \emph{efficient} if it reaches the Cramér--Rao bound for all values of \(\theta\), that is,
+\begin{equation}
+\cov \hTheta = \fisher^{-1}(\theta)\,, \quad \forall \theta\,.
+\end{equation}
+\end{defn}
 \begin{prop}
-	The maximum likelihood estimator is efficient.
+The maximum likelihood estimator derived in \eqref{eq:mlestimator} is efficient.
 \end{prop}
 \begin{proof}
-	The proof is trivial and left as an exercise to the reader.
+
 \end{proof}
 \subsection{Best asymptotically normal}
 \begin{prop}
