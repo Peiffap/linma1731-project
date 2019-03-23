@@ -232,6 +232,7 @@ where \(\fisher(\theta)\) is the \(N \times N\) \emph{Fisher information matrix}
 defined by
 \begin{equation}
 \big[\fisher(\theta)\big]_{i, j} \coloneqq -\expe{\frac{\partial^2 \ln \pdf_Z(z; \theta)}{\partial \theta_i \partial \theta_j}}\,.
+\label{information_matrix}
 \end{equation}
 \end{thm}
 \begin{defn}[Efficient estimator]
@@ -264,6 +265,86 @@ The maximum likelihood estimator derived in \eqref{eq:mlestimator} is efficient.
 We now consider \(V_i \sim \Gamma(k, s)\) (for \(i = 1,\ldots,N)\) with both \(k\) and \(s\) unknown.
 \section{Numerical simulation}
 \section{Fisher information matrix}
+We can compute the Fisher information matrix. The entry $(i,j)$ of this matrix is given by equation \ref{information_matrix}. Since we have two estimators, this matrix is a $2\times 2$ matrix. Remember that
+\begin{equation}
+	\begin{aligned}
+	lnf_Z(z,\theta) = h(z,\theta) & = ln\bigg( \frac{1}{\Gamma(k)s^k}x^{k-1}e^{-x/s} \bigg)\\
+						   & = ln(x^{k-1}) + ln(e^{-x/s}) - ln(\Gamma(k)) - ln(s^k)\\
+						   & = (k-1)ln(x) - \frac{x}{s} - ln(\Gamma(k)) - kln(s).
+	\end{aligned}
+\end{equation}
+Therefore, before calculating the entries of the information matrix, we have to compute the partial derivatives before taking the expectation of it. These are given by equations \ref{00}, \ref{01}, \ref{10} and \ref{11}
+\begin{equation}
+	\begin{aligned}
+	\frac{\partial h(z;\theta)}{\partial s} & = \frac{x}{s^2} - \frac{k}{s}
+	\end{aligned}
+\end{equation}
+\begin{equation}
+	\begin{aligned}
+	\frac{\partial h(z;\theta)}{\partial k} & = ln(x) - \frac{1}{\Gamma(k)}\Gamma(k)\phi^{(0)}(k) - ln(s)\\
+														  & = ln(x) - \phi^{0}(k) - ln(s).
+	\end{aligned}
+\end{equation}
+\begin{equation}
+	\begin{aligned}
+	\frac{\partial^2h(z;\theta)}{\partial s^2} & = -\frac{x}{s^3}\cdot\frac{1}{2} + \frac{k}{s^2}.
+	\end{aligned}
+	\label{00}
+\end{equation}
+\begin{equation}
+	\begin{aligned}
+	\frac{\partial^2 h(z;\theta)}{\partial k \partial s} & = -\frac{1}{s}.
+	\end{aligned}
+	\label{01}
+\end{equation}
+\begin{equation}
+	\begin{aligned}
+	\frac{\partial h(z; \theta)}{\partial s \partial k} & = -\frac{1}{s}.
+	\end{aligned}
+	\label{10}
+\end{equation}
+\begin{equation}
+	\begin{aligned}
+	\frac{\partial h(z; \theta)}{\partial k^2} & = -\frac{d\phi^{(0)}(k)}{dk}\\
+															   & = -\frac{d^2\Gamma(k)}{dk^2}\\
+															   & = -\phi^{(1)}(k).
+	\end{aligned}
+	\label{11}
+\end{equation}
+Then, we take the expectation of these computed values.
+\begin{equation}
+	\begin{aligned}
+	\fisher_{00} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial s^2} \bigg\}\\
+					   & = -\mathbb{E}\bigg\{ \frac{x}{s^2} - \frac{k}{s} \bigg\}\\
+					   & = \frac{k}{s} - \frac{\mathbb{E}\{ x \}}{s^2}\\
+					   & = \frac{k}{s} - \frac{ks}{s^2}\\
+					   & = 0.
+	\end{aligned}
+\end{equation}
+\begin{equation}
+	\begin{aligned}
+	\fisher_{01} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k\partial s} \bigg\}\\
+					  & = -\mathbb{E}\bigg\{ -\frac{1}{s} \bigg\}\\
+					  & = \frac{1}{s}.
+	\end{aligned}
+\end{equation}
+\begin{equation}
+	\begin{aligned}
+	\fisher_{10} & = \fisher{01} = \frac{1}{s}.
+	\end{aligned}
+\end{equation}
+\begin{equation}
+	\begin{aligned}
+	\fisher_{11} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k^2} \bigg\}\\
+					  & = -\mathbb{E}bigg\{ \phi^{(1)}(k) \bigg\}\\
+					  & = -\phi^{(1)}(k).
+	\end{aligned}
+\end{equation}
+Finally, the Fisher information matrix is 
+\[ \fisher(\theta) = \left( \begin{array}{cc}
+	0 & \frac{1}{s} \\
+	\frac{1}{s} & -\phi^{(1)}(k) \\
+	 \end{array} \right)\] 
 \section{Numerical proof}
 \bibliography{report-linma1731-project}
 \bibliographystyle{aomalpha}
