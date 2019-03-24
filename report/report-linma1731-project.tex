@@ -176,7 +176,7 @@ In order to alleviate notation, we compute instead the log-likelihood, which is 
 \ell(v_1, \ldots, v_N; k, \theta) &\coloneqq \ln \like(v_1, \ldots, v_N; k, \theta)\\
 &= \ln\Bigg(\prod_{i=1}^{N} \frac{1}{\Gamma(k) \theta^k} v_i^{k-1} \e^{-\frac{v_i}{\theta}} \Bigg)\\
 & = \sum_{i=1}^{N} \ln\Bigg(\frac{1}{\Gamma(k) \theta^k} v_i^{k-1} \e^{-\frac{v_i}{\theta}}\Bigg)\\
-& = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{v_i}{\theta} - N \big(k \ln \theta + \ln \Gamma(k)\big)\,.
+& = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{v_i}{\theta} - N \big(k \ln \theta + \ln \Gamma(k)\big)\,.\label{loglikelihood}
 \end{align}
 Now, in order to obtain the maximum likelihood estimate \(\htheta\), we must differentiate the log-likelihood with respect to the estimand \(\theta\), and set it equal to zero:
 \begin{align}
@@ -262,7 +262,28 @@ The maximum likelihood estimator derived in \eqref{eq:mlestimator} is efficient.
 	The proof is trivial and left as an exercise to the reader.
 \end{proof}
 \section{Joint maximum likelihood estimation}
-We now consider \(V_i \sim \Gamma(k, s)\) (for \(i = 1,\ldots,N)\) with both \(k\) and \(s\) unknown.
+We now consider \(V_i \sim \Gamma(k, s)\) (for \(i = 1,\ldots,N)\) with both \(k\) and \(s\) unknown. Before, we assumed \(k\) known, so we could maximize the log-likelihood function with respect to \(s\). Now, we have to maximize this function with respect to \(s\) and \(k\) at the same time. We know that the maximum likelihood estimator of \(s\), \(\hat{s} = f(k)\). Therefore, in the log-likelihood function, we can replace all the occurrences of \(s\) by the found estimator, \(\hat{s}\). We then get a function of \(k\) only; and we could seek for the maximum likelihood estimator of \(k\) by derivate this function and equal it to 0. Remember from equation \ref{loglikelihood} the log-likelihood function. If we replace all the occurrences of \(s\) by its estimator, we get
+\begin{equation}
+	\begin{aligned}
+\ell(z;\theta) & = (k-1)\sum_iln(V_i) - \frac{kN}{\sum_iV_i}\sum_iV_i - Nkln(\frac{\sum_i}{kN}) - Nln(\Gamma(k))\\
+						   & = (k-1)\sum_iln(V_i) - kN - Nkln(\sum_iV_i) +Nkln(k) + Nkln(N) - Nln(\Gamma(k)).
+	\end{aligned}
+\end{equation}
+Taking the derivative of this function with respect to \(k\), we get
+\begin{equation}
+	\begin{aligned}
+		\eval{\frac{\partial \ell(v_1, \ldots, v_N; \theta)}{\partial k}}_{k = \hat{k}} & = \sum_iln(V_i) - N - Nln(\sum_iV_i) + Nln(k) + \frac{Nk}{k} + Nln(N) - N\frac{\Gamma(k)}{\Gamma(k)}\phi^{(0)}(k)\\
+		 & = \sum_iln(V_i) - Nln(\sum_iV_i) + Nln(k) + Nln(n) - N\phi^{(0)}(k).
+	\end{aligned}
+\end{equation}
+And looking for the root of this derivative, we have
+\begin{equation}
+	\begin{aligned}
+		ln(k) - \phi^{(0)}(k) & = ln(\sum_iV_i) - ln(N) - \frac{\sum_iln(V_i)}{N}\\
+		ln(k) - \phi^{(0)}(k) & = ln(\frac{\sum_iV_i}{N}) - \frac{\sum_iln(V_i)}{N}.
+	\end{aligned}
+\end{equation}
+We can't find an analytical solution to this equation, but we can approximate it my numerical methods.
 \section{Numerical simulation}
 \section{Fisher information matrix}
 We can compute the Fisher information matrix. The entry $(i,j)$ of this matrix is given by equation \ref{information_matrix}. Since we have two estimators, this matrix is a $2\times 2$ matrix. Remember that
@@ -336,7 +357,7 @@ Then, we take the expectation of these computed values.
 \begin{equation}
 	\begin{aligned}
 	\fisher_{11} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k^2} \bigg\}\\
-					  & = -\mathbb{E}bigg\{ \phi^{(1)}(k) \bigg\}\\
+					  & = -\mathbb{E}\bigg\{ \phi^{(1)}(k) \bigg\}\\
 					  & = -\phi^{(1)}(k).
 	\end{aligned}
 \end{equation}
