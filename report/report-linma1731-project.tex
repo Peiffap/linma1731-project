@@ -314,7 +314,7 @@ We can compute the Fisher information matrix. The entry $(i,j)$ of this matrix i
 						   & = (k-1)ln(x) - \frac{x}{s} - ln(\Gamma(k)) - kln(s).
 	\end{aligned}
 \end{equation}
-Therefore, before calculating the entries of the information matrix, we have to compute the partial derivatives before taking the expectation of it. These are given by equations \ref{00}, \ref{01}, \ref{10} and \ref{11}
+Therefore, before calculating the entries of the information matrix, we have to compute the partial derivatives before taking the expectation of it. Two examples of derivation are given in equations \ref{00} and \ref{11}. The procedure is similar for the other entries and the calculations can be found in Appendix \ref{fischer derivation}
 \begin{equation}
 	\begin{aligned}
 	\frac{\partial h(z;\theta)}{\partial s} & = \frac{x}{s^2} - \frac{k}{s}
@@ -334,59 +334,51 @@ Therefore, before calculating the entries of the information matrix, we have to 
 \end{equation}
 \begin{equation}
 	\begin{aligned}
-	\frac{\partial^2 h(z;\theta)}{\partial k \partial s} & = -\frac{1}{s}.
-	\end{aligned}
-	\label{01}
-\end{equation}
-\begin{equation}
-	\begin{aligned}
-	\frac{\partial h(z; \theta)}{\partial s \partial k} & = -\frac{1}{s}.
-	\end{aligned}
-	\label{10}
-\end{equation}
-\begin{equation}
-	\begin{aligned}
-	\frac{\partial h(z; \theta)}{\partial k^2} & = -\frac{d\phi^{(0)}(k)}{dk}\\
-															   & = -\frac{d^2\Gamma(k)}{dk^2}\\
-															   & = -\phi^{(1)}(k).
+	\frac{\partial^2 h(z; \theta)}{\partial k^2} & = -\frac{d\phi^{(0)}(k)}{dk} = -\frac{d^2\Gamma(k)}{dk^2} = -\phi^{(1)}(k).
 	\end{aligned}
 	\label{11}
 \end{equation}
 Then, we take the expectation of these computed values.
 \begin{equation}
 	\begin{aligned}
-	\fisher_{00} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial s^2} \bigg\}\\
-					   & = -\mathbb{E}\bigg\{ \frac{x}{s^2} - \frac{k}{s} \bigg\}\\
-					   & = \frac{k}{s} - \frac{\mathbb{E}\{ x \}}{s^2}\\
-					   & = \frac{k}{s} - \frac{ks}{s^2}\\
-					   & = 0.
-	\end{aligned}
-\end{equation}
-\begin{equation}
-	\begin{aligned}
-	\fisher_{01} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k\partial s} \bigg\}\\
-					  & = -\mathbb{E}\bigg\{ -\frac{1}{s} \bigg\}\\
-					  & = \frac{1}{s}.
-	\end{aligned}
-\end{equation}
-\begin{equation}
-	\begin{aligned}
-	\fisher_{10} & = \fisher_{01} = \frac{1}{s}.
-	\end{aligned}
-\end{equation}
-\begin{equation}
-	\begin{aligned}
-	\fisher_{11} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k^2} \bigg\}\\
-					  & = -\mathbb{E}\bigg\{ \phi^{(1)}(k) \bigg\}\\
-					  & = -\phi^{(1)}(k).
+	\fisher_{00} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial s^2} \bigg\} = -\mathbb{E}\bigg\{ \frac{x}{s^2} - \frac{k}{s} \bigg\}\\
+					   & = \frac{k}{s} - \frac{\mathbb{E}\{ x \}}{s^2} = \frac{k}{s} - \frac{ks}{s^2} = 0.
 	\end{aligned}
 \end{equation}
 Finally, the Fisher information matrix is 
 \[ \fisher(\theta) = \left( \begin{array}{cc}
-	0 & \frac{1}{s} \\
+	0              & \frac{1}{s} \\
 	\frac{1}{s} & -\phi^{(1)}(k) \\
 	 \end{array} \right)\] 
+Then we have
+\[ \fisher^{-1}(\theta) = \left( \begin{array}{cc}
+	-\phi^{(1)}(k)s^2 & -s \\
+	-s    & 0 \\
+\end{array} \right) \] 
 \section{Numerical proof}
+\appendix
+\section{\\Analytical derivations for d}
+\subsection{Derivation of the Fisher information matrix coefficients}
+\label{fischer derivation}
+\begin{equation}
+\begin{aligned}
+\fisher_{01} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k\partial s} \bigg\}\\
+& = -\mathbb{E}\bigg\{ -\frac{1}{s} \bigg\}\\
+& = \frac{1}{s}.
+\end{aligned}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+\fisher_{10} & = \fisher_{01} = \frac{1}{s}.
+\end{aligned}
+\end{equation}
+\begin{equation}
+\begin{aligned}
+\fisher_{11} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k^2} \bigg\}\\
+& = -\mathbb{E}\bigg\{ \phi^{(1)}(k) \bigg\}\\
+& = -\phi^{(1)}(k).
+\end{aligned}
+\end{equation}
 \bibliography{report-linma1731-project}
 \bibliographystyle{aomalpha}
 
