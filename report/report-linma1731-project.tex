@@ -18,6 +18,7 @@
 
 \usepackage{mathtools,amssymb,amsthm}
 \usepackage{bm}
+\usepackage{float}
 
 %    Some definitions useful in producing this sort of documentation:
 \chardef\bslash=`\\ % p. 424, TeXbook
@@ -91,7 +92,7 @@
 \DeclareMathOperator{\dom}{dom}
 
 \makeatletter
-\DeclareRobustCommand{\expe}{\mathbf{E}\@ifstar\@firstofone\@expe}
+\DeclareRobustCommand{\expe}{\mathbb{E}\@ifstar\@firstofone\@expe}
 \newcommand{\@expe}[1]{\left[#1\right]}
 \makeatother
 
@@ -118,6 +119,13 @@
 \title[Fish schools tracking]{LINMA1731 -- Project 2019\\
 Fish schools tracking}
 
+\author{Louis Navarre}
+\address{Université catholique de Louvain, Ottignies-Louvain-la-Neuve, Belgium}
+\fulladdress{École Polytechnique, Université catholique de Louvain, Place de l'Université 1, 1348 Ottignies-Louvain-la-Neuve, Belgique}
+\email{navarre.louis@student.uclouvain.be}
+\givenname{Louis}
+\surname{Navarre}
+
 \author{Gilles Peiffer}
 \address{Université catholique de Louvain, Ottignies-Louvain-la-Neuve, Belgium}
 \fulladdress{École Polytechnique\\
@@ -127,20 +135,13 @@ Fish schools tracking}
 \givenname{Gilles}
 \surname{Peiffer}
 
-\author{Louis Navarre}
-\address{Université catholique de Louvain, Ottignies-Louvain-la-Neuve, Belgium}
-\fulladdress{École Polytechnique, Université catholique de Louvain, Place de l'Université 1, 1348 Ottignies-Louvain-la-Neuve, Belgique}
-\email{navarre.louis@student.uclouvain.be}
-\givenname{Louis}
-\surname{Navarre}
-
 %\oldsubsections
 \copyrightnote{\textcopyright~2019 Gilles Peiffer and Louis Navarre}
 
 \begin{document}
 
 \begin{abstract}
-	In this paper we solve the first part of the project for the class ``Stochastic process: Estimation and prediction'' given during the Fall term of 2019.
+	In this paper we solve the first part of the project for the class ``Stochastic processes: Estimation and prediction'' given during the Fall term of 2019.
 	The average speed of each fish in a school of fish is approximated by a gamma-distributed random variable with a shape parameter \(k\) and a scale parameter \(s\), and various methods for estimating this quantity are given; a numerical simulation is also included.
 \end{abstract}
 
@@ -149,6 +150,8 @@ Fish schools tracking}
 
 \part{Average speed estimation}
 \section{Introduction}
+In this paper we give a precise form to this connection, showing that WF
+
 For the purpose of this project, we assume that the speed of each fish in a school
 at time \(i\) is a random variable \(V_i\) following a Gamma distribution, as suggested in [1].
 This distribution is characterized by two parameters:
@@ -285,6 +288,23 @@ And looking for the root of this derivative, we have
 \end{equation}
 We can't find an analytical solution to this equation, but we can approximate it my numerical methods.
 \section{Numerical simulation}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{img/k_mom.png}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{img/s_mom.png}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{img/k_ml.png}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{img/s_ml.png}
+\end{figure}
+
 \section{Fisher information matrix}
 We can compute the Fisher information matrix. The entry $(i,j)$ of this matrix is given by equation \ref{information_matrix}. Since we have two estimators, this matrix is a $2\times 2$ matrix. Remember that
 \begin{equation}
