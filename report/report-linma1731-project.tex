@@ -76,7 +76,8 @@
 \newcommand{\X}{\mathcal{X}}
 \newcommand{\wt}{\widetilde}
 \newcommand{\wh}{\widehat}
-
+\newcommand{\dig}{\psi^{(0)}}
+\newcommand{\trig}{\psi^{(1)}}
 
 \newcommand{\like}{\mathcal{L}} % likelihood
 \newcommand{\loglike}{\ell} % log-likelihood
@@ -91,7 +92,7 @@
 \DeclareMathOperator{\cov}{cov}
 \DeclareMathOperator{\dom}{dom}
 \DeclareMathOperator{\argmax}{arg\,max}
-\DeclareMathOperator{\plim}{plim}
+\DeclareMathOperator*{\plim}{plim}
 
 \makeatletter
 \DeclareRobustCommand{\expe}{\mathbb{E}\@ifstar\@firstofone\@expe}
@@ -181,8 +182,8 @@ With this in mind, we can find that the likelihood \(\like(v_1, \ldots, v_N; k, 
 In order to alleviate notation, we compute instead the log-likelihood, which is generally easier to work with\footnote{This is possible because the values of \(\theta\) which maximize the log-likelihood also maximize the likelihood.}:
 \begin{align}
 \ell(v_1, \ldots, v_N; k, \theta) &\coloneqq \ln \like(v_1, \ldots, v_N; k, \theta)\\
-& = \sum_{i=1}^{N} \ln\Bigg(\frac{1}{\Gamma(k) \theta^k} v_i^{k-1} \e^{-\frac{v_i}{\theta}}\Bigg)\\
-& = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{v_i}{\theta} - N \big(k \ln \theta + \ln \Gamma(k)\big)\,.\label{loglikelihood}
+&= \sum_{i=1}^{N} \ln\Bigg(\frac{1}{\Gamma(k) \theta^k} v_i^{k-1} \e^{-\frac{v_i}{\theta}}\Bigg)\\
+&= (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{v_i}{\theta} - N \big(k \ln \theta + \ln \Gamma(k)\big)\,.\label{eq:loglikelihood}
 \end{align}
 Now, in order to obtain the maximum likelihood estimate \(\htheta\), we must differentiate the log-likelihood with respect to the estimand \(\theta\), and set it equal to zero:
 \begin{align}
@@ -311,28 +312,31 @@ This proves that the ML estimator is best asymptotically normal.
 	This proves that the variance (and hence the mean square error) of the estimator goes to zero as \(N\) goes to infinity, hence the estimator is consistent.
 \end{proof}
 \section{Joint maximum likelihood estimation}
-We now consider \(V_i \sim \Gamma(k, s)\) (for \(i = 1,\ldots,N)\) with both \(k\) and \(s\) unknown. Before, we assumed \(k\) known, so we could maximize the log-likelihood function with respect to \(s\). Now, we have to maximize this function with respect to \(s\) and \(k\) at the same time. We know that the maximum likelihood estimator of \(s\), \(\hat{s} = f(k)\). Therefore, in the log-likelihood function, we can replace all the occurrences of \(s\) by the found estimator, \(\hat{s}\). We then get a function of \(k\) only; and we could seek for the maximum likelihood estimator of \(k\) by derivate this function and equal it to 0. Remember from equation \ref{loglikelihood} the log-likelihood function. If we replace all the occurrences of \(s\) by its estimator, we get
-\begin{equation}
-	\begin{aligned}
-\ell(z;\theta) & = (k-1)\sum_iln(V_i) - \frac{kN}{\sum_iV_i}\sum_iV_i - Nkln(\frac{\sum_i}{kN}) - Nln(\Gamma(k))\\
-						   & = (k-1)\sum_iln(V_i) - kN - Nkln(\sum_iV_i) +Nkln(k) + Nkln(N) - Nln(\Gamma(k)).
-	\end{aligned}
-\end{equation}
+We now consider \(V_i \sim \Gamma(k, s)\) (for \(i = 1,\ldots,N)\) with both \(k\) and \(s\) unknown.
+Before, we assumed \(k\) was known, so we could maximize the log-likelihood function with respect to \(s\).
+Now, we have to maximize this function with respect to \(s\) and \(k\) at the same time.
+We know the maximum likelihood estimator of \(s\), \(\hat{s} = f(k)\).
+Therefore, in the log-likelihood function, we can replace all the occurrences of \(s\) by the estimator we found, \(\hat{s}\).
+We then get a function of \(k\) only, which we can differentiate  and set its derivative to zero, solving to find the maximum likelihood estimator of \(k\).
+We use the log-likelihood as given in \eqref{eq:loglikelihood}.
+We abusively write \(\ell(v)\) instead of \(\ell(v_1, \ldots, v_N; \theta)\)
+Substituting in the estimator \(\hat{s}\) instead of \(s\), one finds
+\begin{align}
+\ell(v) = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{kv_i}{\widebar{v}} - N k \ln \widebar{v} + N k \ln k - N \ln \Gamma(k)\big)\,.
+\end{align}
 Taking the derivative of this function with respect to \(k\), we get
-\begin{equation}
-	\begin{aligned}
-		\eval{\frac{\partial \ell(v_1, \ldots, v_N; \theta)}{\partial k}}_{k = \hat{k}} & = \sum_iln(V_i) - N - Nln(\sum_iV_i) + Nln(k) + \frac{Nk}{k} + Nln(N) - N\frac{\Gamma(k)}{\Gamma(k)}\phi^{(0)}(k)\\
-		 & = \sum_iln(V_i) - Nln(\sum_iV_i) + Nln(k) + Nln(n) - N\phi^{(0)}(k).
-	\end{aligned}
-\end{equation}
-And looking for the root of this derivative, we have
-\begin{equation}
-	\begin{aligned}
-		ln(k) - \phi^{(0)}(k) & = ln(\sum_iV_i) - ln(N) - \frac{\sum_iln(V_i)}{N}\\
-		ln(k) - \phi^{(0)}(k) & = ln(\frac{\sum_iV_i}{N}) - \frac{\sum_iln(V_i)}{N}.
-	\end{aligned}
-\end{equation}
-We can't find an analytical solution to this equation, but we can approximate it my numerical methods.
+\begin{align}
+\eval{\frac{\partial \ell(v)}{\partial k}}_{k = \hat{k}} &= \sum_{i=1}^N \ln v_i - N - N \ln \widebar{v} + N \ln \hat{k} + \frac{N\hat{k}}{\hat{k}} - N\frac{\Gamma(\hat{k})}{\Gamma(\hat{k})}\dig(\hat{k})\\
+&= \sum_{i=1}^N \ln v_i - N \ln \sum_{i=1}^N v_i + N \ln \hat{k}  + N \ln N - N \dig(\hat{k})\,,
+\end{align}
+where \(\dig\) is the digamma function, i.e. the logarithmic derivative of the gamma function.
+We now look for a root of this equation:
+\begin{align}
+\ln \hat{k} - \dig(\hat{k}) &= \ln \left(\sum_{i=1}^N v_i\right) - \ln N - \frac{\sum_{i=1}^N \ln v_i}{N}\\
+\iff \ln \hat{k}  - \dig(\hat{k}) &= \ln \left(\frac{\sum_{i=1}^N v_i}{N}\right) - \frac{\sum_{i=1}^N \ln v_i}{N}\,.
+\end{align}
+This equation has no closed-form solution for \(k\), but can be approximated using numerical methods since the function is very well-behaved.
+
 \section{Numerical simulation}
 \begin{figure}[H]
 	\centering
