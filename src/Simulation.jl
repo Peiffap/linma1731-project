@@ -85,6 +85,46 @@ function main()
 		s_ml_std[i] = std(s_ml[i, :])
 	end
 
+	# For question f
+	# This is here that the Louis' bullshit starts
+	# please be indulgent
+	Mf = 10e4
+	N = [10 50 150 3000]
+	index = 1
+
+	xf = collect(20:20:M)
+
+	k_ml_f = zeros(length(N), length(xf))
+	s_ml_f = zeros(length(N), length(xf))
+
+	for n in N
+		index2 = 1
+		for m in xf
+			V = rand(Γ, n)
+			k_ml_f[index, index2], s_ml_f[index, index2] = ml(V; mom_init=false)
+			index2 += 1
+		end
+		index += 1
+		println(n)
+	end
+
+	fisher_inverse = [-trigamma(1)*2^2 -2; -2 0]
+
+
+	cov_matrix = zeros(length(N),1)
+	rapport = zeros(length(N),1)
+	index = 1
+	for n in N
+		cov_matrix = cov(vec(k_ml_f[index,:]), vec(s_ml_f[index,:]))
+		println(index)
+		rapport[index] = (cov_matrix[1,1]/fisher_inverse[1,1] + cov_matrix[1,2]/fisher_inverse[1,2] + cov_matrix[2,1]/fisher_inverse[2,1] + cov_matrix[2,2]/0)/4
+		index += 1
+	end
+
+	rapport = plot(x=N, y=rapport)
+
+	# End of bullshit
+
 	p_k_mom = plot(x=x, y=k_mom_mean, ymin=k_mom_mean - k_mom_std, ymax=k_mom_mean + k_mom_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt), Guide.xlabel("Size of sample vector"), Guide.ylabel("MoM estimator for k"), Guide.title("Method of moments estimation of the first parameter (k)"));
 
 	p_s_mom = plot(x=x, y=s_mom_mean, ymin=s_mom_mean - s_mom_std, ymax=s_mom_mean + s_mom_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt), Guide.xlabel("Size of sample vector"), Guide.ylabel("MoM estimator for s"), Guide.title("Method of moments estimation of the second parameter (s)"));
@@ -98,6 +138,7 @@ function main()
 	p_s_mom |> PNG("s_mom.png")
 	p_k_ml |> PNG("k_ml.png")
 	p_s_ml |> PNG("s_ml.png")
+	rapport |> PNG("rapport.png")
 end
 
 main()
