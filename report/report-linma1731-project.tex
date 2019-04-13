@@ -395,40 +395,10 @@ Finally, the Fisher information matrix is
 	\frac{1}{s} & \psi_1(k) \\
 	 \end{array} \right)\] 
 Then we have
-\[ \fisher^{-1}(\theta) = N\left( \begin{array}{cc}
+\[ \fisher^{-1}(\theta) = \frac{1}{N}\left( \begin{array}{cc}
 	\psi_1(k) & -\frac{1}{s}\\
 	-\frac{1}{s} & \frac{K}{s^2}
 \end{array} \right)\cdot \frac{s^2}{K\psi_1(k) - 1} \] 
-\section{Numerical proof}
-\appendix
-\section{\\Analytical derivations for d}
-\subsection{Derivation of the Fisher information matrix coefficients}
-\label{fischer derivation}
-\begin{equation}
-\begin{aligned}
-\fisher_{01} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k\partial s} \bigg\}\\
-& = -\mathbb{E}\bigg\{ -\frac{1}{s} \bigg\}\\
-& = \frac{1}{s}.
-\end{aligned}
-\end{equation}
-\begin{equation}
-\begin{aligned}
-\fisher_{10} & = \fisher_{01} = \frac{1}{s}.
-\end{aligned}
-\end{equation}
-\begin{equation}
-\begin{aligned}
-\fisher_{11} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k^2} \bigg\}\\
-& = -\mathbb{E}\bigg\{ \phi^{(1)}(k) \bigg\}\\
-& = -\phi^{(1)}(k).
-\end{aligned}
-\end{equation}
-
-Finally, the Fisher information matrix is 
-\[ \fisher(\theta) = \left( \begin{array}{cc}
-	0 & \frac{1}{s} \\
-	\frac{1}{s} & -\phi^{(1)}(k) \\
-	 \end{array} \right)\] 
 \section{Numerical proof}
 
 \appendix
