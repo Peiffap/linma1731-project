@@ -48,12 +48,26 @@ function ml(V::Vector; mom_init = false)
 	return k̂, ŝ
 end
 
+function norm(A::Matrix)
+	"""
+	Function to calculate the Frobenius-norm. Didn't find the actual norm function already in Julia
+	"""
+	norm = 0
+	m,n = size(A)
+	for i in 1:m
+		for j in 1:n
+			norm += A[i,j]^2
+		end
+	end
+	return sqrt(norm)
+end
+
 function main()
 	Γ =  Gamma(1, 2)
 	N = 1000
 	M = 5
 	x = collect(20:20:N)
-
+"""
 	k_mom = zeros(length(x), M)
 	s_mom = zeros(length(x), M)
 	k_ml = zeros(length(x), M)
@@ -84,7 +98,47 @@ function main()
 		k_ml_std[i] = std(k_ml[i, :])
 		s_ml_std[i] = std(s_ml[i, :])
 	end
+"""
+	# For question f
+	# This is here that the Louis' bullshit starts
+	# please be indulgent
+	Mf = 10000
+	N = [10 50 150 3000]
+	index = 1
 
+	k_ml_f = zeros(length(N), Mf)
+	s_ml_f = zeros(length(N), Mf)
+
+	for n in N
+		for index2 in 1:Mf
+			V = rand(Γ, n)
+			k_ml_f[index, index2], s_ml_f[index, index2] = ml(V; mom_init=false)
+		end
+		index += 1
+		println(n)
+	end
+
+	ratio = zeros(length(N),1)
+	index = 1
+	for n in N
+		cov_kk = cov(vec(k_ml_f[index,:]), vec(k_ml_f[index,:]))
+		cov_ks = cov(vec(k_ml_f[index,:]), vec(s_ml_f[index,:]))
+		cov_ss = cov(vec(s_ml_f[index,:]), vec(s_ml_f[index,:]))
+		cov_matrix = [cov_ss cov_ks; cov_ks cov_kk]
+		fisher_inverse = (1/n)*[trigamma(1) -0.5; -0.5 1/(2^2)]*(2^2)/(trigamma(1) - 1)
+		println(index)
+		println(cov_matrix)
+		println(fisher_inverse)
+		matrix_raito = cov_matrix./fisher_inverse
+		println(matrix_raito)
+		ratio[index] = norm(matrix_raito)
+		index += 1
+	end
+
+	p_ratio = plot(x=N, y=ratio)
+
+	# End of bullshit
+"""
 	p_k_mom = plot(x=x, y=k_mom_mean, ymin=k_mom_mean - k_mom_std, ymax=k_mom_mean + k_mom_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt), Guide.xlabel("Size of sample vector"), Guide.ylabel("MoM estimator for k"), Guide.title("Method of moments estimation of the first parameter (k)"));
 
 	p_s_mom = plot(x=x, y=s_mom_mean, ymin=s_mom_mean - s_mom_std, ymax=s_mom_mean + s_mom_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt), Guide.xlabel("Size of sample vector"), Guide.ylabel("MoM estimator for s"), Guide.title("Method of moments estimation of the second parameter (s)"));
@@ -97,7 +151,8 @@ function main()
 	p_k_mom |> PNG("k_mom.png")
 	p_s_mom |> PNG("s_mom.png")
 	p_k_ml |> PNG("k_ml.png")
-	p_s_ml |> PNG("s_ml.png")
+	p_s_ml |> PNG("s_ml.png")"""
+	p_ratio |> PNG("rapport.png")
 end
 
 main()

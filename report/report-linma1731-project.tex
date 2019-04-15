@@ -358,86 +358,50 @@ This equation has no closed-form solution for \(\hat{k}\), but can be approximat
 
 \section{Fisher information matrix}
 We can compute the Fisher information matrix. The entry $(i,j)$ of this matrix is given by equation \ref{information_matrix}. Since we have two estimators, this matrix is a $2\times 2$ matrix. Remember that
-\begin{equation}
-	\begin{aligned}
-	lnf_Z(z,\theta) = h(z,\theta) & = ln\bigg( \frac{1}{\Gamma(k)s^k}x^{k-1}e^{-x/s} \bigg)\\
-						   & = ln(x^{k-1}) + ln(e^{-x/s}) - ln(\Gamma(k)) - ln(s^k)\\
-						   & = (k-1)ln(x) - \frac{x}{s} - ln(\Gamma(k)) - kln(s).
-	\end{aligned}
-\end{equation}
+\begin{align}
+	\ell(x) = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{v_i}{s} - N \big(k \ln s + \ln \Gamma(k)\big)\,
+\end{align}
 Therefore, before calculating the entries of the information matrix, we have to compute the partial derivatives before taking the expectation of it. Two examples of derivation are given in equations \ref{00} and \ref{11}. The procedure is similar for the other entries and the calculations can be found in Appendix \ref{fischer derivation}
-\begin{equation}
-	\begin{aligned}
-	\frac{\partial h(z;\theta)}{\partial s} & = \frac{x}{s^2} - \frac{k}{s}
-	\end{aligned}
-\end{equation}
-\begin{equation}
-	\begin{aligned}
-	\frac{\partial h(z;\theta)}{\partial k} & = ln(x) - \frac{1}{\Gamma(k)}\Gamma(k)\phi^{(0)}(k) - ln(s)\\
-														  & = ln(x) - \phi^{(0)}(k) - ln(s).
-	\end{aligned}
-\end{equation}
-\begin{equation}
-	\begin{aligned}
-	\frac{\partial^2h(z;\theta)}{\partial s^2} & = -\frac{x}{s^3}\cdot\frac{1}{2} + \frac{k}{s^2}.
-	\end{aligned}
+\begin{align}
+	\frac{\partial h(z;\theta)}{\partial s} & = \frac{1}{s^2}\sum_{i=1}^{N}v_i - \frac{Nk}{s}
+\end{align}
+\begin{align}
+	\frac{\partial h(z;\theta)}{\partial k} & = \sum_{i=1}^{N}\ln v_i - N\ln s - N\psi_0(k)
+\end{align}
+\begin{align}
+	\frac{\partial^2h(z;\theta)}{\partial s^2} & = -\frac{2}{s^3}\sum_{i=1}^{N}v_i + \frac{Nk}{s^2}
 	\label{00}
-\end{equation}
-\begin{equation}
-	\begin{aligned}
-	\frac{\partial^2 h(z; \theta)}{\partial k^2} & = -\frac{d\phi^{(0)}(k)}{dk} = -\frac{d^2\Gamma(k)}{dk^2} = -\phi^{(1)}(k).
-	\end{aligned}
+	\end{align}
+\begin{align}
+	\frac{\partial^2 h(z; \theta)}{\partial k^2} & = -N\psi_1(k).
 	\label{11}
-\end{equation}
+\end{align}
+\begin{align}
+		\frac{\partial^2 h(z; \theta)}{\partial k\partial s} & = -\frac{N}{s} .
+\end{align}
 Then, we take the expectation of these computed values.
-\begin{equation}
-	\begin{aligned}
-	\fisher_{00} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial s^2} \bigg\} = -\mathbb{E}\bigg\{ \frac{x}{s^2} - \frac{k}{s} \bigg\}\\
-					   & = \frac{k}{s} - \frac{\mathbb{E}\{ x \}}{s^2} = \frac{k}{s} - \frac{ks}{s^2} = 0.
-	\end{aligned}
-\end{equation}
+\begin{align}
+	\fisher_{00} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial s^2} \bigg\} = -\mathbb{E}\bigg\{ -\frac{2}{s^3}\sum_{i=1}^{N}v_i + \frac{Nk}{s^2} \bigg\}\\
+					   & = \frac{2}{s^3}Nsk - \frac{NK}{s^2} = \frac{NK}{s^2}.
+\end{align}
+\begin{align}
+	\fisher_{01} & = \fisher_{10} =  -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k \partial s} \bigg\} = \frac{N}{s}.
+\end{align}
+\begin{align}
+	\fisher_{11} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k^2} \bigg\} = -N\psi_1(k).
+\end{align}
 Finally, the Fisher information matrix is 
-\[ \fisher(\theta) = \left( \begin{array}{cc}
-	0              & \frac{1}{s} \\
-	\frac{1}{s} & -\phi^{(1)}(k) \\
+\[ \fisher(\theta) = N\left( \begin{array}{cc}
+	\frac{K}{s^2} & \frac{1}{s} \\
+	\frac{1}{s} & \psi_1(k) \\
 	 \end{array} \right)\] 
 Then we have
-\[ \fisher^{-1}(\theta) = \left( \begin{array}{cc}
-	-\phi^{(1)}(k)s^2 & -s \\
-	-s    & 0 \\
-\end{array} \right) \] 
+\[ \fisher^{-1}(\theta) = \frac{1}{N}\left( \begin{array}{cc}
+	\psi_1(k) & -\frac{1}{s}\\
+	-\frac{1}{s} & \frac{K}{s^2}
+\end{array} \right)\cdot \frac{s^2}{K\psi_1(k) - 1} \] 
 \section{Numerical proof}
-\appendix
-\section{\\Analytical derivations for d}
-\subsection{Derivation of the Fisher information matrix coefficients}
-\label{fischer derivation}
-\begin{equation}
-\begin{aligned}
-\fisher_{01} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k\partial s} \bigg\}\\
-& = -\mathbb{E}\bigg\{ -\frac{1}{s} \bigg\}\\
-& = \frac{1}{s}.
-\end{aligned}
-\end{equation}
-\begin{equation}
-\begin{aligned}
-\fisher_{10} & = \fisher_{01} = \frac{1}{s}.
-\end{aligned}
-\end{equation}
-\begin{equation}
-\begin{aligned}
-\fisher_{11} & = -\mathbb{E}\bigg\{ \frac{\partial^2 h(z;\theta)}{\partial k^2} \bigg\}\\
-& = -\mathbb{E}\bigg\{ \phi^{(1)}(k) \bigg\}\\
-& = -\phi^{(1)}(k).
-\end{aligned}
-\end{equation}
-
-Finally, the Fisher information matrix is 
-\[ \fisher(\theta) = \left( \begin{array}{cc}
-	0 & \frac{1}{s} \\
-	\frac{1}{s} & -\phi^{(1)}(k) \\
-	 \end{array} \right)\] 
-\section{Numerical proof}
-
+Figure FIGURE shows the matrix norm induced by the vector 2-norm. We see that, the more N increase, the more we get close to 2 (which is the norm for a matrix 2x2 composed of 1). Figure FIGURE shows also the empirical covariance matrices, the inverse of the Fisher information matrix, and the matrix composed of the the ratio between the coefficients of the first two for a value of $N = 3000$. Wee directly see that these coefficients are very close to one, showing that the covariance matrix tends to the Cramer-Rao lower bound, resulting in the proof that our estimators are efficient.
 \appendix
 \section{Omitted proofs}
 \subsection{Proof of normality using the central limit theorem}
