@@ -15,6 +15,7 @@
 [1994/12/01]% LaTeX date must December 1994 or later
 \documentclass[final]{aomart}
 \usepackage[english]{babel}
+\usepackage[top=1.9cm, bottom=1.9cm, left=2.2cm, right=2.2cm]{geometry} % marges
 
 \usepackage{mathtools,amssymb,amsthm}
 \usepackage{bm}
@@ -335,7 +336,7 @@ We now look for a root of this equation:
 \ln \hat{k} - \dig(\hat{k}) &= \ln \left(\sum_{i=1}^N v_i\right) - \ln N - \frac{\sum_{i=1}^N \ln v_i}{N}\\
 \iff \ln \hat{k}  - \dig(\hat{k}) &= \ln \left(\frac{\sum_{i=1}^N v_i}{N}\right) - \frac{\sum_{i=1}^N \ln v_i}{N}\,.
 \end{align}
-This equation has no closed-form solution for \(k\), but can be approximated using numerical methods since the function is very well-behaved.
+This equation has no closed-form solution for \(\hat{k}\), but can be approximated using numerical methods since the function is very well-behaved.
 
 \section{Numerical simulation}
 \begin{figure}[H]

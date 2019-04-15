@@ -144,21 +144,7 @@
         \put(-21,-25){\usebox{\@aom@linecount}}%
       \end{picture}}
   \fi
-  \chead{\scriptsize%
-    \href{\@annalsurl}{Annals of Mathematics} \textbf{\currentvolume}
-    (\currentyear),
-    \start@page%
-    \def\tempa{\pageref{LastPage}}%
-    \edef\tempb{\start@page}%
-    \ifx\tempa\end@page
-      \edef\tempa{\HyPsd@@@pageref{LastPage}}%
-    \else
-       \edef\tempa{\end@page}%
-    \fi
-    \ifx\tempa\tempb\else--\end@page\fi\\
-  \ifx\@doinumber\@empty\else
-  \edef\@doinumber{\@doinumber}%
-  \expandafter\doi\expandafter{\@doinumber}\fi}%
+  \chead{}%
    \cfoot{\footnotesize\thepage}}%
 \def\annalsurl#1{\gdef\@annalsurl{#1}}
 \annalsurl{http://annals.math.princeton.edu/annals/about/cover/cover.html}
@@ -260,7 +246,7 @@
 \let\corresponding\@gobble
 \let\version\@gobble
 \def\doinumber#1{\gdef\@doinumber{#1}}
-\doinumber{10.4007/annals.\currentyear.\currentvolume.\currentissue.\currentpaper}
+\doinumber{}
 \def\mrnumber#1{\gdef\@mrnumber{#1}}
 \mrnumber{}
 \def\zblnumber#1{\gdef\@zblnumber{#1}}
