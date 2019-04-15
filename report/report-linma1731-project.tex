@@ -15,7 +15,7 @@
 [1994/12/01]% LaTeX date must December 1994 or later
 \documentclass[final]{aomart}
 \usepackage[english]{babel}
-\usepackage[top=1.9cm, bottom=1.9cm, left=2.2cm, right=2.2cm]{geometry} % marges
+%\usepackage[top=1.9cm, bottom=1.9cm, left=2.2cm, right=2.2cm]{geometry} % marges
 
 \usepackage{mathtools,amssymb,amsthm}
 \usepackage{bm}
@@ -402,6 +402,11 @@ Then we have
 \end{array} \right)\cdot \frac{s^2}{K\psi_1(k) - 1} \] 
 \section{Numerical proof}
 Figure FIGURE shows the matrix norm induced by the vector 2-norm. We see that, the more N increase, the more we get close to 2 (which is the norm for a matrix 2x2 composed of 1). Figure FIGURE shows also the empirical covariance matrices, the inverse of the Fisher information matrix, and the matrix composed of the the ratio between the coefficients of the first two for a value of $N = 3000$. Wee directly see that these coefficients are very close to one, showing that the covariance matrix tends to the Cramer-Rao lower bound, resulting in the proof that our estimators are efficient.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{img/ratio.png}
+\end{figure}
+
 \appendix
 \section{Omitted proofs}
 \subsection{Proof of normality using the central limit theorem}
