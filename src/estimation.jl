@@ -141,6 +141,19 @@ function f()
 		cov_ss = cov(vec(s_ml_f[index, :]), vec(s_ml_f[index, :]))
 		cov_matrix = [cov_ss cov_ks; cov_ks cov_kk]
 
+		fisher_inverse = (1/n)*[trigamma(1) -0.5; -0.5 1/(2^2)]*(2^2)/(trigamma(1) - 1)
+
+		println(index)
+		println(cov_matrix)
+		println(fisher_inverse)
+
+		matrix_raito = cov_matrix./fisher_inverse
+
+		println(matrix_raito) # This is the ratio matrix that is important
+		ratio[index] = norm(matrix_raito)
+		index += 1
+	end
+
 		fisher_inverse = nfisher_inv / n
 
 		# Compute the element-wise ratio between
