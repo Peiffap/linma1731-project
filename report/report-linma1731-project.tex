@@ -316,10 +316,12 @@ And the inverse of this matrix, the Cramr-Rao lower-bound, is
 \end{array} \right)\cdot \frac{s^2}{K\psi_1(k) - 1} \] 
 
 \section{Numerical proof}
-Figure FIGURE shows the matrix norm induced by the vector 2-norm. We see that, the more N increase, the more we get close to 2 (which is the norm for a matrix 2x2 composed of 1). Figure FIGURE shows also the empirical covariance matrices, the inverse of the Fisher information matrix, and the matrix composed of the the ratio between the coefficients of the first two for a value of $N = 3000$. Wee directly see that these coefficients are very close to one, showing that the covariance matrix tends to the Cramér--Rao lower bound, resulting in the proof that our estimators are efficient.
+Figure \ref{numerical_proof} show the matrix norm induced by the vector 2-norm of the \emph{ratio} matrix. This matrix is is the result of the ratio of the entries of the empirical covariance matrix by the inverse of the Fisher information matrix, subtracted by one. As a result, if the empirical covariance matrix tends to reach the Cramr-Rao lower bound, the ratio of the entries should tend to 1, and hence the matrix induced norm of this matrix subtracted by 1 should be equal to 0. Indeed, we see on figure \ref{numerical_proof} that this matrix induced norm tends to 0 as the size of the sample vector increases. It empirically proofs that our estimators reach the Cramr-Rao lower bound, meaning that they are efficient.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\textwidth]{img/ratio.png}
+	\label{numerical_proof}
+	\caption{Norm of the "ratio" matrix subtracted by 1}
 \end{figure}
 
 \appendix
