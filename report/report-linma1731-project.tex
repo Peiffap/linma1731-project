@@ -377,9 +377,9 @@ We can compute the Fisher information matrix. Since we have two estimators, this
 -\expe{\frac{\partial^2 l(x)}{\partial s^2}} & -\expe{\frac{\partial^2 l(x)}{\partial k \partial s}} \\
 -\expe{\frac{\partial^2 l(x)}{\partial s \partial k}} & -\expe{\frac{\partial^2 l(x)}{\partial k^2}}  \\
 \end{array} \right).\] 
-Where \(\ell(x)\) is the log-likelihood function computer before.
+Where \(\ell(v)\) is the log-likelihood function computer before.
 \begin{align}
-	\ell(x) = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{v_i}{s} - N \big(k \ln s + \ln \Gamma(k)\big).
+	\ell(v) = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{v_i}{s} - N \big(k \ln s + \ln \Gamma(k)\big).
 \end{align}
 The calculation of theses entries can be found in appendix \ref{fisher_information}. Finally, the Fisher information matrix is 
 \[ \fisher(\theta) = N\left( \begin{array}{cc}
@@ -499,32 +499,32 @@ Using the Lindeberg--Lévy CLT, we thus have
 \section{Calculations of the Fisher information matrix}
 \label{fisher_information}
 \begin{align}
-\frac{\partial \ell(x))}{\partial s} & = \frac{1}{s^2}\sum_{i=1}^{N}v_i - \frac{Nk}{s}
+\frac{\partial \ell(v))}{\partial s} & = \frac{1}{s^2}\sum_{i=1}^{N}v_i - \frac{Nk}{s}
 \end{align}
 \begin{align}
-\frac{\partial \ell(x)}{\partial k} & = \sum_{i=1}^{N}\ln v_i - N\ln s - N\psi_0(k)
+\frac{\partial \ell(v)}{\partial k} & = \sum_{i=1}^{N}\ln v_i - N\ln s - N\psi_0(k)
 \end{align}
 \begin{align}
-\frac{\partial^2\ell(x)}{\partial s^2} & = -\frac{2}{s^3}\sum_{i=1}^{N}v_i + \frac{Nk}{s^2}
+\frac{\partial^2\ell(v)}{\partial s^2} & = -\frac{2}{s^3}\sum_{i=1}^{N}v_i + \frac{Nk}{s^2}
 \label{00}
 \end{align}
 \begin{align}
-\frac{\partial^2 \ell(x)}{\partial k^2} & = -N\psi_1(k).
+\frac{\partial^2 \ell(v)}{\partial k^2} & = -N\psi_1(k).
 \label{11}
 \end{align}
 \begin{align}
-\frac{\partial^2 \ell(x)}{\partial k\partial s} & = -\frac{N}{s} .
+\frac{\partial^2 \ell(v)}{\partial k\partial s} & = -\frac{N}{s} .
 \end{align}
 Then, we take the expectation of these computed values.
 \begin{align}
-\fisher_{00} & = -\mathbb{E}\bigg\{ \frac{\partial^2 \ell(x)}{\partial s^2} \bigg\} = -\mathbb{E}\bigg\{ -\frac{2}{s^3}\sum_{i=1}^{N}v_i + \frac{Nk}{s^2} \bigg\}\\
+\fisher_{00} & = -\mathbb{E}\bigg\{ \frac{\partial^2 \ell(v)}{\partial s^2} \bigg\} = -\mathbb{E}\bigg\{ -\frac{2}{s^3}\sum_{i=1}^{N}v_i + \frac{Nk}{s^2} \bigg\}\\
 & = \frac{2}{s^3}Nsk - \frac{NK}{s^2} = \frac{NK}{s^2}.
 \end{align}
 \begin{align}
-\fisher_{01} & = \fisher_{10} =  -\mathbb{E}\bigg\{ \frac{\partial^2 \ell(x)}{\partial k \partial s} \bigg\} = \frac{N}{s}.
+\fisher_{01} & = \fisher_{10} =  -\mathbb{E}\bigg\{ \frac{\partial^2 \ell(v)}{\partial k \partial s} \bigg\} = \frac{N}{s}.
 \end{align}
 \begin{align}
-\fisher_{11} & = -\mathbb{E}\bigg\{ \frac{\partial^2 \ell(x)}{\partial k^2} \bigg\} = -N\psi_1(k).
+\fisher_{11} & = -\mathbb{E}\bigg\{ \frac{\partial^2 \ell(v)}{\partial k^2} \bigg\} = -N\psi_1(k).
 \end{align}
 \bibliography{report-linma1731-project}
 \bibliographystyle{aomalpha}
