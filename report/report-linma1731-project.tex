@@ -196,59 +196,86 @@ Now, in order to obtain the maximum likelihood estimate \(\htheta\), we must dif
 
 \section{Properties of the estimator}
 
-% The new version here
-The estimator we just found has many interesting properties. First, it is an asymptotically unbiased estimator (\ref{def_unbiased}) . One can show that \(lim_{N\to +\infty}\expe{\frac{\widebar{V}}{k}} = \theta\):
-\begin{equation}
-\expe{\frac{\widebar{V}}{k}} = \frac{\expe{\frac{1}{N} \sum_{i=1}^N V_i}}{k} = \frac{\frac{1}{N} \sum_{i=1}^N \expe{V_i}}{k} = \frac{\frac{1}{N} N k \theta}{k} = \theta\,.
-\end{equation}
-The estimator is more than asymptotically unbiased; it is unbiased. Another interesting property is the efficiency (\ref{def_eff}) of \(\theta\). An unbiased estimator is said to be \emph{efficient} if it reaches the Cramr-Rao bound for all values of $\theta$, that is,
-\begin{equation}
-\cov \hTheta = \fisher^{-1}(\theta)\,, \quad \forall \theta\,.
-\end{equation}
-Since we only have one estimator, we only have to calculate the expectation of the second derivative of the log-likelihood function derived earlier:
-\begin{align}
-\fisher(\theta) &= - N \expe{\frac{\partial^2}{\partial \theta^2} \Bigg((k-1) \ln v_1 - \frac{v_1}{\theta} - \big(k \ln \theta + \ln \Gamma(k)\big)\Bigg)}\\
-&=  N\expe{\frac{\partial^2}{\partial \theta^2} \Big(\frac{v_1}{\theta} + k \ln \theta \Big)} = \frac{kN}{\theta^2}\,.\label{eq:crlb}
-\end{align}
-Then, we have to compute the variance  of the ML estimator \(\Hat{\Theta}\), which is given by 
-\begin{equation}
-\var{\hTheta} = \var{\frac{\overline{V}}{k}} = \frac{\theta^2}{kN}\,.
-\end{equation}
-We directly see that the variance of our estimator reaches the Cramr-Rao lower bound; it is then an efficient estimator. \\
+We now wish to show some of the properties of this estimator.
+The definitions of these properties are given in Appendix~\ref{app:defs}.
+\begin{prop}
+	The maximum likelihood estimator derived in \eqref{eq:mlestimator} is asymptotically unbiased, that is,
+	\begin{equation}
+	\lim_{N \to +\infty} \expe{g(V_1, \ldots, V_N); \theta} = \theta\,.
+	\end{equation}
+\end{prop}
+\begin{proof}
+	We wish to prove that \(\lim_{N \to +\infty} \expe{\frac{\widebar{V}}{k}} = \theta\).
+	We recall that \(\expe{V_i} = k \theta\) for \(V_i \sim \Gamma(k, \theta)\)
+	and that the expected value operator is linear to obtain
+	\begin{equation}
+	\expe{\frac{\widebar{V}}{k}} = \frac{\expe{\frac{1}{N} \sum_{i=1}^N V_i}}{k} = \frac{\frac{1}{N} \sum_{i=1}^N \expe{V_i}}{k} = \frac{\frac{1}{N} N k \theta}{k} = \theta\,.
+	\end{equation}
+	This proves that the maximum likelihood estimator of \eqref{eq:mlestimator} is unbiased,
+	hence it is also asymptotically unbiased.
+\end{proof}
 
-A third property is that the estimator is best asymptotically normal (\ref{def_normal}). In our case, we can show using the Cramér--Rao lower bound that \(\Sigma\) is minimal if it is equal to \(\fisher^{-1}(\theta)\).
-To alleviate notations, we will write \(\ell(\theta)\) instead of \(\ell(v_1, \ldots, v_N; k, \theta)\).
-By definition, since \(\htheta = \argmax_{\theta} \ell(\theta)\),
-we know that \(\ell'(\htheta) = 0\).
-Let \(\theta_0\) be the true value of the parameter \(\theta\).
-We can then use Taylor expansion on \(\ell'(\htheta)\) around \(\htheta = \theta_0\) to obtain
-\begin{align}
-\ell'(\htheta) &= \ell'(\theta_0) + \frac{\ell''(\theta_0)}{1!} (\htheta - \theta_0) + \mathcal{O}\left((\htheta-\theta_0)^2\right)\,.
-\intertext{We know the expression on the left is zero, hence}
-\ell'(\theta_0) &= -\ell''(\theta_0) (\htheta - \theta_0) + \mathcal{O}\left((\htheta-\theta_0)^2\right)\,.
-\intertext{Rearranging and multiplying by \(\sqrt{n}\), we get}
-\sqrt{n}(\htheta - \theta_0) &= \frac{\ell'(\theta_0)/\sqrt{n}}{-\ell''(\theta_0)/n + \mathcal{O}\left((\htheta-\theta_0)/n\right)}\,.
-\end{align}
+\begin{prop}
+	\label{prop:eff}
+	The maximum likelihood estimator derived in \eqref{eq:mlestimator} is efficient.
+\end{prop}
+\begin{proof}
+	We use the fact that the random variables are independent to simplify the computations.
+	Since \(\theta\) is a scalar parameter, the Fisher information matrix is a scalar, equal to
+	\begin{align}
+	\fisher(\theta) &= - N \expe{\frac{\partial^2}{\partial \theta^2} \Bigg((k-1) \ln v_1 - \frac{v_1}{\theta} - \big(k \ln \theta + \ln \Gamma(k)\big)\Bigg)}\\
+	&=  N\expe{\frac{\partial^2}{\partial \theta^2} \Big(\frac{v_1}{\theta} + k \ln \theta \Big)} = \frac{kN}{\theta^2}\,.\label{eq:crlb}
+	\end{align}
+	We must also compute the variance of the ML estimator \(\hTheta\), which is given by
+	\begin{equation}
+	\var{\hTheta} = \var{\frac{\overline{V}}{k}} = \frac{\theta^2}{kN}\,.
+	\end{equation}
+	The Cramér--Rao lower bound is thus reached for all values of \(\theta\), which concludes the proof.
+\end{proof}
 
-Next, we need to show that \(\ell'(\theta_0)/\sqrt{n} \sim \mathcal{N}\big(0, \fisher(\theta_0)\big)\).
-This is done using the Lindeberg--Lévy central limit theorem, in Appendix~\ref{app:banproof}.
-We know that \(1/N \ell''(\theta_0) = \fisher(\theta_0)\).
-Finally, we can rewrite
-\begin{equation}
-\sqrt{N} (\htheta - \theta_0) \sim \frac{\mathcal{N}(0, \fisher(\theta_0))}{\fisher(\theta_0)} = \mathcal{N}(0, \fisher^{-1}(\theta_0))\,,
-\end{equation}
-where we didn't take into account the remainder of the Taylor series, which goes to zero.
-This proves that the ML estimator is best asymptotically normal. \\
+\begin{prop}
+	The maximum likelihood estimator of \eqref{eq:mlestimator} is best asymptotically normal.
+\end{prop}
+\begin{proof}
+	In our case, we can show using the Cramér--Rao lower bound that \(\Sigma\) is minimal if it is equal to \(\fisher^{-1}(\theta)\).
+	To alleviate notations, we will write \(\ell(\theta)\) instead of \(\ell(v_1, \ldots, v_N; k, \theta)\).
+	By definition, since \(\htheta = \argmax_{\theta} \ell(\theta)\),
+	we know that \(\ell'(\htheta) = 0\).
+	Let \(\theta_0\) be the true value of the parameter \(\theta\).
+	We can then use Taylor expansion on \(\ell'(\htheta)\) around \(\htheta = \theta_0\) to obtain
+	\begin{align}
+	\ell'(\htheta) &= \ell'(\theta_0) + \frac{\ell''(\theta_0)}{1!} (\htheta - \theta_0) + \mathcal{O}\left((\htheta-\theta_0)^2\right)\,.
+	\intertext{We know the expression on the left is zero, hence}
+	\ell'(\theta_0) &= -\ell''(\theta_0) (\htheta - \theta_0) + \mathcal{O}\left((\htheta-\theta_0)^2\right)\,.
+	\intertext{Rearranging and multiplying by \(\sqrt{n}\), we get}
+	\sqrt{n}(\htheta - \theta_0) &= \frac{\ell'(\theta_0)/\sqrt{n}}{-\ell''(\theta_0)/n + \mathcal{O}\left((\htheta-\theta_0)/n\right)}\,.
+	\end{align}
+	
+	Next, we need to show that \(\ell'(\theta_0)/\sqrt{n} \sim \mathcal{N}\big(0, \fisher(\theta_0)\big)\).
+	This is done using the Lindeberg--Lévy central limit theorem, in Appendix~\ref{app:banproof}.
+	We know that \(1/N \ell''(\theta_0) = \fisher(\theta_0)\).
+	Finally, we can rewrite
+	\begin{equation}
+	\sqrt{N} (\htheta - \theta_0) \sim \frac{\mathcal{N}(0, \fisher(\theta_0))}{\fisher(\theta_0)} = \mathcal{N}(0, \fisher^{-1}(\theta_0))\,,
+	\end{equation}
+	where we didn't take into account the remainder of the Taylor series, which goes to zero.
+	This proves that the ML estimator is best asymptotically normal.
+\end{proof}
 
-A last but important property to show that we have a "good" estimator is the consistency (\ref{def_consis}) of it. We have shown that the estimator is unbiased, hence its MSE is equal to its variance.
-Since the estimator is efficient - as said earlier - we know that its variance is equal to the Cramér--Rao lower bound, \(\cov \hTheta = \fisher^{-1}(\theta)\).
-We found this lower bound to be equal to \(\theta^2/(kN)\) in \eqref{eq:crlb}.
-We have
-\begin{equation}
-\lim_{N \to +\infty} \cov \hTheta = \lim_{N \to +\infty} \frac{\theta^2}{kN} = 0\,.
-\end{equation}
-This proves that the variance (and hence the mean square error) of the estimator goes to zero as \(N\) goes to infinity, hence the estimator is consistent.
-% End of the new version
+\begin{prop}
+	The maximum likelihood estimator of \eqref{eq:mlestimator} is consistent.
+\end{prop}
+\begin{proof}
+	We have shown that the estimator is unbiased, hence its MSE is equal to its variance.
+	Since the estimator is efficient by Property~\ref{prop:eff}, we know that its variance is equal to the Cramér--Rao lower bound, \(\cov \hTheta = \fisher^{-1}(\theta)\).
+	We found this lower bound to be equal to \(\theta^2/(kN)\) in \eqref{eq:crlb}.
+	We have
+	\begin{equation}
+	\lim_{N \to +\infty} \cov \hTheta = \lim_{N \to +\infty} \frac{\theta^2}{kN} = 0\,.
+	\end{equation}
+	This proves that the variance (and hence the mean square error) of the estimator goes to zero as \(N\) goes to infinity, hence the estimator is consistent.
+\end{proof}
+
 \section{Joint maximum likelihood estimation}
 We now consider \(V_i \sim \Gamma(k, s)\) (for \(i = 1,\ldots,N)\) with both \(k\) and \(s\) unknown.
 Before, we assumed \(k\) was known, so we could maximize the log-likelihood function with respect to \(s\).
@@ -327,40 +354,56 @@ Figure \ref{numerical_proof} show the matrix norm induced by the vector 2-norm o
 \appendix
 
 \section{Definitions of properties}
-\subsection{Asymptotically unbiased}
+\label{app:defs}
+\subsection{Asymptotic unbiasedness}
 \begin{defn}[Unbiased estimator]
+	\label{def_unbiased}
 	The Fisher estimator \(\hTheta = g(Z)\) of \(\theta\) is \emph{unbiased} if
 	\begin{equation}
 	m_{\hTheta; \theta} \coloneqq \expe{g(Z); \theta} = \theta\,, \quad \textnormal{for all } \theta\,.
 	\end{equation}
 \end{defn}
-\label{def_unbiased}
+
 \subsection{Efficiency}
+\begin{thm}[Cramér--Rao inequality]
+	If \(Z = (Z_1, \ldots, Z_N)^T\) with i.i.d. random variables \(Z_k\) and if its probability density function given by \(\pdf_Z(z; \theta) = \prod_{k=1}^{N} \pdf_{Z_k}(z_k; \theta)\) satisfies certain regularity conditions, then the covariance of any unbiased estimator \(\hTheta\) satisfies the \emph{Cramér--Rao inequality}
+	\begin{equation}
+	\cov \hTheta \succeq \fisher^{-1}(\theta)\,,
+	\end{equation}
+	where \(\fisher(\theta)\) is the \(p \times p\) \emph{Fisher information matrix},
+	defined by
+	\begin{equation}
+	\big[\fisher(\theta)\big]_{i, j} \coloneqq -\expe{\frac{\partial^2 \ln \pdf_Z(z; \theta)}{\partial \theta_i \partial \theta_j}}\,.
+	\label{information_matrix}
+	\end{equation}
+\end{thm}
 \begin{defn}[Efficient estimator]
+	\label{def_eff}
 	An unbiased estimator is said to be \emph{efficient} if it reaches the Cramér--Rao bound for all values of \(\theta\), that is,
 	\begin{equation}
 	\cov \hTheta = \fisher^{-1}(\theta)\,, \quad \forall \theta\,.
 	\end{equation}
 \end{defn}
-\label{def_eff}
-\subsection{Best asymptotically normal}
-\begin{defn}[Best asymptotically normal]
+
+\subsection{Asymptotic normality}
+\begin{defn}[Best asymptotically normal estimator]
+	\label{def_normal}
 	A sequence \(\{\hTheta_N(Z)\}_{N \in \mathbb{N}}\) of consistent estimators of \(\theta\) is called \emph{best asymptotically normal} if
 	\begin{equation}
 	\sqrt{N} \left(\hTheta_N(Z) - \theta\right) \xrightarrow[N \to +\infty]{\mathcal{D}} \mathcal{N}(0, \Sigma)\,,
 	\end{equation}
 	for some minimal positive definite matrix \(\Sigma\).
 \end{defn}
-\label{def_normal}
+
 \subsection{Consistency}
 \begin{defn}[Consistent estimator]
+	\label{def_consis}
 	A sequence \(\{\hTheta_N(Z)\}_{N \in \mathbb{N}}\) of estimators of \(\theta\) is called \emph{consistent} if
 	\begin{equation}
 	\plim_{N \to +\infty} \hTheta_N(Z) = \theta\,.
 	\end{equation}
 	Equivalently, we can show that the MSE of the estimator converges to zero as \(N\) goes to infinity.
 \end{defn}
-\label{def_consis}
 
 \section{Omitted proofs}
 \subsection{Proof of normality using the central limit theorem}
