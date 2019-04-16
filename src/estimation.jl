@@ -1,4 +1,7 @@
-using Compat, Random, Distributions, StatsBase, Gadfly, JuMP, Ipopt, SpecialFunctions, Cairo, Fontconfig, LinearAlgebra
+using Compat
+using Random, Distributions, StatsBase
+using JuMP, Ipopt, SpecialFunctions, LinearAlgebra
+using Gadfly, Cairo, Fontconfig
 
 """
 	mom(V::Vector)
@@ -59,7 +62,7 @@ function d()
 	Γ =  Gamma(1, 2)
 	N = 1000
 	M = 500
-	x = collect(5:15:N)
+	x = collect(10:15:N)
 	k_mom = zeros(length(x), M)
 	s_mom = zeros(length(x), M)
 	k_ml = zeros(length(x), M)
@@ -91,18 +94,18 @@ function d()
 		s_ml_std[i] = std(s_ml[i, :])
 	end
 
-	p_k_mom = plot(x=x, y=k_mom_mean, ymin=k_mom_mean - k_mom_std, ymax=k_mom_mean + k_mom_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt), Guide.xlabel("Size of sample vector"), Guide.ylabel("MoM estimator for k"), Guide.title("Method of moments estimation of the first parameter (k)"));
+	p_k = plot(
+	layer(x=x, y=k_mom_mean, ymin=k_mom_mean - k_mom_std, ymax=k_mom_mean + k_mom_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt, default_color=colorant"blue")),
+	layer(x=x, y=k_ml_mean, ymin=k_ml_mean - k_ml_std, ymax=k_ml_mean + k_ml_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt, default_color=colorant"orange")), Guide.xlabel("Size of sample vector"), Guide.ylabel("Mean and standard deviation"), Guide.title("Estimation of the first parameter (k)"), Guide.manual_color_key("Estimators", ["MOM", "ML"], ["blue", "orange"])
+	);
 
-	p_s_mom = plot(x=x, y=s_mom_mean, ymin=s_mom_mean - s_mom_std, ymax=s_mom_mean + s_mom_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt), Guide.xlabel("Size of sample vector"), Guide.ylabel("MoM estimator for s"), Guide.title("Method of moments estimation of the second parameter (s)"));
+	p_s = plot(
+	layer(x=x, y=s_mom_mean, ymin=s_mom_mean - s_mom_std, ymax=s_mom_mean + s_mom_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt, default_color=colorant"blue")),
+	layer(x=x, y=s_ml_mean, ymin=s_ml_mean - s_ml_std, ymax=s_ml_mean + s_ml_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt, default_color=colorant"orange")), Guide.xlabel("Size of sample vector"), Guide.ylabel("Mean and standard deviation"), Guide.title("Estimation of the second parameter (s)"), Guide.manual_color_key("Estimators", ["MOM", "ML"], ["blue", "orange"])
+	);
 
-	p_k_ml = plot(x=x, y=k_ml_mean, ymin=k_ml_mean - k_ml_std, ymax=k_ml_mean + k_ml_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt), Guide.xlabel("Size of sample vector"), Guide.ylabel("ML estimator for k"), Guide.title("Maximum likelihood estimation of the first parameter (k)"));
-
-	p_s_ml = plot(x=x, y=s_ml_mean, ymin=s_ml_mean - s_ml_std, ymax=s_ml_mean + s_ml_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt), Guide.xlabel("Size of sample vector"), Guide.ylabel("ML estimator for s"), Guide.title("Maximum likelihood estimation of the second parameter (s)"));
-
-	p_k_mom |> PNG("k_mom.png")
-	p_s_mom |> PNG("s_mom.png")
-	p_k_ml |> PNG("k_ml.png")
-	p_s_ml |> PNG("s_ml.png")
+	p_k |> PNG("k.png")
+	p_s |> PNG("s.png")
 end
 
 """
@@ -156,7 +159,7 @@ function f()
 		index += 1
 	end
 
-	p_ratio = plot(x=N, y=ratio, Geom.line, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt), Guide.xlabel("Size of sample vector"), Guide.ylabel("Spectral norm of the ratio matrix - [1 1; 1 1]"), Guide.title("Numerical indication of convergence towards the Cramér--Rao bound"));
+	p_ratio = plot(x=N, y=ratio, Geom.line, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=24pt,minor_label_font_size=21pt), Guide.xlabel("Size of sample vector"), Guide.ylabel("Spectral norm of the ratio matrix - [1 1; 1 1]"), Guide.title("Numerical indication of convergence towards the Cramér--Rao bound"));
 
 	p_ratio |> PNG("ratio.png")
 end
@@ -168,8 +171,8 @@ end
 """
 function main()
 	set_default_plot_size(32cm, 18cm)
-	# d()
-	f()
+	d()
+	# f()
 end
 
 main()

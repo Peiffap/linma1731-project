@@ -20,6 +20,8 @@
 \usepackage{mathtools,amssymb,amsthm}
 \usepackage{bm}
 \usepackage{float}
+\usepackage{siunitx}
+\usepackage{minted}
 
 %    Some definitions useful in producing this sort of documentation:
 \chardef\bslash=`\\ % p. 424, TeXbook
@@ -79,6 +81,13 @@
 \newcommand{\wh}{\widehat}
 \newcommand{\dig}{\psi^{(0)}}
 \newcommand{\trig}{\psi^{(1)}}
+\newcommand{\imagj}{\mathrm{j}\mkern1mu} % Imaginary unit but with 100% more engineering
+
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\theta}{\vartheta}
+\renewcommand{\kappa}{\varkappa}
+\renewcommand{\rho}{\varrho}
+\renewcommand{\phi}{\varphi}
 
 \newcommand{\like}{\mathcal{L}} % likelihood
 \newcommand{\loglike}{\ell} % log-likelihood
@@ -92,7 +101,7 @@
 \DeclareMathOperator{\var}{var}
 \DeclareMathOperator{\cov}{cov}
 \DeclareMathOperator{\dom}{dom}
-\DeclareMathOperator{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\plim}{plim}
 
 \makeatletter
@@ -174,7 +183,7 @@ We start by deriving the maximum likelihood estimator of \(\theta \coloneqq s\) 
 Since the estimand $\theta$ is a deterministic quantity, we use Fisher estimation.
 In order to do this, let us restate the probability density function of \(V_i \sim \Gamma(k, s)\):
 \begin{equation}
-\pdf_{V_i}(v_i; k, s) = \frac{1}{\Gamma(k) s^k} v_i^{k-1} \e^{-\frac{v_i}{s}}\,, \quad i = 1, \ldots, N\,.
+\pdf_{V_i}(v_i; k, s) = \frac{1}{\Gamma(k) s^k} v_i^{k-1} \e^{-\frac{v_i}{s}}\,, \quad i = 1, \ldots, N\,.\label{eq:gamma}
 \end{equation}
 With this in mind, we can find that the likelihood \(\like(v_1, \ldots, v_N; k, \theta)\) is given by
 \begin{align}
@@ -251,9 +260,9 @@ The definitions of these properties are given in Appendix~\ref{app:defs}.
 	\sqrt{n}(\htheta - \theta_0) &= \frac{\ell'(\theta_0)/\sqrt{n}}{-\ell''(\theta_0)/n + \mathcal{O}\left((\htheta-\theta_0)/n\right)}\,.
 	\end{align}
 	
-	Next, we need to show that \(\ell'(\theta_0)/\sqrt{n} \sim \mathcal{N}\big(0, \fisher(\theta_0)\big)\).
+	Next, we need to show that \(\frac{1}{\sqrt{n}} \ell'(\theta_0) \sim \mathcal{N}\big(0, \fisher(\theta_0)\big)\).
 	This is done using the Lindeberg--Lévy central limit theorem, in Appendix~\ref{app:banproof}.
-	We know that \(1/N \ell''(\theta_0) = \fisher(\theta_0)\).
+	We know that \(\frac{1}{N} \ell''(\theta_0) = \fisher(\theta_0)\).
 	Finally, we can rewrite
 	\begin{equation}
 	\sqrt{N} (\htheta - \theta_0) \sim \frac{\mathcal{N}(0, \fisher(\theta_0))}{\fisher(\theta_0)} = \mathcal{N}(0, \fisher^{-1}(\theta_0))\,,
@@ -268,7 +277,7 @@ The definitions of these properties are given in Appendix~\ref{app:defs}.
 \begin{proof}
 	We have shown that the estimator is unbiased, hence its MSE is equal to its variance.
 	Since the estimator is efficient by Property~\ref{prop:eff}, we know that its variance is equal to the Cramér--Rao lower bound, \(\cov \hTheta = \fisher^{-1}(\theta)\).
-	We found this lower bound to be equal to \(\theta^2/(kN)\) in \eqref{eq:crlb}.
+	We found this lower bound to be equal to \(\frac{\theta^2}{kN}\) in \eqref{eq:crlb}.
 	We have
 	\begin{equation}
 	\lim_{N \to +\infty} \cov \hTheta = \lim_{N \to +\infty} \frac{\theta^2}{kN} = 0\,.
@@ -277,14 +286,16 @@ The definitions of these properties are given in Appendix~\ref{app:defs}.
 \end{proof}
 
 \section{Joint maximum likelihood estimation}
+\label{sec:joint}
 We now consider \(V_i \sim \Gamma(k, s)\) (for \(i = 1,\ldots,N)\) with both \(k\) and \(s\) unknown.
 Before, we assumed \(k\) was known, so we could maximize the log-likelihood function with respect to \(s\).
 Now, we have to maximize this function with respect to \(s\) and \(k\) at the same time.
 We know the maximum likelihood estimator of \(s\), \(\hat{s} = f(k)\).
 Therefore, in the log-likelihood function, we can replace all the occurrences of \(s\) by the estimator we found, \(\hat{s}\).
-We then get a function of \(k\) only, which we can differentiate  and set its derivative to zero, solving to find the maximum likelihood estimator of \(k\).
-We use the log-likelihood as given in \eqref{eq:loglikelihood}.
-We abusively write \(\ell(v)\) instead of \(\ell(v_1, \ldots, v_N; \theta)\)
+One then gets a function of \(k\) only, which can be differentiated and its derivative set to zero.
+Solving this, one can find the maximum likelihood estimator of \(k\).
+The log-likelihood is used as given in \eqref{eq:loglikelihood}.
+We abusively write \(\ell(v)\) instead of \(\ell(v_1, \ldots, v_N; \theta)\).
 Substituting in the estimator \(\hat{s}\) instead of \(s\), one finds
 \begin{align}
 \ell(v) = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{kv_i}{\widebar{v}} - N k \ln \widebar{v} + N k \ln k - N \ln \Gamma(k)\big)\,.
@@ -295,30 +306,69 @@ Taking the derivative of this function with respect to \(k\), we get
 &= \sum_{i=1}^N \ln v_i - N \ln \sum_{i=1}^N v_i + N \ln \hat{k}  + N \ln N - N \dig(\hat{k})\,,
 \end{align}
 where \(\dig\) is the digamma function, i.e. the logarithmic derivative of the gamma function.
-We now look for a root of this equation:
+One must now look for a root of this equation:
 \begin{align}
 \ln \hat{k} - \dig(\hat{k}) &= \ln \left(\sum_{i=1}^N v_i\right) - \ln N - \frac{\sum_{i=1}^N \ln v_i}{N}\\
-\iff \ln \hat{k}  - \dig(\hat{k}) &= \ln \left(\frac{\sum_{i=1}^N v_i}{N}\right) - \frac{\sum_{i=1}^N \ln v_i}{N}\,.
+\iff \ln \hat{k}  - \dig(\hat{k}) &= \ln \left(\frac{\sum_{i=1}^N v_i}{N}\right) - \frac{\sum_{i=1}^N \ln v_i}{N}\,.\label{eq:mlk}
 \end{align}
 This equation has no closed-form solution for \(\hat{k}\), but can be approximated using numerical methods since the function is very well-behaved.
 
 \section{Numerical simulation}
+For the numerical simulation, \(N\) random variables were generated from a distribution with parameters \(\Gamma(1, 2)\), for different values of \(N\) (\mintinline{julia}{10:15:1000}).
+For each value of \(N\), the experiment was repeated \(M = 500\) times.
+
+In order to use method of moments estimation for the Gamma distribution given in \eqref{eq:gamma},
+one first needs to know its characteristic function: \(\phi_{V_i}(t) = \expe{\e^{\imagj t V_i}} = (1 - \imagj s t)^{-k}\).
+The \(n\)th moment is given by \(\mu_n = \expe{V_i^n} = \imagj^{-n} \phi_{V_i}^{(n)}(0)\).
+Since the parameter vector has dimension two,
+we need to compute the first two moments.
+These are given by \(\mu_1 = ks\) and \(\mu_2 = k(k+1) s^2\).
+One can use the sample moments \(\hat{\mu}_1\) and \(\hat{\mu}_2\)
+to estimate \(\mu_1\) and \(\mu_2\) as follows:
+\begin{equation}
+\hat{\mu}_1 = \frac{1}{N} \sum_{i=1}^N v_i\,,\quad \hat{\mu}_2 = \frac{1}{N} \sum_{i=1}^N v_i^2\,.
+\end{equation}
+Using some simple algebra, one then finds
+\begin{equation}
+\hat{k}_{\textnormal{MOM}} = \frac{\hat{\mu}_1^2}{\hat{\mu}_2 - \hat{\mu}_1^2}\,, \quad \hat{s}_{\textnormal{MOM}} = \frac{\hat{\mu}_2}{\hat{\mu}_1} - \hat{\mu}_1\,.
+\end{equation}
+
+The maximum likelihood estimators are computed using the formulas in \eqref{eq:mlestimator} and \eqref{eq:mlk}, for the given sample.
+As mentioned in Section~\ref{sec:joint},
+the maximum likelihood estimator for \(k\) has no closed-form solution,
+but can be approximated using numerical methods which require an initial guess.
+One such first guess is provided by the method of moments estimator for the parameter,
+that is
+\begin{equation}
+\hat{k}_{\textnormal{ML}}^{(0)} = \hat{k}_{\textnormal{MOM}} =  \frac{\hat{\mu}_2}{\hat{\mu}_1} - \hat{\mu}_1\,.
+\end{equation}
+Another possible choice for the first guess is
+\begin{equation}
+\hat{k}_{\textnormal{ML}}^{(0)} = \frac{3 - \xi + \sqrt{(\xi - 3)^2 + 24\xi}}{12 \xi}\,, \quad \textnormal{where } \xi = \ln \widebar{v} + \frac{1}{N} \sum_{i=1}^N \ln v_i\,.
+\end{equation}
+This guess can be shown to be within \(\SI{1.5}{\percent}\) of the actual value.
+The estimator for \(s\) can then be found from \eqref{eq:mlestimator}, using \(\hat{k}_{\textnormal{ML}}\) instead of \(k\).
+
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{img/k_mom.png}
+	\includegraphics[width=\textwidth]{img/k.png}
+	\caption{Estimators for the first parameter.}
+	\label{fig:k_est}
 \end{figure}
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{img/s_mom.png}
+	\includegraphics[width=\textwidth]{img/s.png}
+	\caption{Estimators for the second parameter.}
+	\label{fig:s_est}
 \end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{img/k_ml.png}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\textwidth]{img/s_ml.png}
-\end{figure}
+
+On Figures~\ref{fig:k_est} and \ref{fig:s_est}, the mean and standard deviation are shown for the \(M\) values of both the method of moments estimator and the maximum likelihood estimator, for different values of the size of the sample, \(N\).
+For both parameters, both estimators are unbiased, but the ML estimator has a lower variance.
+This should not come as a surprise: since it is efficient, every other estimator must have a greater or equal asymptotic variance.
+As is shown numerically in Section~\ref{sec:ratio},
+this variance asymptotically goes to \(\fisher^{-1}(\theta)\),
+the Cramér--Rao lower bound.
+This is also expected, in light of Property~\ref{prop:eff}.
 
 \section{Fisher information matrix}
 We can compute the Fisher information matrix. Since we have two estimators, this matrix is a $2\times 2$ matrix. This matrix is hence computed by \label{fisher_matrix}
@@ -343,6 +393,7 @@ And the inverse of this matrix, the Cramr-Rao lower-bound, is
 \end{array} \right)\cdot \frac{s^2}{K\psi_1(k) - 1} \] 
 
 \section{Numerical proof}
+\label{sec:ratio}
 Figure \ref{numerical_proof} show the matrix norm induced by the vector 2-norm of the \emph{ratio} matrix. This matrix is is the result of the ratio of the entries of the empirical covariance matrix by the inverse of the Fisher information matrix, subtracted by one. As a result, if the empirical covariance matrix tends to reach the Cramr-Rao lower bound, the ratio of the entries should tend to 1, and hence the matrix induced norm of this matrix subtracted by 1 should be equal to 0. Indeed, we see on figure \ref{numerical_proof} that this matrix induced norm tends to 0 as the size of the sample vector increases. It empirically proofs that our estimators reach the Cramr-Rao lower bound, meaning that they are efficient.
 \begin{figure}[H]
 	\centering
@@ -355,7 +406,7 @@ Figure \ref{numerical_proof} show the matrix norm induced by the vector 2-norm o
 
 \section{Definitions of properties}
 \label{app:defs}
-\subsection{Asymptotic unbiasedness}
+
 \begin{defn}[Unbiased estimator]
 	\label{def_unbiased}
 	The Fisher estimator \(\hTheta = g(Z)\) of \(\theta\) is \emph{unbiased} if
@@ -364,7 +415,6 @@ Figure \ref{numerical_proof} show the matrix norm induced by the vector 2-norm o
 	\end{equation}
 \end{defn}
 
-\subsection{Efficiency}
 \begin{thm}[Cramér--Rao inequality]
 	If \(Z = (Z_1, \ldots, Z_N)^T\) with i.i.d. random variables \(Z_k\) and if its probability density function given by \(\pdf_Z(z; \theta) = \prod_{k=1}^{N} \pdf_{Z_k}(z_k; \theta)\) satisfies certain regularity conditions, then the covariance of any unbiased estimator \(\hTheta\) satisfies the \emph{Cramér--Rao inequality}
 	\begin{equation}
@@ -385,7 +435,6 @@ Figure \ref{numerical_proof} show the matrix norm induced by the vector 2-norm o
 	\end{equation}
 \end{defn}
 
-\subsection{Asymptotic normality}
 \begin{defn}[Best asymptotically normal estimator]
 	\label{def_normal}
 	A sequence \(\{\hTheta_N(Z)\}_{N \in \mathbb{N}}\) of consistent estimators of \(\theta\) is called \emph{best asymptotically normal} if
@@ -395,20 +444,19 @@ Figure \ref{numerical_proof} show the matrix norm induced by the vector 2-norm o
 	for some minimal positive definite matrix \(\Sigma\).
 \end{defn}
 
-\subsection{Consistency}
 \begin{defn}[Consistent estimator]
 	\label{def_consis}
 	A sequence \(\{\hTheta_N(Z)\}_{N \in \mathbb{N}}\) of estimators of \(\theta\) is called \emph{consistent} if
 	\begin{equation}
 	\plim_{N \to +\infty} \hTheta_N(Z) = \theta\,.
 	\end{equation}
-	Equivalently, we can show that the MSE of the estimator converges to zero as \(N\) goes to infinity.
+	Equivalently, one can show that the MSE of the estimator converges to zero as \(N\) goes to infinity.
 \end{defn}
 
 \section{Omitted proofs}
-\subsection{Proof of normality using the central limit theorem}
-\label{app:banproof}
+The following is a proof of normality, using the Lindeberg--Lévy formulation of the central limit theorem.
 \begin{proof}
+\label{app:banproof}
 We want to prove that  \(\ell'(\theta_0)/\sqrt{N} \sim \mathcal{N}\big(0, \fisher(\theta_0)\big)\).
 We simplify notation by writing \(\pdf(v_i)\) instead of \(\pdf_{V_i}(v_i; k, \theta)\)
 and using Euler's notation for derivatives.
