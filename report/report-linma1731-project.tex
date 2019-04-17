@@ -26,6 +26,7 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=newest}
 \usepackage{subcaption}
+\usepackage{url}
 
 %    Some definitions useful in producing this sort of documentation:
 \chardef\bslash=`\\ % p. 424, TeXbook
@@ -164,7 +165,7 @@ Fish schools tracking}
 
 \begin{abstract}
 	In this paper we solve the first part of the project for the class ``Stochastic processes: Estimation and prediction'' given during the Fall term of 2019.
-	The average speed of each fish in a school of fish is approximated by a gamma-distributed random variable with a shape parameter \(k\) and a scale parameter \(s\), and various methods for estimating this quantity are given; a numerical simulation is also included.
+	The average speed of each fish in a school of fish is approximated by a gamma-distributed random variable with a shape parameter \(k\) and a scale parameter \(s\), and various methods for estimating this quantity are given; numerical simulations are also included, using Julia and J\textsuperscript{u}MP \cite{DunningHuchetteLubin2017}.
 \end{abstract}
 
 \maketitle
@@ -173,17 +174,17 @@ Fish schools tracking}
 \part{Average speed estimation}
 \section{Introduction}
 For the purpose of this project, we assume that the speed of each fish in a school
-at time \(i\) is a random variable \(V_i\) following a Gamma distribution, as suggested in [1].
+at time \(i\) is a random variable \(V_i\) following a Gamma distribution, as suggested in \cite{huth:sim}.
 This distribution is characterized by two parameters:
 a shape parameter \(k > 0\) and a scale parameter \(s > 0\).
 The parameters are the same for every fish and are time invariant.
 The aim of this first part is to identify these two parameters using empirical observations \(v_i\).
 
 \section{A maximum likelihood estimator for a scalar parameter}
-Let \(v_i\) be i.i.d. realisations of a random variable following a Gamma distribution \(\Gamma(k, s)\) (with \(i = 1,\ldots, N)\).
+Let \(v_i\) be i.i.d. realisations of a random variable following a Gamma distribution \(\Gamma(k, s)\) (with \(i = 1,\ldots, N)\)\cite{wiki:gamma}.
 We first assume that the shape parameter \(k\) is known.
 
-We start by deriving the maximum likelihood estimator of \(\theta \coloneqq s\) based on \(N\) observations.
+We start by deriving the maximum likelihood estimator of \(\theta \coloneqq s\) based on \(N\) observations \cite{wiki:mle}.
 Since the estimand $\theta$ is a deterministic quantity, we use Fisher estimation.
 In order to do this, let us restate the probability density function of \(V_i \sim \Gamma(k, s)\):
 \begin{equation}
@@ -308,7 +309,7 @@ Taking the derivative of this function with respect to \(k\), we get
 \eval{\frac{\partial \ell(v)}{\partial k}}_{k = \hat{k}} &= \sum_{i=1}^N \ln v_i - N - N \ln \widebar{v} + N \ln \hat{k} + \frac{N\hat{k}}{\hat{k}} - N\frac{\Gamma(\hat{k})}{\Gamma(\hat{k})}\dig(\hat{k})\\
 &= \sum_{i=1}^N \ln v_i - N \ln \sum_{i=1}^N v_i + N \ln \hat{k}  + N \ln N - N \dig(\hat{k})\,,
 \end{align}
-where \(\dig\) is the digamma function, i.e. the logarithmic derivative of the gamma function.
+where \(\dig\) is the digamma function, i.e. the logarithmic derivative of the gamma function \cite{wolf:dig}.
 One must now look for a root of this equation:
 \begin{align}
 \ln \hat{k} - \dig(\hat{k}) &= \ln \left(\sum_{i=1}^N v_i\right) - \ln N - \frac{\sum_{i=1}^N \ln v_i}{N}\\
@@ -322,7 +323,7 @@ For each value of \(N\), the experiment was repeated \(M = 500\) times.
 
 In order to use method of moments estimation for the Gamma distribution given in \eqref{eq:gamma},
 one first needs to know its characteristic function: \(\phi_{V_i}(t) = \expe{\e^{\imagj t V_i}} = (1 - \imagj s t)^{-k}\).
-The \(n\)th moment is given by \(\mu_n = \expe{V_i^n} = \imagj^{-n} \phi_{V_i}^{(n)}(0)\).
+The \(n\)th moment is given by \(\mu_n = \expe{V_i^n} = \imagj^{-n} \phi_{V_i}^{(n)}(0)\) \cite{wiki:charfun}.
 Since the parameter vector has dimension two,
 we need to compute the first two moments.
 These are given by \(\mu_1 = ks\) and \(\mu_2 = k(k+1) s^2\).
@@ -345,7 +346,7 @@ Another possible choice for the first guess is
 \begin{equation}
 \hat{k}_{\textnormal{ML}}^{(0)} = \frac{3 - \xi + \sqrt{(\xi - 3)^2 + 24\xi}}{12 \xi}\,, \quad \textnormal{where } \xi = \ln \widebar{v} + \frac{1}{N} \sum_{i=1}^N \ln v_i\,.
 \end{equation}
-This guess can be shown to be within \(\SI{1.5}{\percent}\) of the actual value.
+This guess can be shown to be within \(\SI{1.5}{\percent}\) of the actual value \cite{minka:gamma}.
 The estimator for \(s\) can then be found from \eqref{eq:mlestimator}, using \(\hat{k}_{\textnormal{ML}}\) instead of \(k\).
 \begin{figure}[H]
 	\centering
@@ -403,7 +404,7 @@ and the Cramér--Rao lower bound, given by the inverse of the Fisher information
 -\frac{1}{s} & \frac{k}{s^2}
 \end{pmatrix} \frac{s^2}{k\trig(k) - 1}\,,\label{eq:fisher}
 \end{equation}
-where \(\trig\) is the trigamma function, i.e. the second derivative of the logarithm of the gamma function.
+where \(\trig\) is the trigamma function, i.e. the second derivative of the logarithm of the gamma function \cite{wolf:trig}.
 
 \section{Numerical evidence of convergence to the Cramér--Rao bound}
 \label{sec:ratio}
@@ -413,7 +414,7 @@ Figure~\ref{fig:CRLB} gives the spectral norm of
 \end{equation}
 where \(\oslash\) denotes Hadamard (element-wise) division and \(\hTheta\) is \((\hat{k}_{\textnormal{ML}}, \hat{s}_{\textnormal{ML}})\), for different values of \(N\).
 If this estimator is efficient, we know by Theorem~\ref{theo:CR} that its covariance should asymptotically go to the inverse of the Fisher information matrix.
-If one takes the Hadamard division of the covariance matrix by the inverse of the Fisher matrix, the result should be a matrix of ones.
+If one takes the Hadamard division of the covariance matrix by the inverse of the Fisher matrix, the result should converge to a matrix of ones \cite{wiki:hadamard}.
 In order to visualize this convergence, the matrix must be ``centered'', by removing one in every position\footnote{If the matrix is not centered so as to make its asymptotic value equal to the zero matrix, then the norm does not suffice to prove convergence.}.
 
 For any norm\footnote{For this paper, the spectral norm is used, but any norm would give similar results.} of the resulting matrix \(\mathscr{R}\), one can then observe that \(\lim_{N \to +\infty} \norm{\mathscr{R}} = 0\).
@@ -427,7 +428,7 @@ Finally, the matrix was centered, and its spectral norm was computed.
 	\centering
 	\scalebox{0.8}{\input{img/ratio.tex}}
 	\caption{Using an adequately-centered spectral norm, one can visualize to which extent the Cramér--Rao lower bound is reached.
-	The symbol ``\(\oslash\)'' denotes Hadamard division.}
+	The symbol ``\(\oslash\)'' denotes Hadamard division \cite{wiki:hadamard}.}
 	\label{fig:CRLB}
 \end{figure}
 
@@ -543,6 +544,7 @@ In order to find the entries of the Fisher matrix, one must take the expectation
 \Big[\fisher(\theta)\Big]_{0, 1} = \Big[\fisher(\theta)\Big]_{1, 0} &=  -\expe{\frac{\partial^2 \ell(v)}{\partial k \partial s}} = \frac{N}{s}\,,\\
 \Big[\fisher(\theta)\Big]_{1, 1} &= -\expe{\frac{\partial^2 \ell(v)}{\partial k^2}} = -N \trig(k)\,.
 \end{align}
+
 \bibliography{report-linma1731-project}
 \bibliographystyle{aomalpha}
 
