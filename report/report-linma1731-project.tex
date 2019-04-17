@@ -417,6 +417,13 @@ Figure~\ref{fig:CRLB} gives the spectral norm as defined in \cite{wiki:spectral}
 \end{equation}
 where \(\oslash\) denotes Hadamard division as defined in \cite{wiki:hadamard} and \(\hTheta\) is \((\hat{k}_{\textnormal{ML}}, \hat{s}_{\textnormal{ML}})\), for different values of \(N\).
 If this estimator is efficient, we know by Theorem~\ref{theo:CR} that its covariance should asymptotically go to the inverse of the Fisher information matrix.
+
+Let the covariance matrix be defined as in \cite{wiki:scm}, that is
+\begin{equation}
+\cov \hTheta = \frac{1}{M-1} \begin{pmatrix} \sum_{i=1}^M \hat{s}_{i, \textnormal{c}}^2 & \sum_{i=1}^M \hat{k}_{i, \textnormal{c}} \hat{s}_{i, \textnormal{c}} \\ \sum_{i=1}^M \hat{s}_{i, \textnormal{c}} \hat{k}_{i, \textnormal{c}} & \sum_{i=1}^M \hat{k}_{i, \textnormal{c}}^2 \end{pmatrix}\,.
+\end{equation}
+where \(\hat{k}_i\) and \(\hat{s}_i\) are the maximum likelihood estimators for the sample in the \(i\)th repetition of the experiment, and \(\hat{\rho}_{i, \textnormal{c}} = \hat{\rho}_i - \tilde{\rho}\), with \(\tilde{\rho}\) denoting the mean over all experiments of \(\hat{\rho}\) for a given value of \(N\), for \(\rho = k, s\).
+
 If one takes the Hadamard division of the covariance matrix by the inverse of the Fisher information matrix, the result should converge to a matrix of ones \cite{wiki:hadamard}.
 In order to visualize this convergence, the matrix must be ``centered'', by removing one in every position\footnote{If the matrix is not centered so as to make its asymptotic value equal to the zero matrix, then the norm does not suffice to prove convergence to a matrix of ones.}.
 
@@ -441,7 +448,7 @@ We found the result to be \(\hat{s}_{\textnormal{ML}} = \frac{\widebar{V}}{k}\) 
 We proved some asymptotic properties of this estimator in Section~\ref{sec:prop}, showing that it is asymptotically unbiased, efficient, best asymptotically normal and consistent.
 After establishing this, in Section~\ref{sec:joint}, we looked into estimating both parameters of the Gamma distribution jointly, using our previous estimator.
 This led us to find that \(\hat{k}_{\textnormal{ML}}\) is the solution of \eqref{eq:mlk}.
-This estimator has no closed form, hence in Section~\ref{sec:est_code} we turned to numerical methods to estimate it; comparing the maximum likelihood estimators with the method of moments estimators showed that both are unbiased (for both parameters), with the former generally having lower variance.
+This estimator has no closed form, hence in Section~\ref{sec:est_code} we turned to numerical methods to estimate it; comparing the maximum likelihood estimators with the method of moments estimators showed that both are unbiased (for both parameters), with the former generally having lower variance, while the latter can be useful as an initial guess for the maximum likelihood estimator.
 Section~\ref{sec:fisher}, together with Appendix~\ref{app:fisher_information}, details an analytical derivation of the bound given by the Cramér--Rao inequality of Theorem~\ref{theo:CR}.
 Finally, in Section~\ref{sec:ratio}, empirical evidence of the efficiency of the maximum likelihood estimator was found.
 
