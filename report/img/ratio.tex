@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+\begin{axis}[grid={major}, title={\Large Convergence towards the Cramér--Rao bound}, xlabel={\footnotesize Size of the sample vector}, ylabel={\footnotesize Spectral norm of $\cov \hTheta \oslash \mathcal{I}^{-1}(\vartheta) - \left(\begin{smallmatrix}1&1\\1&1\end{smallmatrix}\right)$}, xmode={log}]
+    \addplot
+        table[row sep={\\}]
+        {
+            x  y  \\
+            10.0  2.6715124732040203  \\
+            50.0  0.25407679273353834  \\
+            150.0  0.07881648895451268  \\
+            3000.0  0.009691607578209131  \\
+        }
+        ;
+\end{axis}
+\end{tikzpicture}

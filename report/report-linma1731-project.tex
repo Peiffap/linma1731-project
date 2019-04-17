@@ -22,6 +22,8 @@
 \usepackage{float}
 \usepackage{siunitx}
 \usepackage{minted}
+\usepackage{tikz}
+\usepackage{pgfplots}
 
 %    Some definitions useful in producing this sort of documentation:
 \chardef\bslash=`\\ % p. 424, TeXbook
@@ -340,7 +342,7 @@ but can be approximated using numerical methods which require an initial guess.
 One such first guess is provided by the method of moments estimator for the parameter,
 that is
 \begin{equation}
-\hat{k}_{\textnormal{ML}}^{(0)} = \hat{k}_{\textnormal{MOM}} =  \frac{\hat{\mu}_2}{\hat{\mu}_1} - \hat{\mu}_1\,.
+\hat{k}_{\textnormal{ML}}^{(0)} = \hat{k}_{\textnormal{MOM}} =  \frac{\hat{\mu}_1^2}{\hat{\mu}_2 - \hat{\mu}_1^2}\,.
 \end{equation}
 Another possible choice for the first guess is
 \begin{equation}
@@ -394,12 +396,14 @@ And the inverse of this matrix, the Cramr-Rao lower-bound, is
 
 \section{Numerical proof}
 \label{sec:ratio}
-Figure \ref{numerical_proof} show the matrix norm induced by the vector 2-norm of the \emph{ratio} matrix. This matrix is is the result of the ratio of the entries of the empirical covariance matrix by the inverse of the Fisher information matrix, subtracted by one. As a result, if the empirical covariance matrix tends to reach the Cramr-Rao lower bound, the ratio of the entries should tend to 1, and hence the matrix induced norm of this matrix subtracted by 1 should be equal to 0. Indeed, we see on figure \ref{numerical_proof} that this matrix induced norm tends to 0 as the size of the sample vector increases. It empirically proofs that our estimators reach the Cramr-Rao lower bound, meaning that they are efficient.
+Figure \ref{fig:CRLB} show the matrix norm induced by the vector 2-norm of the \emph{ratio} matrix. This matrix is is the result of the ratio of the entries of the empirical covariance matrix by the inverse of the Fisher information matrix, subtracted by one. As a result, if the empirical covariance matrix tends to reach the Cramr-Rao lower bound, the ratio of the entries should tend to 1, and hence the matrix induced norm of this matrix subtracted by 1 should be equal to 0. Indeed, we see on figure \ref{fig:CRLB} that this matrix induced norm tends to 0 as the size of the sample vector increases. It empirically proofs that our estimators reach the Cramr-Rao lower bound, meaning that they are efficient.
+
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\textwidth]{img/ratio.png}
-	\label{numerical_proof}
-	\caption{Norm of the "ratio" matrix subtracted by 1}
+	\input{img/ratio.tex}
+	\caption{Using an adequately-centered spectral norm, one can visualize to which extent the Cramér--Rao lower bound is reached.
+	The symbol ``\(\oslash\)'' denotes Hadamard (element-wise) division.}
+	\label{fig:CRLB}
 \end{figure}
 
 \appendix
