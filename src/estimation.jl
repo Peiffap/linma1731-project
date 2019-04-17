@@ -1,7 +1,6 @@
 using Compat
 using Random, Distributions, StatsBase
 using JuMP, Ipopt, SpecialFunctions, LinearAlgebra
-# using Plots; pgfplots()
 using PGFPlotsX
 using LaTeXStrings
 
@@ -62,9 +61,9 @@ end
 """
 function d()
 	Γ =  Gamma(1, 2)
-	N = 1000
+	N = 1_000
 	M = 500
-	x = collect(10:15:N)
+	x = collect(10:50:N)
 	k_mom = zeros(length(x), M)
 	s_mom = zeros(length(x), M)
 	k_ml = zeros(length(x), M)
@@ -96,20 +95,65 @@ function d()
 		s_ml_std[i] = std(s_ml[i, :])
 	end
 
-	"""
-	p_k = plot(
-	layer(x=x, y=k_mom_mean, ymin=k_mom_mean - k_mom_std, ymax=k_mom_mean + k_mom_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt, default_color=colorant"blue")),
-	layer(x=x, y=k_ml_mean, ymin=k_ml_mean - k_ml_std, ymax=k_ml_mean + k_ml_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt, default_color=colorant"orange")), Guide.xlabel("Size of sample vector"), Guide.ylabel("Mean and standard deviation"), Guide.title("Estimation of the first parameter (k)"), Guide.manual_color_key("Estimators", ["MOM", "ML"], ["blue", "orange"])
-	);
+	@pgf p_k = Axis(
+	{
+		grid="major",
+		title=L"\Large Estimation of the first parameter, $k$",
+		xlabel="\\footnotesize Size of the sample vector",
+		ylabel="\\footnotesize Mean and standard deviation",
+		"legend cell align=left"
+	},
+	PlotInc({"blue, only marks, error bars/.cd, y dir=both,y explicit,
+	error bar style={line width=1pt},
+	error mark options={
+		rotate=90,
+		blue,
+		mark size=4pt,
+		line width=1pt
+	}"}, Table({"y error=error"}, [:x => x, :y => k_mom_mean, :error => k_mom_std])),
+	LegendEntry(L"$\hat{k}_{\textnormal{MOM}}$"),
+	PlotInc({"red, only marks, error bars/.cd, y dir=both,y explicit,
+	error bar style={line width=1pt},
+	error mark options={
+		rotate=90,
+		red,
+		mark size=4pt,
+		line width=1pt
+	}"}, Table({"y error=error"}, [:x => x, :y => k_ml_mean, :error => k_ml_std])),
+	LegendEntry(L"$\hat{k}_{\textnormal{ML}}$"),
+	HLine({ dashed, green, "line width=1.5pt" }, 1),
+	)
+	pgfsave("k.tex", p_k, include_preamble = false)
 
-	p_s = plot(
-	layer(x=x, y=s_mom_mean, ymin=s_mom_mean - s_mom_std, ymax=s_mom_mean + s_mom_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt, default_color=colorant"blue")),
-	layer(x=x, y=s_ml_mean, ymin=s_ml_mean - s_ml_std, ymax=s_ml_mean + s_ml_std, Geom.line, Geom.errorbar, Theme(major_label_font="CMU Serif",minor_label_font="CMU Serif",major_label_font_size=16pt,minor_label_font_size=14pt, default_color=colorant"orange")), Guide.xlabel("Size of sample vector"), Guide.ylabel("Mean and standard deviation"), Guide.title("Estimation of the second parameter (s)"), Guide.manual_color_key("Estimators", ["MOM", "ML"], ["blue", "orange"])
-	);
-
-	p_k |> PNG("k.png")
-	p_s |> PNG("s.png")
-	"""
+	@pgf p_s = Axis(
+	{
+		grid="major",
+		title=L"\Large Estimation of the second parameter, $s$",
+		xlabel="\\footnotesize Size of the sample vector",
+		ylabel="\\footnotesize Mean and standard deviation",
+		"legend cell align=left"
+	},
+	PlotInc({"blue, only marks, error bars/.cd, y dir=both,y explicit,
+	error bar style={line width=1pt},
+	error mark options={
+		rotate=90,
+		blue,
+		mark size=4pt,
+		line width=1pt
+	}"}, Table({"y error=error"}, [:x => x, :y => s_mom_mean, :error => s_mom_std])),
+	LegendEntry(L"$\hat{s}_{\textnormal{MOM}}$"),
+	PlotInc({"red, only marks, error bars/.cd, y dir=both,y explicit,
+	error bar style={line width=1pt},
+	error mark options={
+		rotate=90,
+		red,
+		mark size=4pt,
+		line width=1pt
+	}"}, Table({"y error=error"}, [:x => x, :y => s_ml_mean, :error => s_ml_std])),
+	LegendEntry(L"$\hat{s}_{\textnormal{ML}}$"),
+	HLine({ dashed, green, "line width=1.5pt" }, 2),
+	)
+	pgfsave("s.tex", p_s, include_preamble = false)
 end
 
 """
@@ -119,8 +163,8 @@ end
 """
 function f()
 	Γ =  Gamma(1, 2)
-	Mf = 10000
-	N = [10; 50; 150; 3000]
+	Mf = 10_000
+	N = [10; 50; 150; 3_000]
 
 	k_ml_f = zeros(length(N), Mf)
 	s_ml_f = zeros(length(N), Mf)
@@ -162,7 +206,7 @@ function f()
 		index += 1
 	end
 
-	p_ratio = @pgf Axis(
+	@pgf p_ratio = Axis(
 	{
 		grid="major",
 		title="\\Large Convergence towards the Cramér--Rao bound",
@@ -181,7 +225,7 @@ end
 	Main function to group execution.
 """
 function main()
-	# d()
+	d()
 	f()
 end
 
