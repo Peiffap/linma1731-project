@@ -180,8 +180,9 @@ a shape parameter \(k > 0\) and a scale parameter \(s > 0\).
 The parameters are the same for every fish and are time invariant.
 The aim of this first part is to identify these two parameters using empirical observations \(v_i\).
 
-\section{A maximum likelihood estimator for a scalar parameter}
-Let \(v_i\) be i.i.d. realisations of a random variable following a Gamma distribution \(\Gamma(k, s)\) (with \(i = 1,\ldots, N)\)\cite{wiki:gamma}.
+\section{A maximum likelihood estimator for the scale parameter}
+\label{sec:s_est}
+Let \(v_i\) be i.i.d. realisations of a random variable following a Gamma distribution \(\Gamma(k, s)\) (with \(i = 1,\ldots, N)\) \cite{wiki:gamma}.
 We first assume that the shape parameter \(k\) is known.
 
 We start by deriving the maximum likelihood estimator of \(\theta \coloneqq s\) based on \(N\) observations \cite{wiki:mle}.
@@ -209,7 +210,7 @@ Now, in order to obtain the maximum likelihood estimate \(\htheta\), we must dif
 \end{align}
 
 \section{Asymptotic properties of the maximum likelihood estimator}
-
+\label{sec:prop}
 We now wish to show some of the properties of this estimator.
 The definitions of these properties are given in Appendix~\ref{app:defs}.
 \begin{prop}
@@ -266,7 +267,7 @@ The definitions of these properties are given in Appendix~\ref{app:defs}.
 	\end{align}
 	
 	Next, we need to show that \(\frac{1}{\sqrt{n}} \ell'(\theta_0) \sim \mathcal{N}\big(0, \fisher(\theta_0)\big)\).
-	This is done using the Lindeberg--Lévy central limit theorem, in Appendix~\ref{app:banproof}.
+	This is done using the Lindeberg--Lévy central limit theorem, in Appendix~\ref{app:banproof} \cite{wiki:clt}.
 	We know that \(\frac{1}{N} \ell''(\theta_0) = \fisher(\theta_0)\).
 	Finally, we can rewrite
 	\begin{equation}
@@ -318,6 +319,7 @@ One must now look for a root of this equation:
 This equation has no closed-form solution for \(\hat{k}\), but can be approximated using numerical methods since the function is very well-behaved.
 
 \section{Numerical experiments with various estimators}
+\label{sec:est_code}
 For the numerical simulation, \(N\) random variables were generated from a distribution with parameters \(\Gamma(1, 2)\), for different values of \(N\) (\mintinline{julia}{10:50:1000}).
 For each value of \(N\), the experiment was repeated \(M = 500\) times.
 
@@ -348,7 +350,7 @@ Another possible choice for the first guess is
 \end{equation}
 This guess can be shown to be within \(\SI{1.5}{\percent}\) of the actual value \cite{minka:gamma}.
 The estimator for \(s\) can then be found from \eqref{eq:mlestimator}, using \(\hat{k}_{\textnormal{ML}}\) instead of \(k\).
-\begin{figure}[H]
+\begin{figure}[!htbp]
 	\centering
 	\begin{subfigure}{.5\textwidth}
 		\centering
@@ -377,6 +379,7 @@ the Cramér--Rao lower bound.
 This is also expected, in light of Property~\ref{prop:eff}.\footnote{While Property~\ref{prop:eff} is only proved for the estimator in \eqref{eq:mlestimator}, it also holds for the estimator found in Section~\ref{sec:joint}.}
 
 \section{An analytical derivation of the Fisher information matrix}
+\label{sec:fisher}
 One can analytically derive the Fisher information matrix.
 Since there are two estimators, the dimensions of the matrix are \(2 \times 2\).
 Using the definition of the Fisher information matrix given in Theorem~\ref{theo:CR}, the Fisher matrix is given by
@@ -408,14 +411,14 @@ where \(\trig\) is the trigamma function, i.e. the second derivative of the loga
 
 \section{Numerical evidence of convergence to the Cramér--Rao bound}
 \label{sec:ratio}
-Figure~\ref{fig:CRLB} gives the spectral norm of
+Figure~\ref{fig:CRLB} gives the spectral norm as defined in \cite{wiki:spectral} of
 \begin{equation}
 \mathscr{R} = \cov \hTheta \oslash \fisher(\theta) - \begin{pmatrix} 1&1\\1&1 \end{pmatrix}\,,
 \end{equation}
-where \(\oslash\) denotes Hadamard (element-wise) division and \(\hTheta\) is \((\hat{k}_{\textnormal{ML}}, \hat{s}_{\textnormal{ML}})\), for different values of \(N\).
+where \(\oslash\) denotes Hadamard division as defined in \cite{wiki:hadamard} and \(\hTheta\) is \((\hat{k}_{\textnormal{ML}}, \hat{s}_{\textnormal{ML}})\), for different values of \(N\).
 If this estimator is efficient, we know by Theorem~\ref{theo:CR} that its covariance should asymptotically go to the inverse of the Fisher information matrix.
-If one takes the Hadamard division of the covariance matrix by the inverse of the Fisher matrix, the result should converge to a matrix of ones \cite{wiki:hadamard}.
-In order to visualize this convergence, the matrix must be ``centered'', by removing one in every position\footnote{If the matrix is not centered so as to make its asymptotic value equal to the zero matrix, then the norm does not suffice to prove convergence.}.
+If one takes the Hadamard division of the covariance matrix by the inverse of the Fisher information matrix, the result should converge to a matrix of ones \cite{wiki:hadamard}.
+In order to visualize this convergence, the matrix must be ``centered'', by removing one in every position\footnote{If the matrix is not centered so as to make its asymptotic value equal to the zero matrix, then the norm does not suffice to prove convergence to a matrix of ones.}.
 
 For any norm\footnote{For this paper, the spectral norm is used, but any norm would give similar results.} of the resulting matrix \(\mathscr{R}\), one can then observe that \(\lim_{N \to +\infty} \norm{\mathscr{R}} = 0\).
 This is shown for the spectral norm on Figure~\ref{fig:CRLB}.
@@ -424,15 +427,25 @@ This experiment was repeated \(M = 10000\) times.
 The ratio matrix was then computed as the element-wise division between the empirical covariance of the estimators for a given \(N\) and the inverse of the Fisher information matrix, given by \eqref{eq:fisher}.
 Finally, the matrix was centered, and its spectral norm was computed.
 
-\begin{figure}[H]
+\begin{figure}[!htbp]
 	\centering
-	\scalebox{0.8}{\input{img/ratio.tex}}
+	\scalebox{0.75}{\input{img/ratio.tex}}
 	\caption{Using an adequately-centered spectral norm, one can visualize to which extent the Cramér--Rao lower bound is reached.
 	The symbol ``\(\oslash\)'' denotes Hadamard division \cite{wiki:hadamard}.}
 	\label{fig:CRLB}
 \end{figure}
 
+\section{Conclusion}
+In Section~\ref{sec:s_est}, we looked at maximum likelihood estimation for the scale parameter of a Gamma distribution, \(s\).
+We found the result to be \(\hat{s}_{\textnormal{ML}} = \frac{\widebar{V}}{k}\) in \eqref{eq:mlestimator}.
+We proved some asymptotic properties of this estimator in Section~\ref{sec:prop}, showing that it is asymptotically unbiased, efficient, best asymptotically normal and consistent.
+After establishing this, in Section~\ref{sec:joint}, we looked into estimating both parameters of the Gamma distribution jointly, using our previous estimator.
+This led us to find that \(\hat{k}_{\textnormal{ML}}\) is the solution of \eqref{eq:mlk}.
+This estimator has no closed form, hence in Section~\ref{sec:est_code} we turned to numerical methods to estimate it; comparing the maximum likelihood estimators with the method of moments estimators showed that both are unbiased (for both parameters), with the former generally having lower variance.
+Section~\ref{sec:fisher}, together with Appendix~\ref{app:fisher_information}, details an analytical derivation of the bound given by the Cramér--Rao inequality of Theorem~\ref{theo:CR}.
+Finally, in Section~\ref{sec:ratio}, empirical evidence of the efficiency of the maximum likelihood estimator was found.
 
+\clearpage
 \appendix
 
 \section{Definitions of properties}
@@ -491,7 +504,7 @@ The following is a proof of normality, using the Lindeberg--Lévy formulation of
 \label{app:banproof}
 We want to prove that  \(\frac{1}{\sqrt{N}}\ell'(\theta_0) \sim \mathcal{N}\big(0, \fisher(\theta_0)\big)\).
 We simplify notation by writing \(\pdf(v_i)\) instead of \(\pdf_{V_i}(v_i; k, \theta)\)
-and using Euler's notation for derivatives.
+and using Euler's notation for partial derivatives \cite{wiki:eulerdiff}.
 First, we show that the expected value of \(\frac{1}{\sqrt{N}}\ell'(\theta_0)\) is zero.
 \begin{align}
 \expe{\frac{\ell'(\theta_0)}{\sqrt{N}}} &= \int_{-\infty}^{+\infty} \partial_{\theta_0} \left(\sum_{i=1}^N \frac{\ln \pdf(v_i)}{\sqrt{N}}\right) \pdf(v_i)\dif v_i\\
@@ -546,7 +559,7 @@ In order to find the entries of the Fisher matrix, one must take the expectation
 \end{align}
 
 \bibliography{report-linma1731-project}
-\bibliographystyle{aomalpha}
+\bibliographystyle{aomplain}
 
 \end{document}
 \endinput
