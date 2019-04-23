@@ -228,6 +228,7 @@ The definitions of these properties are given in Appendix~\ref{app:defs}.
 	\end{equation}
 	This proves that the maximum likelihood estimator of \eqref{eq:mlestimator} is unbiased,
 	hence it is also asymptotically unbiased.
+	This can be seen on Figures~\ref{fig:k_est}~and~\ref{fig:s_est}.
 \end{proof}
 
 \begin{prop}
@@ -246,6 +247,7 @@ The definitions of these properties are given in Appendix~\ref{app:defs}.
 	\var{\hTheta} = \var{\frac{\overline{V}}{k}} = \frac{\theta^2}{kN}\,.
 	\end{equation}
 	The Cramér--Rao lower bound is thus reached for all values of \(\theta\), which concludes the proof.
+	This is shown on Figure~\ref{fig:CRLB}.
 \end{proof}
 
 \begin{prop}
@@ -489,7 +491,7 @@ Finally, in Section~\ref{sec:ratio}, empirical evidence of the efficiency of the
 
 \begin{defn}[Best asymptotically normal estimator]
 	\label{def_normal}
-	A sequence \(\{\hTheta_N(Z)\}_{N \in \mathbb{N}}\) of consistent estimators of \(\theta\) is called \emph{best asymptotically normal} if
+	A sequence of consistent estimators \(\{\hTheta_N(Z)\}_{N \in \mathbb{N}}\) of \(\theta\) is called \emph{best asymptotically normal} if
 	\begin{equation}
 	\sqrt{N} \left(\hTheta_N(Z) - \theta\right) \xrightarrow[N \to +\infty]{\mathcal{D}} \mathcal{N}(0, \Sigma)\,,
 	\end{equation}
@@ -502,7 +504,7 @@ Finally, in Section~\ref{sec:ratio}, empirical evidence of the efficiency of the
 	\begin{equation}
 	\plim_{N \to +\infty} \hTheta_N(Z) = \theta\,.
 	\end{equation}
-	Equivalently, one can show that the MSE of the estimator converges to zero as \(N\) goes to infinity.
+	Theorem~9.1 of \cite{wms} proves that this is equivalent to the statement that the MSE of the estimator converges to zero as \(N\) goes to infinity.
 \end{defn}
 
 \section{Omitted proofs}

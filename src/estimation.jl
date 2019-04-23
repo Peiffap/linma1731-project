@@ -225,8 +225,8 @@ end
 	Main function to group execution.
 """
 function main()
-	d()
-	f()
+	# d()
+	# f()
 end
 
 main()
