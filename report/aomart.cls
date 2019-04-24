@@ -122,6 +122,7 @@
       \loop{\underline{\scriptsize\the\@tempcnta}}\\
       \advance\@tempcnta by \@ne\ifnum\@tempcnta<43\repeat}}
 \fi
+\RequirePackage[top=2cm, bottom=2cm, left=2.5cm, right=2.5cm]{geometry} % marges
 \pagestyle{fancy}
 \fancyhead{}
 \fancyfoot{}
