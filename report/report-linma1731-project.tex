@@ -15,7 +15,6 @@
 [1994/12/01]% LaTeX date must December 1994 or later
 \documentclass[final]{aomart}
 \usepackage[english]{babel}
-%\usepackage[top=1.9cm, bottom=1.9cm, left=2.2cm, right=2.2cm]{geometry} % marges
 
 \usepackage{mathtools,amssymb,amsthm, mathrsfs}
 \usepackage{bm}
@@ -164,17 +163,18 @@ Fish schools tracking}
 \begin{document}
 
 \begin{abstract}
-	In this paper we solve the first part of the project for the class ``Stochastic processes: Estimation and prediction'' given during the Fall term of 2019.
-	The average speed of each fish in a school of fish is approximated by a gamma-distributed random variable with a shape parameter \(k\) and a scale parameter \(s\), and various methods for estimating this quantity are given; numerical simulations are also included, using Julia and J\textsuperscript{u}MP \cite{DunningHuchetteLubin2017}.
+	In this paper we solve the first part of the project for the class ``Stochastic processes: Estimation and prediction'' given during the Fall term of 2019 at the EPL by Luc Vandendorpe and Pierre-Antoine Absil.
+	The average speed of each fish in a school of fish is approximated by a gamma-distributed random variable with a shape parameter \(k\) and a scale parameter \(s\), and various methods for estimating this quantity are given; numerical simulations are also included, using Julia and J\textsuperscript{u}MP~\cite{DunningHuchetteLubin2017}.
 \end{abstract}
 
 \maketitle
 \tableofcontents
+\newpage
 
 \part{Average speed estimation}
 \section{Introduction}
 For the purpose of this project, we assume that the speed of each fish in a school
-at time \(i\) is a random variable \(V_i\) following a Gamma distribution, as suggested in \cite{huth:sim}.
+at time \(i\) is a random variable \(V_i\) following a Gamma distribution, as suggested in~\cite{huth:sim}.
 This distribution is characterized by two parameters:
 a shape parameter \(k > 0\) and a scale parameter \(s > 0\).
 The parameters are the same for every fish and are time invariant.
@@ -182,10 +182,10 @@ The aim of this first part is to identify these two parameters using empirical o
 
 \section{A maximum likelihood estimator for the scale parameter}
 \label{sec:s_est}
-Let \(v_i\) be i.i.d. realisations of a random variable following a Gamma distribution \(\Gamma(k, s)\) (with \(i = 1,\ldots, N)\) \cite{wiki:gamma}.
+Let \(v_i\) be i.i.d. realisations of a random variable following a Gamma distribution \(\Gamma(k, s)\) (with \(i = 1,\ldots, N)\)~\cite{wiki:gamma}.
 We first assume that the shape parameter \(k\) is known.
 
-We start by deriving the maximum likelihood estimator of \(\theta \coloneqq s\) based on \(N\) observations \cite{wiki:mle}.
+We start by deriving the maximum likelihood estimator of \(\theta \coloneqq s\) based on \(N\) observations~\cite{wiki:mle}.
 Since the estimand $\theta$ is a deterministic quantity, we use Fisher estimation.
 In order to do this, let us restate the probability density function of \(V_i \sim \Gamma(k, s)\):
 \begin{equation}
@@ -228,6 +228,7 @@ The definitions of these properties are given in Appendix~\ref{app:defs}.
 	\end{equation}
 	This proves that the maximum likelihood estimator of \eqref{eq:mlestimator} is unbiased,
 	hence it is also asymptotically unbiased.
+	This can be seen on Figures~\ref{fig:k_est}~and~\ref{fig:s_est}.
 \end{proof}
 
 \begin{prop}
@@ -246,6 +247,7 @@ The definitions of these properties are given in Appendix~\ref{app:defs}.
 	\var{\hTheta} = \var{\frac{\overline{V}}{k}} = \frac{\theta^2}{kN}\,.
 	\end{equation}
 	The Cramér--Rao lower bound is thus reached for all values of \(\theta\), which concludes the proof.
+	This is shown on Figure~\ref{fig:CRLB}.
 \end{proof}
 
 \begin{prop}
@@ -267,11 +269,11 @@ The definitions of these properties are given in Appendix~\ref{app:defs}.
 	\end{align}
 	
 	Next, we need to show that \(\frac{1}{\sqrt{n}} \ell'(\theta_0) \sim \mathcal{N}\big(0, \fisher(\theta_0)\big)\).
-	This is done using the Lindeberg--Lévy central limit theorem, in Appendix~\ref{app:banproof} \cite{wiki:clt}.
+	This is done using the Lindeberg--Lévy central limit theorem, in Appendix~\ref{app:banproof}~\cite{wiki:clt}.
 	We know that \(\frac{1}{N} \ell''(\theta_0) = \fisher(\theta_0)\).
 	Finally, we can rewrite
 	\begin{equation}
-	\sqrt{N} (\htheta - \theta_0) \sim \frac{\mathcal{N}(0, \fisher(\theta_0))}{\fisher(\theta_0)} = \mathcal{N}(0, \fisher^{-1}(\theta_0))\,,
+	\sqrt{N} (\htheta - \theta_0) \sim \frac{\mathcal{N}\big(0, \fisher(\theta_0)\big)}{\fisher(\theta_0)} = \mathcal{N}\big(0, \fisher^{-1}(\theta_0)\big)\,,
 	\end{equation}
 	where we didn't take into account the remainder of the Taylor series, which goes to zero.
 	This proves that the ML estimator is best asymptotically normal.
@@ -300,17 +302,17 @@ We know the maximum likelihood estimator of \(s\), \(\hat{s} = f(k)\).
 Therefore, in the log-likelihood function, we can replace all the occurrences of \(s\) by the estimator we found, \(\hat{s}\).
 One then gets a function of \(k\) only, which can be differentiated and its derivative set to zero.
 Solving this, one can find the maximum likelihood estimator of \(k\).
-We abusively write \(\ell(v)\) instead of \(\ell(v_1, \ldots, v_N; \theta)\).
+We abusively write \(\ell(\theta)\) instead of \(\ell(v_1, \ldots, v_N; \theta)\).
 Substituting in the estimator \(\hat{s}\) instead of \(\theta\) in the log-likelihood given in \eqref{eq:loglikelihood}, one finds
 \begin{align}
-\ell(v) = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{kv_i}{\widebar{v}} - N k \ln \widebar{v} + N k \ln k - N \ln \Gamma(k)\big)\,.
+\ell(\theta) = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{kv_i}{\widebar{v}} - N k \ln \widebar{v} + N k \ln k - N \ln \Gamma(k)\big)\,.
 \end{align}
 Taking the derivative of this function with respect to \(k\), we get
 \begin{align}
-\eval{\frac{\partial \ell(v)}{\partial k}}_{k = \hat{k}} &= \sum_{i=1}^N \ln v_i - N - N \ln \widebar{v} + N \ln \hat{k} + \frac{N\hat{k}}{\hat{k}} - N\frac{\Gamma(\hat{k})}{\Gamma(\hat{k})}\dig(\hat{k})\\
+\eval{\frac{\partial \ell(\theta)}{\partial k}}_{k = \hat{k}} &= \sum_{i=1}^N \ln v_i - N - N \ln \widebar{v} + N \ln \hat{k} + \frac{N\hat{k}}{\hat{k}} - N\frac{\Gamma(\hat{k})}{\Gamma(\hat{k})}\dig(\hat{k})\\
 &= \sum_{i=1}^N \ln v_i - N \ln \sum_{i=1}^N v_i + N \ln \hat{k}  + N \ln N - N \dig(\hat{k})\,,
 \end{align}
-where \(\dig\) is the digamma function, i.e. the logarithmic derivative of the gamma function \cite{wolf:dig}.
+where \(\dig\) is the digamma function, i.e. the logarithmic derivative of the gamma function~\cite{wolf:dig}.
 One must now look for a root of this equation:
 \begin{align}
 \ln \hat{k} - \dig(\hat{k}) &= \ln \left(\sum_{i=1}^N v_i\right) - \ln N - \frac{\sum_{i=1}^N \ln v_i}{N}\\
@@ -325,7 +327,7 @@ For each value of \(N\), the experiment was repeated \(M = 500\) times.
 
 In order to use method of moments estimation for the Gamma distribution given in \eqref{eq:gamma},
 one first needs to know its characteristic function: \(\phi_{V_i}(t) = \expe{\e^{\imagj t V_i}} = (1 - \imagj s t)^{-k}\).
-The \(n\)th moment is given by \(\mu_n = \expe{V_i^n} = \imagj^{-n} \phi_{V_i}^{(n)}(0)\) \cite{wiki:charfun}.
+The \(n\)th moment is given by \(\mu_n = \expe{V_i^n} = \imagj^{-n} \phi_{V_i}^{(n)}(0)\)~\cite{wiki:charfun}.
 Since the parameter vector has dimension two,
 we need to compute the first two moments.
 These are given by \(\mu_1 = ks\) and \(\mu_2 = k(k+1) s^2\).
@@ -339,7 +341,7 @@ The maximum likelihood estimators are computed using the formulas in \eqref{eq:m
 As mentioned in Section~\ref{sec:joint},
 the maximum likelihood estimator for \(k\) has no closed-form solution,
 but can be approximated using numerical methods which require an initial guess.
-One such first guess is provided by the method of moments estimator for the parameter,
+One such first guess could be provided by the method of moments estimator for the parameter,
 that is
 \begin{equation}
 \hat{k}_{\textnormal{ML}}^{(0)} = \hat{k}_{\textnormal{MOM}} =  \frac{\hat{\mu}_1^2}{\hat{\mu}_2 - \hat{\mu}_1^2}\,.
@@ -348,7 +350,7 @@ Another possible choice for the first guess is
 \begin{equation}
 \hat{k}_{\textnormal{ML}}^{(0)} = \frac{3 - \xi + \sqrt{(\xi - 3)^2 + 24\xi}}{12 \xi}\,, \quad \textnormal{where } \xi = \ln \widebar{v} + \frac{1}{N} \sum_{i=1}^N \ln v_i\,.
 \end{equation}
-This guess can be shown to be within \(\SI{1.5}{\percent}\) of the actual value \cite{minka:gamma}.
+This guess can be shown to be within \(\SI{1.5}{\percent}\) of the actual value~\cite{minka:gamma}.
 The estimator for \(s\) can then be found from \eqref{eq:mlestimator}, using \(\hat{k}_{\textnormal{ML}}\) instead of \(k\).
 \begin{figure}[!htbp]
 	\centering
@@ -376,7 +378,7 @@ This should not come as a surprise: since it is efficient, every other estimator
 As is shown numerically in Section~\ref{sec:ratio},
 this variance asymptotically goes to \(\fisher^{-1}(\theta)\),
 the Cramér--Rao lower bound.
-This is also expected, in light of Property~\ref{prop:eff}.\footnote{While Property~\ref{prop:eff} is only proved for the estimator in \eqref{eq:mlestimator}, it also holds for the estimator found in Section~\ref{sec:joint}.}
+This is also expected, in light of Property~\ref{prop:eff}.\footnote{While Property~\ref{prop:eff} is only proved for the estimator in \eqref{eq:mlestimator}, it also holds for the estimator found in \eqref{eq:mlk}, as it is a general property of maximum likelihood estimators.}
 
 \section{An analytical derivation of the Fisher information matrix}
 \label{sec:fisher}
@@ -386,10 +388,10 @@ Using the definition of the Fisher information matrix given in Theorem~\ref{theo
 \begin{equation}
 \label{fisher_matrix}
 \fisher(\theta) = \begin{pmatrix}
--\expe{\dfrac{\partial^2 \ell(v)}{\partial s^2}} & -\expe{\dfrac{\partial^2 \ell(v)}{\partial k \partial s}} \\
--\expe{\dfrac{\partial^2 \ell(v)}{\partial s \partial k}} & -\expe{\dfrac{\partial^2 \ell(v)}{\partial k^2}} \end{pmatrix}\,,
+-\expe{\dfrac{\partial^2 \ell(v; k, s)}{\partial s^2}} & -\expe{\dfrac{\partial^2 \ell(v; k, s)}{\partial k \partial s}} \\
+-\expe{\dfrac{\partial^2 \ell(v; k, s)}{\partial s \partial k}} & -\expe{\dfrac{\partial^2 \ell(v; k, s)}{\partial k^2}} \end{pmatrix}\,,
 \end{equation}
-where \(\ell(v)\) is used as a shorthand for \(\ell(v_1, \ldots, v_N; k, s)\), given by
+where \(\ell(v; k, s)\) is used as a shorthand for \(\ell(v_1, \ldots, v_N; k, s)\), given by
 \begin{equation}
 \ell(v_1, \ldots, v_N; k, s) = (k-1) \sum_{i=1}^{N}\ln v_i - \sum_{i=1}^{N} \frac{v_i}{s} - N \big(k \ln s + \ln \Gamma(k)\big)\,.
 \end{equation}
@@ -407,24 +409,24 @@ and the Cramér--Rao lower bound, given by the inverse of the Fisher information
 -\frac{1}{s} & \frac{k}{s^2}
 \end{pmatrix} \frac{s^2}{k\trig(k) - 1}\,,\label{eq:fisher}
 \end{equation}
-where \(\trig\) is the trigamma function, i.e. the second derivative of the logarithm of the gamma function \cite{wolf:trig}.
+where \(\trig\) is the trigamma function, i.e. the second derivative of the logarithm of the gamma function~\cite{wolf:trig}.
 
 \section{Numerical evidence of convergence to the Cramér--Rao bound}
 \label{sec:ratio}
-Figure~\ref{fig:CRLB} gives the spectral norm as defined in \cite{wiki:spectral} of
+Figure~\ref{fig:CRLB} gives the spectral norm as defined in~\cite{wiki:spectral} of
 \begin{equation}
 \mathscr{R} = \cov \hTheta \oslash \fisher(\theta) - \begin{pmatrix} 1&1\\1&1 \end{pmatrix}\,,
 \end{equation}
-where \(\oslash\) denotes Hadamard division as defined in \cite{wiki:hadamard} and \(\hTheta\) is \((\hat{k}_{\textnormal{ML}}, \hat{s}_{\textnormal{ML}})\), for different values of \(N\).
-If this estimator is efficient, we know by Theorem~\ref{theo:CR} that its covariance should asymptotically go to the inverse of the Fisher information matrix.
+where \(\oslash\) denotes Hadamard division as defined in~\cite{wiki:hadamard} and \(\hTheta\) is \((\hat{k}_{\textnormal{ML}}, \hat{s}_{\textnormal{ML}})\), for different values of \(N\).
+If this estimator is efficient, we know by Definition~\ref{def_eff} that its covariance should asymptotically go to the inverse of the Fisher information matrix.
 
-Let the covariance matrix be defined as in \cite{wiki:scm}, that is
+Let the covariance matrix be defined as in~\cite{wiki:scm}, that is
 \begin{equation}
 \cov \hTheta = \frac{1}{M-1} \begin{pmatrix} \sum_{i=1}^M \hat{s}_{i, \textnormal{c}}^2 & \sum_{i=1}^M \hat{k}_{i, \textnormal{c}} \hat{s}_{i, \textnormal{c}} \\ \sum_{i=1}^M \hat{s}_{i, \textnormal{c}} \hat{k}_{i, \textnormal{c}} & \sum_{i=1}^M \hat{k}_{i, \textnormal{c}}^2 \end{pmatrix}\,.
 \end{equation}
 where \(\hat{k}_i\) and \(\hat{s}_i\) are the maximum likelihood estimators for the sample in the \(i\)th repetition of the experiment, and \(\hat{\rho}_{i, \textnormal{c}} = \hat{\rho}_i - \tilde{\rho}\), with \(\tilde{\rho}\) denoting the mean over all experiments of \(\hat{\rho}\) for a given value of \(N\), for \(\rho = k, s\).
 
-If one takes the Hadamard division of the covariance matrix by the inverse of the Fisher information matrix, the result should converge to a matrix of ones \cite{wiki:hadamard}.
+If one takes the Hadamard division of the covariance matrix by the inverse of the Fisher information matrix, the result should converge to a matrix of ones~\cite{wiki:hadamard}.
 In order to visualize this convergence, the matrix must be ``centered'', by removing one in every position\footnote{If the matrix is not centered so as to make its asymptotic value equal to the zero matrix, then the norm does not suffice to prove convergence to a matrix of ones.}.
 
 For any norm\footnote{For this paper, the spectral norm is used, but any norm would give similar results.} of the resulting matrix \(\mathscr{R}\), one can then observe that \(\lim_{N \to +\infty} \norm{\mathscr{R}} = 0\).
@@ -438,7 +440,7 @@ Finally, the matrix was centered, and its spectral norm was computed.
 	\centering
 	\scalebox{0.75}{\input{img/ratio.tex}}
 	\caption{Using an adequately-centered spectral norm, one can visualize to which extent the Cramér--Rao lower bound is reached.
-	The symbol ``\(\oslash\)'' denotes Hadamard division \cite{wiki:hadamard}.}
+	The symbol ``\(\oslash\)'' denotes Hadamard division~\cite{wiki:hadamard}.}
 	\label{fig:CRLB}
 \end{figure}
 
@@ -489,7 +491,7 @@ Finally, in Section~\ref{sec:ratio}, empirical evidence of the efficiency of the
 
 \begin{defn}[Best asymptotically normal estimator]
 	\label{def_normal}
-	A sequence \(\{\hTheta_N(Z)\}_{N \in \mathbb{N}}\) of consistent estimators of \(\theta\) is called \emph{best asymptotically normal} if
+	A sequence of consistent estimators \(\{\hTheta_N(Z)\}_{N \in \mathbb{N}}\) of \(\theta\) is called \emph{best asymptotically normal} if
 	\begin{equation}
 	\sqrt{N} \left(\hTheta_N(Z) - \theta\right) \xrightarrow[N \to +\infty]{\mathcal{D}} \mathcal{N}(0, \Sigma)\,,
 	\end{equation}
@@ -502,16 +504,16 @@ Finally, in Section~\ref{sec:ratio}, empirical evidence of the efficiency of the
 	\begin{equation}
 	\plim_{N \to +\infty} \hTheta_N(Z) = \theta\,.
 	\end{equation}
-	Equivalently, one can show that the MSE of the estimator converges to zero as \(N\) goes to infinity.
+	Theorem~9.1 of~\cite{wms} proves that this is equivalent to the statement that the MSE of the estimator converges to zero as \(N\) goes to infinity.
 \end{defn}
 
 \section{Omitted proofs}
-The following is a proof of normality, using the Lindeberg--Lévy formulation of the central limit theorem.
+The following is a proof of asymptotic normality for the estimator in \eqref{eq:mlestimator}, using the Lindeberg--Lévy formulation of the central limit theorem.
 \begin{proof}
 \label{app:banproof}
 We want to prove that  \(\frac{1}{\sqrt{N}}\ell'(\theta_0) \sim \mathcal{N}\big(0, \fisher(\theta_0)\big)\).
 We simplify notation by writing \(\pdf(v_i)\) instead of \(\pdf_{V_i}(v_i; k, \theta)\)
-and using Euler's notation for partial derivatives \cite{wiki:eulerdiff}.
+and using Euler's notation for partial derivatives~\cite{wiki:eulerdiff}.
 First, we show that the expected value of \(\frac{1}{\sqrt{N}}\ell'(\theta_0)\) is zero.
 \begin{align}
 \expe{\frac{\ell'(\theta_0)}{\sqrt{N}}} &= \int_{-\infty}^{+\infty} \partial_{\theta_0} \left(\sum_{i=1}^N \frac{\ln \pdf(v_i)}{\sqrt{N}}\right) \pdf(v_i)\dif v_i\\
@@ -542,27 +544,27 @@ Knowing this, one easily finds
 since the random variables are i.i.d..
 Using the Lindeberg--Lévy CLT, we thus have
 \begin{equation}
-\frac{\ell'(\theta_0)}{\sqrt{N}} \sim \mathcal{N}(0, \fisher(\theta_0))\,.\qedhere
+\frac{\ell'(\theta_0)}{\sqrt{N}} \sim \mathcal{N}\big(0, \fisher(\theta_0)\big)\,.\qedhere
 \end{equation}
 
 \end{proof}
 
 \section{Computation of the Fisher information matrix}
 \label{app:fisher_information}
-In order to derive an analytical expression for the Fisher information matrix, we start by computing various derivatives of the log-likelihood which will be needed later (writing \(\ell(v)\) instead of \(\ell(v_1, \ldots, v_N; k, s)\)):
+In order to derive an analytical expression for the Fisher information matrix, we start by computing various derivatives of the log-likelihood which will be needed later (writing \(\ell(v; k, s)\) instead of \(\ell(v_1, \ldots, v_N; k, s)\)):
 \begin{align}
-\frac{\partial \ell(v)}{\partial s} &= \frac{1}{s^2}\sum_{i=1}^{N} v_i - \frac{Nk}{s}\,,\\
-\frac{\partial \ell(v)}{\partial k} &= \sum_{i=1}^{N} \ln v_i - N \ln s - N \dig(k)\,,\\
-\frac{\partial^2\ell(v)}{\partial s^2} &= -\frac{2}{s^3}\sum_{i=1}^{N} v_i + \frac{Nk}{s^2}\,,\label{eq:00}\\
-\frac{\partial^2 \ell(v)}{\partial k^2} &= -N\psi_1(k)\,,\label{eq:11}\\
-\frac{\partial^2 \ell(v)}{\partial k\partial s} = \frac{\partial^2 \ell(v)}{\partial s\partial k}&= -\frac{N}{s}\,.
+\frac{\partial \ell(v; k, s)}{\partial s} &= \frac{1}{s^2}\sum_{i=1}^{N} v_i - \frac{Nk}{s}\,,\\
+\frac{\partial \ell(v; k, s)}{\partial k} &= \sum_{i=1}^{N} \ln v_i - N \ln s - N \dig(k)\,,\\
+\frac{\partial^2\ell(v; k, s)}{\partial s^2} &= -\frac{2}{s^3}\sum_{i=1}^{N} v_i + \frac{Nk}{s^2}\,,\label{eq:00}\\
+\frac{\partial^2 \ell(v; k, s)}{\partial k^2} &= -N\psi_1(k)\,,\label{eq:11}\\
+\frac{\partial^2 \ell(v; k, s)}{\partial k\partial s} = \frac{\partial^2 \ell(v; k, s)}{\partial s\partial k}&= -\frac{N}{s}\,.
 \end{align}
 In order to find the entries of the Fisher matrix, one must take the expectation of the previous derivatives:
 \begin{align}
-\Big[\fisher(\theta)\Big]_{0, 0} &= -\expe{\frac{\partial^2 \ell(v)}{\partial s^2}} = - \expe{-\frac{2}{s^3}\sum_{i=1}^{N} v_i + \frac{Nk}{s^2}}\\
+\Big[\fisher(\theta)\Big]_{0, 0} &= -\expe{\frac{\partial^2 \ell(v; k, s)}{\partial s^2}} = - \expe{-\frac{2}{s^3}\sum_{i=1}^{N} v_i + \frac{Nk}{s^2}}\\
 &= \frac{2}{s^3}N k s - \frac{Nk}{s^2} = \frac{Nk}{s^2}\,,\\
-\Big[\fisher(\theta)\Big]_{0, 1} = \Big[\fisher(\theta)\Big]_{1, 0} &=  -\expe{\frac{\partial^2 \ell(v)}{\partial k \partial s}} = \frac{N}{s}\,,\\
-\Big[\fisher(\theta)\Big]_{1, 1} &= -\expe{\frac{\partial^2 \ell(v)}{\partial k^2}} = -N \trig(k)\,.
+\Big[\fisher(\theta)\Big]_{0, 1} = \Big[\fisher(\theta)\Big]_{1, 0} &=  -\expe{\frac{\partial^2 \ell(v; k, s)}{\partial k \partial s}} = \frac{N}{s}\,,\\
+\Big[\fisher(\theta)\Big]_{1, 1} &= -\expe{\frac{\partial^2 \ell(v; k, s)}{\partial k^2}} = -N \trig(k)\,.
 \end{align}
 
 \bibliography{report-linma1731-project}

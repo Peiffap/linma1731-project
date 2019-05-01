@@ -25,7 +25,7 @@ end
 Computes the ML estimator using a vector of gamma-distributed r.v.
 """
 function ml(V::Vector; mom_init = false)
-	rhs = log(mean(V)) - sum(log(x) for x in V)/length(V) # Right-hand side of the nonlinear equation can be precomputed.
+	rhs = log(mean(V)) - sum(log(x) for x ∈ V)/length(V) # Right-hand side of the nonlinear equation can be precomputed.
 
 	# The nonlinear optimisation approach uses the fact that
 	# if one optimises a constant function,
@@ -69,8 +69,8 @@ function d()
 	k_ml = zeros(length(x), M)
 	s_ml = zeros(length(x), M)
 	index = 1
-	for n in x
-		for m in 1:M
+	for n ∈ x
+		for m ∈ 1:M
 			V = rand(Γ, n)
 			k_mom[index, m], s_mom[index, m] = mom(V) # MoM estimator.
 			k_ml[index, m], s_ml[index, m] = ml(V; mom_init = false) # ML estimator.
@@ -79,16 +79,16 @@ function d()
 		println(n)
 	end
 
-	k_mom_mean = mean(k_mom[:, i] for i in 1:M)
-	s_mom_mean = mean(s_mom[:, i] for i in 1:M)
-	k_ml_mean = mean(k_ml[:, i] for i in 1:M)
-	s_ml_mean = mean(s_ml[:, i] for i in 1:M)
+	k_mom_mean = mean(k_mom[:, i] for i ∈ 1:M)
+	s_mom_mean = mean(s_mom[:, i] for i ∈ 1:M)
+	k_ml_mean = mean(k_ml[:, i] for i ∈ 1:M)
+	s_ml_mean = mean(s_ml[:, i] for i ∈ 1:M)
 
 	k_mom_std = zeros(length(x))
 	s_mom_std = zeros(length(x))
 	k_ml_std = zeros(length(x))
 	s_ml_std = zeros(length(x))
-	for i in 1:length(x)
+	for i ∈ 1:length(x)
 		k_mom_std[i] = std(k_mom[i, :])
 		s_mom_std[i] = std(s_mom[i, :])
 		k_ml_std[i] = std(k_ml[i, :])
@@ -170,8 +170,8 @@ function f()
 	s_ml_f = zeros(length(N), Mf)
 
 	index = 1
-	for n in N
-		for index2 in 1:Mf
+	for n ∈ N
+		for index2 ∈ 1:Mf
 			V = rand(Γ, n)
 			k_ml_f[index, index2], s_ml_f[index, index2] = ml(V; mom_init=false)
 		end
@@ -183,9 +183,9 @@ function f()
 	index = 1
 
 	# Values are hardcoded and precomputed for performance reasons.
-	ψ = trigamma(1)
-	nfisher_inv = [4.0ψ -2.0; -2.0 1.0]/(ψ - 1.0)
-	for n in N
+	ψ₁ = trigamma(1)
+	nfisher_inv = [4.0ψ₁ -2.0; -2.0 1.0]/(ψ₁ - 1.0)
+	for n ∈ N
 		# Compute covariances and store them in a symmetric matrix.
 		cov_kk = cov(vec(k_ml_f[index, :]), vec(k_ml_f[index, :]))
 		cov_ks = cov(vec(k_ml_f[index, :]), vec(s_ml_f[index, :]))
@@ -225,8 +225,8 @@ end
 	Main function to group execution.
 """
 function main()
-	d()
-	f()
+	# d()
+	# f()
 end
 
 main()
