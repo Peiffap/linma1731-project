@@ -83,7 +83,3 @@ end
 % Compute MSE -------------------------------------------------------------
 
 MSE = 1/(param.N*param.P) * sum(sum(sqrt(sum((x-x_est).^2,2)),1),3);
-
-function [k, s] = EstimateGamma(noisy_observations)
-    
-end
