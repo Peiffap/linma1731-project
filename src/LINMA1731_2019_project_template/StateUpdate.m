@@ -21,7 +21,7 @@ function [next_x,next_o,next_xe,next_oe] = StateUpdate(current_x,current_o,curre
 %  * ts:         scalar > 0. Time-step [s].
 %  * k_gamma:    scalar > 0. Shape parameter of the Gamma distribution for
 %                the fish speed.
-%  * s_gamma:    scalar > 0. Rate parameter of the Gamma distribution for
+%  * s_gamma:    scalar > 0. Scale parameter of the Gamma distribution for
 %                the fish speed.
 %  * w:          scalar > 0. parameter of the size of the FOV (coordinates
 %                of the  corners of the rectangle: (-w,-w),(-w,w),(w,-w),(w,w)).
@@ -39,9 +39,9 @@ function [next_x,next_o,next_xe,next_oe] = StateUpdate(current_x,current_o,curre
 % References:
 %
 %  [1] Huth, A., and Wissel, C. The Simulation of the Movement of Fish
-%      Schools. Journal of Theoretical Biology 156, 3 (1992), 365–385.
+%      Schools. Journal of Theoretical Biology 156, 3 (1992), 365--385.
 %  [2] Niwa, H.-S. Self-organizing Dynamic Model of Fish Schooling.
-%      Journal of Theoretical Biology 171,(1994), 123–136.
+%      Journal of Theoretical Biology 171,(1994), 123--136.
 %
 % Authors: Charles Wiame and Stephanie Guerit.
 % Creation: 01-Apr-2019. Last update: 18-Apr-2019.
@@ -63,7 +63,7 @@ sigma = 7.5;          % Standard deviation of the perturbation on
                       % the turning angles
 
 P = size(current_x,1);             % Number of fish
-v = gamrnd(k_gamma,1/s_gamma,P,1); % Fish speed (from a gamma distribution)
+v = gamrnd(k_gamma,s_gamma,P,1); % Fish speed (from a gamma distribution)
 
 
 % Pre-allocation ----------------------------------------------------------
@@ -74,8 +74,8 @@ next_o  = zeros(size(current_o));
 % 1. Update the state (position)
 next_x  = current_x + current_o.*repmat(v*ts,1,2);
 next_x  = min(max(next_x,-w),w);
-next_x  = min(max(next_x,-w),w);
 next_xe = current_xe + current_oe.*repmat(ve*ts,1,2);
+next_xe = min(max(next_xe,-w),w);
 
 % 2. Update the fish state (orientation)
 
@@ -83,20 +83,20 @@ next_xe = current_xe + current_oe.*repmat(ve*ts,1,2);
 D = squareform(pdist(next_x));
 
 for p = 1:P
-    
+
     % Pre-allocation
     beta = zeros(P,1);        % Vector that will contain turning angles
     % between fish j and all other fish
     beta_R = 0;               % Angle with the shark
     danger = 0;               % Boolean flag (true if the fish is close
     % to the predator)
-    
+
     for k = 1:P
         if k ~= p
-            
+
             % Check in which area (repulsion, attraction, etc) is fish
             % k with respect to fish j
-            
+
             if D(p,k) <= r1
                 % Repulsion area: fish j goes away from fish k because
                 % it is too close.
@@ -106,13 +106,13 @@ for p = 1:P
                 beta(k) = tmp(idx);
                 clear a tmp idx
             end
-            
+
             if D(p,k) > r1 && D(p,k) <= r2
                 % Alignement area: fish j changes its turning angle
                 % to swim parallel to fish k.
                 beta(k) = computeAngle(current_o(p,:),current_o(k,:));
             end
-            
+
             if D(p,k) > r2 && D(p,k) <= r3
                 % Attraction area: fish j changes its turning angle
                 % to swim towards fish k.
@@ -121,25 +121,25 @@ for p = 1:P
                 beta(k) = computeAngle(current_o(p,:),tmp);
                 clear tmp
             end
-            
+
             if D(p,k) >= r3
                 % Searching area: fish j chooses a random angle.
                 beta(k) = deg2rad(360*rand(1)-180);
             end
         end
-        
+
     end
-    
+
     if norm(next_x(p,:)-next_xe,2) <= r4
         % If fish j is close to the predactor, it runs away in the
         % opposite direction.
-        
-        danger = 1;        
+
+        danger = 1;
         tmp     = -(next_xe-next_x(p,:))./norm(next_xe-next_x(p,:));
         beta_R  = computeAngle(current_o(p,:),tmp);
         clear tmp
     end
-    
+
     % Average decision model: compute the average angle taking into
     % account all the interactions (with the fish and the enemy)
     if danger
@@ -147,22 +147,22 @@ for p = 1:P
     else
         beta_bar = mean(beta);
     end
-    
+
     % Adding a Gaussian perturbation (due to water flows) to the
     % global turning angle
     A = beta_bar + deg2rad(sigma*randn(1));
-    
-    
+
+
     % Orientation update (using rotation matrix)
     next_o(p,:) = current_o(p,:)*[cos(A) -sin(A) ; sin(A) cos(A)]';
-    
-    
+
+
     % Check if the fish orientation is compatible with the eventual
     % presence of a wall
-    
+
     wall = [false; false; false; false];  % Default value for right, top, left and bottom walls.
     normal_vec = [-1 0; 0 -1; 1 0; 0 1];
-    
+
     if abs(next_x(p,1) - w) <= d_m
         wall(1) = true;
     end
@@ -175,36 +175,36 @@ for p = 1:P
     if abs(next_x(p,2) + w) <= d_m
         wall(4) = true;
     end
-    
+
     a = pi*ones(length(wall),1);
     for ii = 1:4
         if wall(ii)
             a(ii) = computeAngle(next_o(p,:),-normal_vec(ii,:));
         end
     end
-    
+
     switch length(nonzeros(abs(a) <= round(pi/2,1)))
         case 1
             idxa    = find(abs(a) <= round(pi/2,1));
             tmp     = [a(idxa)-pi/2 a(idxa)+pi/2];
             [~,idx] = min(abs(tmp)); % Choose the angle such that the fish will swim perpendiculary to the wall normal vector.
             A       = tmp(idx);
-            
+
         case 2
             idxa    = find(abs(a) <= round(pi/2,1));
             tmp     = [a(idxa(1))-pi/2 a(idxa(1))+pi/2 a(idxa(2))-pi/2 a(idxa(2))+pi/2];
             [~,idx] = max(abs(tmp)); % Choose the angle such that the fish will swim perpendiculary to the wall normal vector.
             A       = tmp(idx);
-            
+
         otherwise
             A = 0;
     end
-    
+
     % Update the orientation if the fish is too close to a wall
     next_o(p,:) = next_o(p,:)*[cos(A) -sin(A) ; sin(A) cos(A)]';
-    
+
     clear a tmp idx A
-    
+
 end
 
 % Predator state update ---------------------------------------------------
@@ -219,7 +219,7 @@ for p = 1:P
         % Enemy goes toward fish
         tmp       = (next_x(p,:)-next_xe)./norm(next_x(p,:)-next_xe);
         Ae_tmp(p) = computeAngle(current_oe,tmp);
-        
+
         clear tmp
     end
 end
@@ -266,13 +266,13 @@ switch length(nonzeros(abs(a) <= round(pi/2,1)))
         tmp     = [a(idxa)-pi/2 a(idxa)+pi/2];
         [~,idx] = min(abs(tmp)); % Choose the angle such that the shark will swim perpendiculary to the wall normal vector.
         A       = tmp(idx);
-        
+
     case 2
         idxa = find(abs(a) <= round(pi/2,1));
         tmp  = [a(idxa(1))-pi/2 a(idxa(1))+pi/2 a(idxa(2))-pi/2 a(idxa(2))+pi/2];
         tmp  = sort(tmp,2); % Choose the angle such that the shark will swim perpendiculary to the wall normal vector.
         A    = tmp(end);
-        
+
     otherwise
         A = 0;
 end
