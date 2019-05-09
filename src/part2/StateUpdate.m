@@ -21,7 +21,7 @@ function [next_x,next_o,next_xe,next_oe] = StateUpdate(current_x,current_o,curre
 %  * ts:         scalar > 0. Time-step [s].
 %  * k_gamma:    scalar > 0. Shape parameter of the Gamma distribution for
 %                the fish speed.
-%  * s_gamma:    scalar > 0. Rate parameter of the Gamma distribution for
+%  * s_gamma:    scalar > 0. Scale parameter of the Gamma distribution for
 %                the fish speed.
 %  * w:          scalar > 0. parameter of the size of the FOV (coordinates
 %                of the  corners of the rectangle: (-w,-w),(-w,w),(w,-w),(w,w)).
@@ -63,7 +63,7 @@ sigma = 7.5;          % Standard deviation of the perturbation on
                       % the turning angles
 
 P = size(current_x,1);             % Number of fish
-v = gamrnd(k_gamma,1/s_gamma,P,1); % Fish speed (from a gamma distribution)
+v = gamrnd(k_gamma,s_gamma,P,1); % Fish speed (from a gamma distribution)
 
 
 % Pre-allocation ----------------------------------------------------------
@@ -74,8 +74,8 @@ next_o  = zeros(size(current_o));
 % 1. Update the state (position)
 next_x  = current_x + current_o.*repmat(v*ts,1,2);
 next_x  = min(max(next_x,-w),w);
-next_x  = min(max(next_x,-w),w);
 next_xe = current_xe + current_oe.*repmat(ve*ts,1,2);
+next_xe = min(max(next_xe,-w),w);
 
 % 2. Update the fish state (orientation)
 

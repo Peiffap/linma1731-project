@@ -16,7 +16,7 @@ function [x,xe,o,oe,y,ye] = GenerateObservations(param)
 %    - N:         scalar (integer) > 0. Number of time snapshots.
 %    - ts:        scalar > 0. Time-step [s].
 %    - k:         scalar > 0. Shape parameter of the Gamma distribution for the fish speed.
-%    - s:         scalar > 0. Rate parameter of the Gamma distribution for the fish speed.
+%    - s:         scalar > 0. Scale parameter of the Gamma distribution for the fish speed.
 %    - sigma_obs: scalar > 0. Std of the observation noise on fish and enemy trajectories
 %
 % Outputs:
