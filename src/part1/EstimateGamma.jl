@@ -5,7 +5,7 @@ using PGFPlotsX
 using LaTeXStrings
 
 """
-	mom(V::Vector)
+	mom(V::Array{Float64, 1})
 
 Computes the MoM estimator using a vector of gamma-distributed r.v.
 """
@@ -20,7 +20,7 @@ function mom(V::Array{Float64, 1})
 end
 
 """
-	ml(V::Vector; mom_init = true)
+	ml(V::Array{Float64, 1}; mom_init = true)
 
 Computes the ML estimator using a vector of gamma-distributed r.v.
 """

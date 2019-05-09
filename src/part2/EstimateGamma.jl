@@ -1,5 +1,9 @@
+using Compat
+using Random, Distributions, StatsBase
+using JuMP, Ipopt, SpecialFunctions, LinearAlgebra
+
 """
-	mom(V::Vector)
+	mom(V::Array{Float64, 1})
 
 Computes the MoM estimator using a vector of gamma-distributed r.v.
 """
@@ -14,7 +18,7 @@ function mom(V::Array{Float64, 1})
 end
 
 """
-	ml(V::Vector; mom_init = true)
+	ml(V::Array{Float64, 1}; mom_init = true)
 
 Computes the ML estimator using a vector of gamma-distributed r.v.
 """
@@ -48,6 +52,12 @@ function ml(V::Array{Float64, 1}; mom_init = false)
 	return k̂, ŝ
 end
 
+"""
+	EstimateGamma(obs::Array{Float64, 2})
+
+Computes the maximum likelihood estimators of the distribution of speeds
+while taking as argument the vector of 2D positions.
+"""
 function EstimateGamma(obs::Array{Float64, 2})
 	ts = 0.1 # Time step [s].
 	_, n = size(obs)
