@@ -52,8 +52,8 @@ disp = true;              % Display trajectories
 
 load noisy_observations.mat
 
-[param.k,param.s] = EstimateGamma(noisy_observations); % TO DEFINE! (keep the same inputs/outputs!)
-
+%[param.k,param.s] = EstimateGamma(noisy_observations); % TO DEFINE! (keep the same inputs/outputs!)
+param.k = 3; param.s = 2;
 
 % Generate observations ---------------------------------------------------
 
