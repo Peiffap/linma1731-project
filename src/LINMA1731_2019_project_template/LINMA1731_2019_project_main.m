@@ -38,7 +38,7 @@ close all
 % Parameters --------------------------------------------------------------
 
 param.w         = 20;     % Parameter of the size of the FOV
-param.P         = 10;     % Number of fish
+param.P         = 3;     % Number of fish
 param.N         = 1000;   % Number of time snapshots
 param.Np        = 200;    % Number of particles per animal
 param.ts        = 0.1;    % Time-step [s]
@@ -53,7 +53,7 @@ disp = true;              % Display trajectories
 load noisy_observations.mat
 
 %[param.k,param.s] = EstimateGamma(noisy_observations); % TO DEFINE! (keep the same inputs/outputs!)
-param.k = 3; param.s = 2;
+param.k = 3; param.s = 0.8;
 
 % Generate observations ---------------------------------------------------
 
