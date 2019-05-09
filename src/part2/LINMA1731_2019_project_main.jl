@@ -6,6 +6,8 @@ using LaTeXStrings
 using Distances
 using MATLAB
 
+include("EstimateGamma.jl") # Estimation function.
+include("ParticleFilter.jl") # Particle filter.
 
 """
     LINMA1731_2019_project_main
@@ -43,8 +45,9 @@ Reference
   [1] Huth, A., and Wissel, C. The Simulation of the Movement of Fish
       Schools. Journal of Theoretical Biology 156, 3 (1992), 365�385.
 
-Authors: Louis Navarre and Gilles Peiffer
-Creation: 01-Apr-2019. Last update: 08-May-2019.
+Authors: Charles Wiame and Stephanie Guerit.
+         Ported from Matlab to Julia by Louis Navarre and Gilles Peiffer
+Creation: 01-Apr-2019. Last update: 09-May-2019.
 Developed: 1.1.0 (2019-01-21)
 """
 
@@ -67,17 +70,15 @@ disp = true             # Display trajectories.
 # Estimation of the parameters of the gamma distribution k and s from noisy
 # measurements of the trajectory of one fish ------------------------------
 
-no = MatFile("noisy_observations.mat") # Open MAT file and return handle.
-noisy_observations = get_variable(no, "noisy_observations") # Put in array.
-close(no) # Close MAT file.
+data = MatFile("noisy_observations.mat") # Open MAT file and return handle.
+noisy_observations = get_variable(data, "noisy_observations") # Put in array.
+close(data) # Close MAT file.
 
-k = 2.0
-s = 1.0
+k̂, ŝ = EstimateGamma(noisy_observations) # TO DEFINE! (keep the same inputs/outputs!)
 
-#k, s = EstimateGamma(noisy_observations) # TO DEFINE! (keep the same inputs/outputs!)
+k̂, ŝ = 2, 3
 
-param = mxarray(Param(20.0, 10.0, 1000.0, 200.0, 0.1, 0.2, k, s))
-
+param = mxarray(Param(20.0, 10.0, 1000.0, 200.0, 0.1, 0.2, k̂, ŝ))
 
 # Generate observations ---------------------------------------------------
 mat"""

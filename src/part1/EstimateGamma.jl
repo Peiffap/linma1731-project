@@ -9,7 +9,7 @@ using LaTeXStrings
 
 Computes the MoM estimator using a vector of gamma-distributed r.v.
 """
-function mom(V::Vector)
+function mom(V::Array{Float64, 1})
 	μ̂₁ = mean(V) # First moment.
 	μ̂₂ = moment(V, 2, 0) # Second moment.
 
@@ -24,8 +24,8 @@ end
 
 Computes the ML estimator using a vector of gamma-distributed r.v.
 """
-function ml(V::Vector; mom_init = false)
-	rhs = log(mean(V)) - sum(log(x) for x ∈ V)/length(V) # Right-hand side of the nonlinear equation can be precomputed.
+function ml(V::Array{Float64, 1}; mom_init = false)
+	rhs = log(mean(V)) - sum(log.(V))/length(V) # Right-hand side of the nonlinear equation can be precomputed.
 
 	# The nonlinear optimisation approach uses the fact that
 	# if one optimises a constant function,
