@@ -10,7 +10,7 @@ function [x,xe,o,oe,y,ye] = GenerateObservations(param)
 %
 % Inputs:
 %  * param: Matlab structure containing the following fields:
-%    - w:         scalar > 0. parameter of the size of the FOV (coordinates 
+%    - w:         scalar > 0. parameter of the size of the FOV (coordinates
 %                 of the  corners of the rectangle: (-w,-w),(-w,w),(w,-w),(w,w)).
 %    - P:         scalar (integer) > 0. Number of fish.
 %    - N:         scalar (integer) > 0. Number of time snapshots.
@@ -40,8 +40,8 @@ function [x,xe,o,oe,y,ye] = GenerateObservations(param)
 %
 % Reference:
 %
-%  [1] Huth, A., and Wissel, C. The Simulation of the Movement of Fish 
-%      Schools. Journal of Theoretical Biology 156, 3 (1992), 365–385.
+%  [1] Huth, A., and Wissel, C. The Simulation of the Movement of Fish
+%      Schools. Journal of Theoretical Biology 156, 3 (1992), 365--385.
 %
 % Authors: Charles Wiame and Stephanie Guerit.
 % Creation: 01-Apr-2019. Last update: 18-Apr-2019.
@@ -50,13 +50,13 @@ function [x,xe,o,oe,y,ye] = GenerateObservations(param)
 
 % Parameters --------------------------------------------------------------
 
-w         = param.w ;       
-P         = param.P;         
-N         = param.N;         
-ts        = param.ts;        
-k         = param.k;         
-s         = param.s;         
-sigma_obs = param.sigma_obs; 
+w         = param.w ;
+P         = param.P;
+N         = param.N;
+ts        = param.ts;
+k         = param.k;
+s         = param.s;
+sigma_obs = param.sigma_obs;
 
 % Pre-allocation ----------------------------------------------------------
 
@@ -83,7 +83,7 @@ oe(:,:,1) = oe(:,:,1)./norm(oe(:,:,1));
 
 % Generate physical trajectories ------------------------------------------
 
-for i = 2:N    
+for i = 2:N
     [x(:,:,i),o(:,:,i),xe(1,:,i),oe(1,:,i)] = ...
         StateUpdate(x(:,:,i-1),o(:,:,i-1),xe(1,:,i-1),oe(1,:,i-1),ts,k,s,w);
 end
