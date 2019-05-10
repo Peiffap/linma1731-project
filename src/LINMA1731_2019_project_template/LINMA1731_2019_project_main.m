@@ -39,8 +39,8 @@ close all
 
 param.w         = 20;     % Parameter of the size of the FOV
 param.P         = 3;     % Number of fish
-param.N         = 1000;   % Number of time snapshots
-param.Np        = 200;    % Number of particles per animal
+param.N         = 200;   % Number of time snapshots
+param.Np        = 20;    % Number of particles per animal
 param.ts        = 0.1;    % Time-step [s]
 param.sigma_obs = 0.2;    % Std of the observation noise on fish and 
                           % enemy trajectories
@@ -53,11 +53,13 @@ disp = true;              % Display trajectories
 load noisy_observations.mat
 
 %[param.k,param.s] = EstimateGamma(noisy_observations); % TO DEFINE! (keep the same inputs/outputs!)
-param.k = 3; param.s = 0.8;
+param.k = 3.9540952382110817; param.s = 0.30279168695735004;
 
 % Generate observations ---------------------------------------------------
 
 [x,xe,o,oe,y,ye] = GenerateObservations(param);
+
+[x_est,xe_est]= ParticleFilter(y,ye,param); % TO DEFINE! (keep the same inputs/outputs!)
 
 % Exemple to display the trajectories. Do not hesitate to adapt it :-)
 if disp
@@ -65,7 +67,11 @@ if disp
         cla; hold on
         quiver(x(:,1,i),x(:,2,i),o(:,1,i),o(:,2,i),0,'Marker','o');
         hold on
+        quiver(x_est(:,1,i),x_est(:,2,i),o(:,1,i),o(:,2,i),0,'Marker','o', 'color', [1 0 0]);
+        hold on
         plot(xe(1,1,i),xe(1,2,i),'*k');
+        hold on
+        plot(xe_est(1,1,i),xe(1,2,i),'*r');
         hold on
         rectangle('Position',[-param.w -param.w 2*param.w 2*param.w],'EdgeColor','r','LineWidth',3)
         axis([-param.w-1,param.w+1,-param.w-1,param.w+1]); axis off;
@@ -76,8 +82,6 @@ if disp
 end
 
 % Particle filtering ------------------------------------------------------
-
-[x_est,xe_est]= ParticleFilter(y,ye,param); % TO DEFINE! (keep the same inputs/outputs!)
 
 
 % Compute MSE -------------------------------------------------------------
