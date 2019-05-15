@@ -76,37 +76,39 @@ close(data) # Close MAT file.
 
 k̂, ŝ = EstimateGamma(noisy_observations) # TO DEFINE! (keep the same inputs/outputs!)
 
-param = Param(20.0, 10.0, 1000.0, 200.0, 0.1, 0.2, k̂, ŝ)
-mparam = mxarray(param)
+param = Param(20.0, 3.0, 20.0, 20.0, 0.1, 0.2, k̂, ŝ)
 
 # Generate observations ---------------------------------------------------
 mat"""
-[$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($mparam);
+[$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
 """
+
+# Particle filtering ------------------------------------------------------
+
+x_est, xe_est = ParticleFilter(y, ye, param) # TO DEFINE! (keep the same inputs/outputs!)
 
 # Example to display the trajectories. Do not hesitate to adapt it :-)
 mat"""
 if $disp
-    for i = 1:$mparam.N
+    for i = 1:$param.N
         cla; hold on
-        quiver($x(:, 1, i), $x(:, 2, i), $o(:, 1, i), $o(:, 2, i), 0, 'Marker', 'o');
+        quiver($x(:,1,i),$x(:,2,i),$o(:,1,i),$o(:,2,i),0,'Marker','o');
         hold on
-        plot($xe(1, 1, i), $xe(1, 2, i), '*k');
+        quiver($x_est(:,1,i),$x_est(:,2,i),$o(:,1,i),$o(:,2,i),0,'Marker','o', 'color', [1 0 0]);
         hold on
-        rectangle('Position', [-$mparam.w -$mparam.w 2*$mparam.w 2*$mparam.w], 'EdgeColor', 'r', 'LineWidth', 3)
-        axis([-$mparam.w-1, $mparam.w+1, -$mparam.w-1, $mparam.w+1]); axis off;
-        title(sprintf('time: %3.2f s',i*$mparam.ts))
-        pause(.05);
+        plot($xe(1,1,i),$xe(1,2,i),'*k');
+        hold on
+        plot($xe_est(1,1,i),$xe(1,2,i),'*r');
+        hold on
+        rectangle('Position',[-$param.w -$param.w 2*$param.w 2*$param.w],'EdgeColor','r','LineWidth',3)
+        axis([-$param.w-1,$param.w+1,-$param.w-1,$param.w+1]); axis off;
+        title(sprintf('time: %3.2f s',i*$param.ts))
+        pause(.1);
         hold off;
     end
 end
 """
 
-# Particle filtering ------------------------------------------------------
-
-# [x_est,xe_est]= ParticleFilter(y, ye, param); # TO DEFINE! (keep the same inputs/outputs!)
-
-
 # Compute MSE -------------------------------------------------------------
 
-# MSE = 1/(param.N*param.P) * sum(sum(sqrt(sum((x-x_est).^2,2)),1),3);
+MSE = (1. /(param.N * param.P) * sum(sum(.√(sum((x - x_est).^2, dims=2)), dims=1), dims=3))[1]
