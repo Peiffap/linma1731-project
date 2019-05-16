@@ -4,15 +4,15 @@
 Particle filter for the project.
 """
 function ParticleFilter(y, ye, param)
-    w     = param.w                   # Parameter of the size of the FOV.
-    P     = convert(Int64, param.P)   # Number of fish.
-    N     = convert(Int64, param.N)   # Number of time snapshots.
-    Np    = convert(Int64, param.Np)  # Number of particles per animal.
-    ts    = param.ts                  # Time-step [s].
-    σ_obs = param.sigma_obs           # Sd of the observation noise
-                                      # on fish and enemy trajectories.
-    k     = param.k                   # Shape parameter.
-    s     = param.s                   # Scale parameter.
+    w     = param.w          # Parameter of the size of the FOV.
+    P     = param.P          # Number of fish.
+    N     = param.N          # Number of time snapshots.
+    Np    = param.Np         # Number of particles per animal.
+    ts    = param.ts         # Time-step [s].
+    σ_obs = param.sigma_obs  # Sd of the observation noise
+                             # on fish and enemy trajectories.
+    k     = param.k          # Shape parameter.
+    s     = param.s          # Scale parameter.
 
     d_y   = 1  # Dimension of the output space; must be 1 here.
     μ_w   = 0  # Mean of the gaussian error.
