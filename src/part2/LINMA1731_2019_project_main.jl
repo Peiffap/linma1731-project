@@ -85,7 +85,7 @@ mat"""
 
 # Particle filtering ------------------------------------------------------
 
-x_est, xe_est = ParticleFilter(y, ye, param) # TO DEFINE! (keep the same inputs/outputs!)
+x_est, xe_est = ParticleFilter(x, xe, param) # TO DEFINE! (keep the same inputs/outputs!)
 
 # Example to display the trajectories. Do not hesitate to adapt it :-)
 mat"""

@@ -39,11 +39,11 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
     
     % How do we get the initial o and oe ?
     % For the moment, let's suppose it is random
-    o = rand(P,2);
+    o = y(:, :, 2) - y(:, :, 1) + normrnd(mu_w, sigma_obs, P, 2);   
     norm_o = sqrt(o(:,1).^2 + o(:,2).^2);
     o(:,1) = o(:,1) ./ norm_o;
     o(:,2) = o(:,2) ./ norm_o;
-    oe = rand(1,2);
+    oe = ye(:, :, 2) - ye(:, :, 1) + normrnd(mu_w, sigma_obs, 1, 2);
     norm_oe = sqrt(oe(:,1).^2 + oe(:,2).^2);
     oe(:,1) = oe(:,1) ./ norm_oe;
     oe(:,2) = oe(:,2) ./ norm_oe;
@@ -52,14 +52,14 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
     t = 0;
     for i = 1:Np
         for fish = 1:P
-            X(fish,:,i,t +1) = y(fish,:,i);
+            X(fish,:,i,t +1) = y(fish,:,1) + normrnd(mu_w, sigma_obs, 1, 2);
         end
-        Xe(1,:,i,t +1) = ye(1,:,i);
+        Xe(1,:,i,t +1) = ye(1,:,1) + normrnd(mu_w, sigma_obs, 1, 2);
     end
     
     
     % ** Start loop on time:
-    for t = 0:N-1
+    for t = 0:N-2
         
         % ** Prediction
         for i = 1:Np
@@ -79,11 +79,11 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
         weightse = zeros(1,2,Np);
         for i=1:Np
             for fish = 1:P
-                weights(fish,1,i) = out_noise_pdf(y(fish,1,t +1)-Xtilde(fish,1,i,t+1 +1));
-                weights(fish,2,i) = out_noise_pdf(y(fish,2,t +1)-Xtilde(fish,2,i,t+1 +1));
+                weights(fish,1,i) = out_noise_pdf(y(fish,1,t+1 +1)-Xtilde(fish,1,i,t+1 +1));
+                weights(fish,2,i) = out_noise_pdf(y(fish,2,t+1 +1)-Xtilde(fish,2,i,t+1 +1));
             end
-            weightse(1,1,i) = out_noise_pdf(ye(1,1,t +1)-Xtildee(1,1,i,t+1 +1));
-            weightse(1,2,i) = out_noise_pdf(ye(1,2,t +1)-Xtildee(1,2,i,t+1 +1));
+            weightse(1,1,i) = out_noise_pdf(ye(1,1,t+1 +1)-Xtildee(1,1,i,t+1 +1));
+            weightse(1,2,i) = out_noise_pdf(ye(1,2,t+1 +1)-Xtildee(1,2,i,t+1 +1));
         end
         
         ind_sample  = zeros(Np,2,P);
