@@ -63,11 +63,11 @@ struct Param
     s::Float64          # Scale parameter
 end
 
-disp  = true  # Display trajectories.
-plot  = false  # Generate arrays needed for plotting (SLOW!)
+disp  = false  # Display trajectories.
+plot  = true   # Generate arrays needed for plotting (SLOW!)
 w     = 20.0
 P     = 3
-N     = 20
+N     = 100
 Np    = 20
 t_s   = 0.1
 σ_obs = 0.2
@@ -119,12 +119,11 @@ if disp
         hold off;
     end
     """
-
+    # Compute MSE --------------------------------------------------------------
     MSE_example = (1. /(param.N * param.P) * sum(sum(.√(sum((x - x_est).^2, dims=2)), dims=1), dims=3))[1]
 end
 
-# Compute MSE ------------------------------------------------------------------
-if plot
+function save_plot()
     """
         MSE(x, x̂)
 
@@ -134,28 +133,29 @@ if plot
         return (1. /(param.N * param.P) * sum(sum(.√(sum((x - x̂).^2, dims=2)), dims=1), dims=3))[1]
     end
 
-    M = 100  # Number of repetitions.
-
-    Np_vec    = [10 20 50 100]           # Values of Np.
-    t_s_vec   = [0.05 0.1 0.2 0.5]       # Values of t_s.
-    σ_obs_vec = [0.1 0.2 0.5 1]          # Values of σ_obs.
-
-    MSE_Np    = zeros(length(Np), M)     # MSE for different values of Np.
-    MSE_t_s   = zeros(length(t_s), M)    # MSE for different values of t_s.
-    MSE_σ_obs = zeros(length(σ_obs), M)  # MSE for different values of σ_obs.
-
+    M = 10  # Number of repetitions.
     index = 1
+
+    Np_vec    = [10 20 50 100]              # Values of Np.
+    t_s_vec   = [0.05 0.1 0.2 0.5]          # Values of t_s.
+    σ_obs_vec = [0.1 0.2 0.5 1]             # Values of σ_obs.
+
+    MSE_Np    = zeros(length(Np_vec), M)    # MSE for different values of Np.
+    MSE_t_s   = zeros(length(t_s_vec), M)   # MSE for different values of t_s.
+    MSE_σ_obs = zeros(length(σ_obs_vec), M) # MSE for different values of σ_obs.
 
     for Np ∈ Np_vec
         param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
         for m ∈ 1:M
+            println("Np = ", Np, "; m = ", m)
             # Generate observations ------------------------------------------------
+
             mat"""
             [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
             [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
             """
 
-            MSE_Np[index, m] = MSE(x_est, x̂)
+            MSE_Np[index, m] = MSE(x, x_est)
         end
         index += 1
     end
@@ -168,11 +168,10 @@ if plot
             # Generate observations ----------------------------------------------------
             mat"""
             [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
+            [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
             """
 
-            x̂, x̂e = ParticleFilter(y, ye, param)
-
-            MSE_t_s[index, m] = MSE(x, x̂)
+            MSE_t_s[index, m] = MSE(x, x_est)
         end
         index += 1
     end
@@ -185,14 +184,17 @@ if plot
             # Generate observations ----------------------------------------------------
             mat"""
             [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
+            [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
             """
 
-            x̂, x̂e = ParticleFilter(y, ye, param)
-
-            MSE_σ_obs[index, m] = MSE(x, x̂)
+            MSE_σ_obs[index, m] = MSE(x, x_est)
         end
         index += 1
     end
 
     @save "MSEArray.jld2" MSE_Np MSE_t_s MSE_σ_obs
+end
+
+if plot
+    save_plot()
 end
