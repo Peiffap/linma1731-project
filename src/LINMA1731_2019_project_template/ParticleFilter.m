@@ -49,15 +49,34 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
     % ** Start loop on time:
     for t = 0:N-2
         
-        % ** Prediction
+%         % ** Prediction
+%         for i = 1:Np
+%             % Compute the next state for
+%             [next_x,next_o,next_xe,next_oe] = StateUpdate(X(:,:,i,t +1),o,Xe(1,:,i,t +1),oe,ts,k,s,w);
+%             o = next_o;
+%             Xtilde(:,:,i,t+1 +1) = next_x;
+%             
+%             oe = next_oe;
+%             Xtildee(1,:,i, t+1 +1) = next_xe;
+%         end
+
+        meaned = zeros(P,2);
+        for fish = 1:P
+            meaned(fish,1) = mean(X(fish,1,:,t+1));
+            meaned(fish,2) = mean(X(fish,2,:,t+1));
+        end
+        meanede = zeros(1,2);
+        meanede(1,1) = mean(Xe(1,1,:,t+1));
+        meanede(1,2) = mean(Xe(1,2,:,t+1));
+        
+        [next_x,next_o,next_xe,next_oe] = StateUpdate(meaned,o,meanede,oe,ts,k,s,w);
+        o = next_o;
+        oe = next_oe;
         for i = 1:Np
-            % Compute the next state for
-            [next_x,next_o,next_xe,next_oe] = StateUpdate(X(:,:,i,t +1),o,Xe(1,:,i,t +1),oe,ts,k,s,w);
-            o = next_o;
-            Xtilde(:,:,i,t+1 +1) = next_x;
-            
-            oe = next_oe;
-            Xtildee(1,:,i, t+1 +1) = next_xe;
+            for fish = 1:P
+                Xtilde(fish,:,i,t+1 +1) = next_x(fish,:) + normrnd(mu_w, sigma_obs,1,2);
+            end
+            Xtildee(1,:,i, t+1 +1) = next_xe(1,:) + normrnd(mu_w, sigma_obs,1,2);
         end
         
         % ** Correction
