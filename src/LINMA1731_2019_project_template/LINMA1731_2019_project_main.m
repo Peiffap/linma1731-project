@@ -37,10 +37,10 @@ close all
 
 % Parameters --------------------------------------------------------------
 
-param.w         = 20;     % Parameter of the size of the FOV
+param.w         = 10;     % Parameter of the size of the FOV
 param.P         = 3;     % Number of fish
-param.N         = 300;   % Number of time snapshots
-param.Np        = 200;    % Number of particles per animal
+param.N         = 100;   % Number of time snapshots
+param.Np        = 500;    % Number of particles per animal
 param.ts        = 0.1;    % Time-step [s]
 param.sigma_obs = 0.2;    % Std of the observation noise on fish and 
                           % enemy trajectories
@@ -60,7 +60,7 @@ param.k = 3.9540952382110817; param.s = 0.30279168695735004;
 [x,xe,o,oe,y,ye] = GenerateObservations(param);
 
 tic;
-[x_est,xe_est]= ParticleFilter(y,ye,param); % TO DEFINE! (keep the same inputs/outputs!)
+[x_est,xe_est]= ParticleFilter(x,xe,param); % TO DEFINE! (keep the same inputs/outputs!)
 toc;
 
 % Exemple to display the trajectories. Do not hesitate to adapt it :-)

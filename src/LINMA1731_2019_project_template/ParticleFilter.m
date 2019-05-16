@@ -88,7 +88,6 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
             for fish = 1:P
                 weights(fish,1,i) = out_noise_pdf(y(fish,1,t+1 +1)-Xtilde(fish,1,i,t+1 +1));
                 weights(fish,2,i) = out_noise_pdf(y(fish,2,t+1 +1)-Xtilde(fish,2,i,t+1 +1));
-                %weights(fish,1,i) = out_noise_pdf(y(fish,:,t+1 +1)-Xtilde(fish,:,i,t+1 +1));
             end
             weightse(1,1,i) = out_noise_pdf(ye(1,1,t+1 +1)-Xtildee(1,1,i,t+1 +1));
             weightse(1,2,i) = out_noise_pdf(ye(1,2,t+1 +1)-Xtildee(1,2,i,t+1 +1));
