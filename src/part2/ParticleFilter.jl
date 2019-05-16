@@ -31,14 +31,14 @@ function ParticleFilter(y, ye, param)
 
     # Initialize orientations.
     # Currently, this is done randomly.
-    o = rand(P, 2)                          # Generate random orientations.
-    norm_o = .√(o[:, 1].^2 + o[:,2].^2)     # Compute the norm.
-    o[:, 1] = o[:, 1] ./ norm_o             # Normalize.
+    o = rand(P, 2)                           # Generate random orientations.
+    norm_o = .√(o[:, 1].^2 + o[:, 2].^2)     # Compute the norm.
+    o[:, 1] = o[:, 1] ./ norm_o              # Normalize.
     o[:, 2] = o[:, 2] ./ norm_o
 
-    oe = rand(1, 2)                         # Generate random orientations.
-    norm_oe = .√(oe[:, 1].^2 + oe[:,2].^2)  # Compute the norm.
-    oe[:, 1] = oe[:, 1] ./ norm_oe          # Normalize.
+    oe = rand(1, 2)                          # Generate random orientations.
+    norm_oe = .√(oe[:, 1].^2 + oe[:, 2].^2)  # Compute the norm.
+    oe[:, 1] = oe[:, 1] ./ norm_oe           # Normalize.
     oe[:, 2] = oe[:, 2] ./ norm_oe
 
     # Initial sample set is the first observation for each particle.
