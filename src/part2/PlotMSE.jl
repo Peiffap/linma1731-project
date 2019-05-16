@@ -9,7 +9,7 @@ using LaTeXStrings
     grid="major",
     title="\\Large Mean square error",
     xlabel=L"\footnotesize Number of particles per fish, \(N_\textnormal{p}\)",
-    ylabel=L"\footnotesize Spectral norm of $\cov \hTheta \oslash \mathcal{I}^{-1}(\vartheta) - \left(\begin{smallmatrix}1&1\\1&1\end{smallmatrix}\right)$",
+    ylabel=L"\footnotesize Mean square error $",
     xmode="log"
 },
 Plot(Table([:x => N, :y => ratio]))

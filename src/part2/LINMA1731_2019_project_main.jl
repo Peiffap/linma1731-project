@@ -81,6 +81,9 @@ close(data) # Close MAT file.
 
 k̂, ŝ = EstimateGamma(noisy_observations) # TO DEFINE! (keep the same inputs/outputs!)
 
+println(k̂)
+println(ŝ)
+
 param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
 
 # Generate observations --------------------------------------------------------
