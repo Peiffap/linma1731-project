@@ -82,33 +82,34 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
         % ** Correction
 
         
-        weights  = zeros(P,2,Np);
+        weights  = zeros(P,1,Np);
         weightse = zeros(1,2,Np);
         for i=1:Np
             for fish = 1:P
                 weights(fish,1,i) = out_noise_pdf(y(fish,1,t+1 +1)-Xtilde(fish,1,i,t+1 +1));
                 weights(fish,2,i) = out_noise_pdf(y(fish,2,t+1 +1)-Xtilde(fish,2,i,t+1 +1));
+                %weights(fish,1,i) = out_noise_pdf(y(fish,:,t+1 +1)-Xtilde(fish,:,i,t+1 +1));
             end
             weightse(1,1,i) = out_noise_pdf(ye(1,1,t+1 +1)-Xtildee(1,1,i,t+1 +1));
             weightse(1,2,i) = out_noise_pdf(ye(1,2,t+1 +1)-Xtildee(1,2,i,t+1 +1));
         end
         
-        ind_sample  = zeros(Np,2,P);
-        ind_samplee = zeros(Np,2,1);
+        ind_sample  = zeros(P,Np,2);
+        ind_samplee = zeros(1,Np,2);
         for fish = 1:P
-            ind_sample(:,1,fish) = randsample(Np,Np,true,weights(fish,1,:));
-            ind_sample(:,2,fish) = randsample(Np,Np,true,weights(fish,2,:));
+            ind_sample(fish,:,1) = randsample(Np,Np,true,weights(fish,1,:));
+            ind_sample(fish,:,2) = randsample(Np,Np,true,weights(fish,2,:));
         end
-        ind_samplee(:,1,1) = randsample(Np,Np,true,weightse(1,1,:));
-        ind_samplee(:,2,1) = randsample(Np,Np,true,weightse(1,2,:));
+        ind_samplee(1,:,1) = randsample(Np,Np,true,weightse(1,1,:));
+        ind_samplee(1,:,2) = randsample(Np,Np,true,weightse(1,2,:));
         
         for i=1:Np
             for fish = 1:P
-                X(fish,1,i,t+1 +1) = Xtilde(fish,1,ind_sample(i),t+1 +1);
-                X(fish,2,i,t+1 +1) = Xtilde(fish,2,ind_sample(i),t+1 +1);
+                X(fish,1,i,t+1 +1) = Xtilde(fish,1,ind_sample(fish,i,1),t+1 +1);
+                X(fish,2,i,t+1 +1) = Xtilde(fish,2,ind_sample(fish,i,2),t+1 +1);
             end
-            Xe(1,1,i,t+1 +1) = Xtildee(1,1,ind_samplee(i),t+1 +1);
-            Xe(1,2,i,t+1 +1) = Xtildee(1,2,ind_samplee(i),t+1 +1);
+            Xe(1,1,i,t+1 +1) = Xtildee(1,1,ind_samplee(1,i,1),t+1 +1);
+            Xe(1,2,i,t+1 +1) = Xtildee(1,2,ind_samplee(1,i,1),t+1 +1);
         end
     end
     

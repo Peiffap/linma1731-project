@@ -39,10 +39,10 @@ close all
 
 param.w         = 20;     % Parameter of the size of the FOV
 param.P         = 3;     % Number of fish
-param.N         = 200;   % Number of time snapshots
-param.Np        = 100;    % Number of particles per animal
+param.N         = 300;   % Number of time snapshots
+param.Np        = 200;    % Number of particles per animal
 param.ts        = 0.1;    % Time-step [s]
-param.sigma_obs = 0.1;    % Std of the observation noise on fish and 
+param.sigma_obs = 0.2;    % Std of the observation noise on fish and 
                           % enemy trajectories
                           
 disp = true;              % Display trajectories
