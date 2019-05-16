@@ -30,13 +30,14 @@ function ParticleFilter(y, ye, param)
     X̃e = zeros(1, 2, Np, N+1)  # Predator particles -- predictions.
 
     # Initialize orientations.
-    # Currently, this is done randomly.
-    o = rand(P, 2)                           # Generate random orientations.
+    # We assume that the orientation points
+    # from the first observation to the second.
+    o = y[:, :, 2] - y[:, :, 1]              # Generate random orientations.
     norm_o = .√(o[:, 1].^2 + o[:, 2].^2)     # Compute the norm.
     o[:, 1] = o[:, 1] ./ norm_o              # Normalize.
     o[:, 2] = o[:, 2] ./ norm_o
 
-    oe = rand(1, 2)                          # Generate random orientations.
+    oe = ye[:, :, 2] - ye[:, :, 1]           # Generate random orientations.
     norm_oe = .√(oe[:, 1].^2 + oe[:, 2].^2)  # Compute the norm.
     oe[:, 1] = oe[:, 1] ./ norm_oe           # Normalize.
     oe[:, 2] = oe[:, 2] ./ norm_oe
