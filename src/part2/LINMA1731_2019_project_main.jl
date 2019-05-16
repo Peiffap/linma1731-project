@@ -1,10 +1,8 @@
 using Compat
 using Random, Distributions, StatsBase
 using JuMP, Ipopt, SpecialFunctions, LinearAlgebra
-using PGFPlotsX
-using LaTeXStrings
-using Distances
 using MATLAB
+using JLD2
 
 include("EstimateGamma.jl") # Estimation function.
 include("ParticleFilter.jl") # Particle filter.
@@ -46,18 +44,18 @@ Reference
       Schools. Journal of Theoretical Biology 156, 3 (1992), 365�385.
 
 Authors: Charles Wiame and Stephanie Guerit.
-         Ported from Matlab to Julia by Louis Navarre and Gilles Peiffer
-Creation: 01-Apr-2019. Last update: 09-May-2019.
+         Ported from Matlab to Julia by Louis Navarre and Gilles Peiffer.
+Creation: 01-Apr-2019. Last update: 16-May-2019.
 Developed: 1.1.0 (2019-01-21)
 """
 
-# Parameters --------------------------------------------------------------
+# Parameters -------------------------------------------------------------------
 
 struct Param
     w::Float64          # Parameter of the size of the FOV.
-    P::Float64          # Number of fish.
-    N::Float64          # Number of time snapshots.
-    Np::Float64         # Number of particles per animal.
+    P::Int64            # Number of fish.
+    N::Int64            # Number of time snapshots.
+    Np::Int64           # Number of particles per animal.
     ts::Float64         # Time-step [s].
     sigma_obs::Float64  # Sd of the observation noise
                         # on fish and enemy trajectories.
@@ -65,10 +63,17 @@ struct Param
     s::Float64          # Scale parameter
 end
 
-disp = true             # Display trajectories.
+disp  = true  # Display trajectories.
+plot  = false  # Generate arrays needed for plotting (SLOW!)
+w     = 20.0
+P     = 3
+N     = 20
+Np    = 20
+t_s   = 0.1
+σ_obs = 0.2
 
 # Estimation of the parameters of the gamma distribution k and s from noisy
-# measurements of the trajectory of one fish ------------------------------
+# measurements of the trajectory of one fish -----------------------------------
 
 data = MatFile("noisy_observations.mat") # Open MAT file and return handle.
 noisy_observations = get_variable(data, "noisy_observations") # Put in array.
@@ -76,20 +81,27 @@ close(data) # Close MAT file.
 
 k̂, ŝ = EstimateGamma(noisy_observations) # TO DEFINE! (keep the same inputs/outputs!)
 
-param = Param(20.0, 3.0, 20.0, 20.0, 0.1, 0.2, k̂, ŝ)
+param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
 
-# Generate observations ---------------------------------------------------
+# Generate observations --------------------------------------------------------
 mat"""
 [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
 """
 
-# Particle filtering ------------------------------------------------------
+function test()
+    @time mat"""
+    ParticleFilter($y, $ye, $param)
+    """
+end
 
-x_est, xe_est = ParticleFilter(y, ye, param) # TO DEFINE! (keep the same inputs/outputs!)
+if disp
+    # Particle filtering -------------------------------------------------------
+    mat"""
+    $x_est, $xe_est = ParticleFilter($y, $ye, $param)
+    """
 
-# Example to display the trajectories. Do not hesitate to adapt it :-)
-mat"""
-if $disp
+    # Example to display the trajectories. Do not hesitate to adapt it :-)
+    mat"""
     for i = 1:$param.N
         cla; hold on
         quiver($x(:,1,i),$x(:,2,i),$o(:,1,i),$o(:,2,i),0,'Marker','o');
@@ -106,9 +118,81 @@ if $disp
         pause(.1);
         hold off;
     end
+    """
+
+    MSE_example = (1. /(param.N * param.P) * sum(sum(.√(sum((x - x_est).^2, dims=2)), dims=1), dims=3))[1]
 end
-"""
 
-# Compute MSE -------------------------------------------------------------
+# Compute MSE ------------------------------------------------------------------
+if plot
+    """
+        MSE(x, x̂)
 
-MSE = (1. /(param.N * param.P) * sum(sum(.√(sum((x - x_est).^2, dims=2)), dims=1), dims=3))[1]
+    Compute the MSE of a result vector.
+    """
+    function MSE(x, x̂)
+        return (1. /(param.N * param.P) * sum(sum(.√(sum((x - x̂).^2, dims=2)), dims=1), dims=3))[1]
+    end
+
+    M = 100  # Number of repetitions.
+
+    Np_vec    = [10 20 50 100]           # Values of Np.
+    t_s_vec   = [0.05 0.1 0.2 0.5]       # Values of t_s.
+    σ_obs_vec = [0.1 0.2 0.5 1]          # Values of σ_obs.
+
+    MSE_Np    = zeros(length(Np), M)     # MSE for different values of Np.
+    MSE_t_s   = zeros(length(t_s), M)    # MSE for different values of t_s.
+    MSE_σ_obs = zeros(length(σ_obs), M)  # MSE for different values of σ_obs.
+
+    index = 1
+
+    for Np ∈ Np_vec
+        param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
+        for m ∈ 1:M
+            # Generate observations ------------------------------------------------
+            mat"""
+            [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
+            [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
+            """
+
+            MSE_Np[index, m] = MSE(x_est, x̂)
+        end
+        index += 1
+    end
+
+    index = 1
+
+    for t_s ∈ t_s_vec
+        param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
+        for m ∈ 1:M
+            # Generate observations ----------------------------------------------------
+            mat"""
+            [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
+            """
+
+            x̂, x̂e = ParticleFilter(y, ye, param)
+
+            MSE_t_s[index, m] = MSE(x, x̂)
+        end
+        index += 1
+    end
+
+    index = 1
+
+    for σ_obs ∈ σ_obs_vec
+        param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
+        for m ∈ 1:M
+            # Generate observations ----------------------------------------------------
+            mat"""
+            [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
+            """
+
+            x̂, x̂e = ParticleFilter(y, ye, param)
+
+            MSE_σ_obs[index, m] = MSE(x, x̂)
+        end
+        index += 1
+    end
+
+    @save "MSEArray.jld2" MSE_Np MSE_t_s MSE_σ_obs
+end
