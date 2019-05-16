@@ -445,7 +445,12 @@ Finally, the matrix was centered, and its spectral norm was computed.
 \end{figure}
 
 \chapter{Part II - Particle filtering}
-
+\section{Estimation of the speed}
+Recall that the speed of the fished follows a Gamma distribution (\( V_i \sim \Gamma(k,s) \)). Here, we get noisy measurements of the position of a fish through time. Once we have extracted a noisy approximation of the speed from this set of data, we can repeat what we explained earlier in the document (\ref{sec:est_code}). Hence, we still have to compute these approximations. To do so, some basic physical algebra does the work. From \(x(i)\), the noisy measurement of the position at time $t=i$, we can get \(v^i\), the noisy approximation of the speed of the fish at time $t=i$, by
+\begin{align}
+	\textbf{v}^i & = \frac{\big|\big| \textbf{x}^{i+1} + \textbf{n}_p - \big(\textbf{x}^{i+1} + \textbf{n}_p(i)\big)\big|\big| }{t_s},
+\end{align}
+With $t_s$ being the the sampling period, and $\textbf{n}_p \sim \mathcal{N}(0, \sigma_{obs})$ a white noise. As said before, using the function computed and explained earlier in the document, we can get approximations of the two parameters of the Gamma distribution of the speed, \((\hat{k}, \hat{s})\).
 
 \section{Conclusion}
 In Section~\ref{sec:s_est}, we looked at maximum likelihood estimation for the scale parameter of a Gamma distribution, \(s\).
