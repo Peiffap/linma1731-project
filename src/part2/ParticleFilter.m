@@ -39,11 +39,11 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
     
     % How do we get the initial o and oe ?
     % For the moment, let's suppose it is random
-    o = rand(P,2);
+    o = y(:, :, 2) - y(:, :, 1) + normrnd(mu_w, sigma_obs, P, 2);  
     norm_o = sqrt(o(:,1).^2 + o(:,2).^2);
     o(:,1) = o(:,1) ./ norm_o;
     o(:,2) = o(:,2) ./ norm_o;
-    oe = rand(1,2);
+    oe = ye(:, :, 2) - ye(:, :, 1) + normrnd(mu_w, sigma_obs, 1, 2);
     norm_oe = sqrt(oe(:,1).^2 + oe(:,2).^2);
     oe(:,1) = oe(:,1) ./ norm_oe;
     oe(:,2) = oe(:,2) ./ norm_oe;
@@ -52,9 +52,9 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
     t = 0;
     for i = 1:Np
         for fish = 1:P
-            X(fish,:,i,t +1) = y(fish,:,i);
+            X(fish,:,i,t +1) = y(fish,:,1) + normrnd(mu_w, sigma_obs, 1, 2);
         end
-        Xe(1,:,i,t +1) = ye(1,:,i);
+        Xe(1,:,i,t +1) = ye(1,:,1) + normrnd(mu_w, sigma_obs, 1, 2);
     end
     
     

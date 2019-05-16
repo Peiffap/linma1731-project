@@ -18,18 +18,6 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
     % Initial position guess
     % We compute the sample mean of all the particles we have
     
-%     init_pos = zeros(P,2);
-%     % y : Px2xN
-%     % ye: 1x2xN
-%     for i = 1:P
-%         init_pos(i,1) = sum(y(i,1,:))/N;
-%         init_pos(i,2) = sum(y(i,2,:))/N;
-%     end
-%     
-%     init_posee = zeros(1,2);
-%     init_posee(1,1) = sum(ye(1,:,1))/N;
-%     init_posee(1,2) = sum(ye(1,:,2))/N;
-    
     % Particles will be stores in X
     X  = zeros(P,2,Np,N +1);
     Xe = zeros(1,2,Np,N +1);
