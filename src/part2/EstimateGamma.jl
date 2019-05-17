@@ -60,8 +60,7 @@ end
 Computes the maximum likelihood estimators of the distribution of speeds
 while taking as argument the vector of 2D positions.
 """
-function EstimateGamma(obs::Array{Float64, 2})
-	ts = 0.1 # Time step [s].
+function EstimateGamma(obs::Array{Float64, 2}; ts = 0.1)
 	_, n = size(obs)
 
 	v = .√((obs[1, 2:n] - obs[1, 1:n-1]).^2 + (obs[2, 2:n] - obs[2, 1:n-1]).^2) / ts # Compute the speeds.

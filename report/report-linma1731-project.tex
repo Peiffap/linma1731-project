@@ -444,7 +444,14 @@ Finally, the matrix was centered, and its spectral norm was computed.
 	\label{fig:CRLB}
 \end{figure}
 
-\chapter{Part II - Particle filtering}
+\part{Particle filtering}
+
+\begin{figure}[!htbp]
+	\centering
+	\scalebox{0.75}{\input{img/mse_np.tex}}
+	\caption{}
+\end{figure}
+
 \section{Estimation of the speed}
 Recall that the speed of the fished follows a Gamma distribution (\( V_i \sim \Gamma(k,s) \)). Here, we get noisy measurements of the position of a fish through time. Once we have extracted a noisy approximation of the speed from this set of data, we can repeat what we explained earlier in the document (\ref{sec:est_code}). Hence, we still have to compute these approximations. To do so, some basic physical algebra does the work. From \(x(i)\), the noisy measurement of the position at time $t=i$, we can get \(v^i\), the noisy approximation of the speed of the fish at time $t=i$, by
 \begin{align}

@@ -1,0 +1,24 @@
+\begin{tikzpicture}
+\begin{axis}[grid={major}, title={\Large Influence of $N_\textnormal{p}$ on the mean squared error}, xlabel={\footnotesize Number of particles per fish, $N_\textnormal{p}$}, ylabel={\footnotesize Mean squared error}, xmode={log}]
+    \addplot+[blue, only marks, error bars/.cd, y dir=both,y explicit,
+    error bar style={line width=1pt},
+    error mark options={
+        rotate=90,
+        blue,
+        mark size=4pt,
+        line width=1pt
+    }]
+        table[row sep={\\}, y error=error]
+        {
+            x  y  error  \\
+            10.0  0.5192753529155981  0.08850559891377986  \\
+            20.0  0.4607943776815425  0.07646853666397808  \\
+            50.0  0.4473671532547745  0.10473951946609003  \\
+            100.0  0.42820141382126  0.10515089063889548  \\
+            200.0  0.42366960556473177  0.07045072501264958  \\
+            500.0  0.4235720847166806  0.08981536674808899  \\
+            1000.0  0.4473506027359681  0.11559196851775393  \\
+        }
+        ;
+\end{axis}
+\end{tikzpicture}

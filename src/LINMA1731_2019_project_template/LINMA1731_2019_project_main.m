@@ -9,14 +9,14 @@
 %  fish and of their enemy.
 %
 % Requirements:
-%  * EstimateGamma: [to implement by yourself using functions from part 1 
+%  * EstimateGamma: [to implement by yourself using functions from part 1
 %    of the project!] function that estimates parameters k and s of a Gamma
-%    distribution from noisy measurements 'noisy_observations'. 
+%    distribution from noisy measurements 'noisy_observations'.
 %  * StateUpdate: function provided by the TA and called by
 %    GenerateObservations. Useful to update the state vector of the fish and
 %    the enemy. It implements the state model found in [1].
-%  * GenerateObservations: function provided by the TA and calling 
-%    recursively StateUpdate and adding Gaussian white noise of variance  
+%  * GenerateObservations: function provided by the TA and calling
+%    recursively StateUpdate and adding Gaussian white noise of variance
 %    sigma_obs^2 to the position and the orientation vectors.
 %  * ParticleFilter: [to implement by yourself] function tracking the fish
 %    and the enemy using a particle filter.
@@ -24,7 +24,7 @@
 %
 % Reference:
 %
-%  [1] Huth, A., and Wissel, C. The Simulation of the Movement of Fish 
+%  [1] Huth, A., and Wissel, C. The Simulation of the Movement of Fish
 %      Schools. Journal of Theoretical Biology 156, 3 (1992), 365???385.
 %
 % Authors: Charles Wiame and Stephanie Guerit.
@@ -42,12 +42,12 @@ param.P         = 3;     % Number of fish
 param.N         = 100;   % Number of time snapshots
 param.Np        = 500;    % Number of particles per animal
 param.ts        = 0.1;    % Time-step [s]
-param.sigma_obs = 0.2;    % Std of the observation noise on fish and 
+param.sigma_obs = 0.2;    % Std of the observation noise on fish and
                           % enemy trajectories
-                          
+
 disp = true;              % Display trajectories
-                          
-% Estimation of the parameters of the gamma distribution k and s from noisy 
+
+% Estimation of the parameters of the gamma distribution k and s from noisy
 % measurements of the trajectory of one fish ------------------------------
 
 load noisy_observations.mat
