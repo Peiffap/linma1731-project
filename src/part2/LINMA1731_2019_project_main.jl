@@ -36,6 +36,29 @@ Requirements
   * ParticleFilter: [to implement by yourself] function tracking the fish
     and the enemy using a particle filter.
 
+Supplementary information about the port
+----------------------------------------
+This main function was translated from Matlab to Julia
+in order to fit with the rest of the tools of the project.
+However, in order to avoid having to risk introducing errors in the code
+such as typo's while translating StateUpdate and GenerateObservations,
+it simply calls them in the environment provided by MATLAB.jl.
+This method however causes quite a bit of overhead,
+mainly when converting matrices from Julia to Matlab.
+For this reason, the filter itself was implemented in Matlab
+(FYI, StateUpdate is called too often for this,
+with no easy way to avoid matrix conversion).
+
+This main function also contains the code for the simple display activity
+(which was the default in its Matlab counterpart),
+as well as the save_plot function which allows us
+to save the data for our plots, made using a separate .jl file.
+It is STRONLGY advised to leave the plot variable to false.
+
+If you have any questions regarding the translation of the code,
+please direct them to
+    gilles.peiffer@student.uclouvain.be
+and I'll be happy to answer them :).
 
 Reference
 ---------
@@ -63,8 +86,8 @@ struct Param
     s::Float64          # Scale parameter
 end
 
-disp  = false  # Display trajectories.
-plot  = true   # Generate arrays needed for plotting (SLOW!)
+disp  = true   # Display trajectories.
+plot  = false  # Generate arrays needed for plotting (SLOW!)
 w     = 20.0
 P     = 3
 N     = 100
@@ -80,27 +103,13 @@ noisy_observations = get_variable(data, "noisy_observations") # Put in array.
 close(data) # Close MAT file.
 k̂, ŝ = EstimateGamma(noisy_observations) # TO DEFINE! (keep the same inputs/outputs!)
 
-param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
-
-# Generate observations --------------------------------------------------------
-mat"""
-[$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
-"""
-
-function test()
-    @time mat"""
-    ParticleFilter($y, $ye, $param);
-    """
-end
+param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ
 
 if disp
-    # Particle filtering -------------------------------------------------------
+    # Generate observations, particle filtering and display --------------------
     mat"""
+    [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
     $x_est, $xe_est = ParticleFilter($y, $ye, $param);
-    """
-
-    # Example to display the trajectories. Do not hesitate to adapt it :-)
-    mat"""
     for i = 1:$param.N
         cla; hold on
         quiver($x(:,1,i),$x(:,2,i),$o(:,1,i),$o(:,2,i),0,'Marker','o');
@@ -122,6 +131,11 @@ if disp
     MSE_example = (1. /(param.N * param.P) * sum(sum(.√(sum((x - x_est).^2, dims=2)), dims=1), dims=3))[1]
 end
 
+"""
+    save_plot()
+
+Simple saving utility for all the data used in the plots.
+"""
 function save_plot()
     """
         MSE(x, x̂)
@@ -135,8 +149,8 @@ function save_plot()
     M = 15  # Number of repetitions.
     index = 1
 
-    Np_vec    = [1 2 5 10 20 50 100 150 200 250]     # Values of Np.
-    t_s_vec   = [0.01 0.05 0.1 0.2 0.5 1.0 2.0 5.0]  # Values of t_s.
+    Np_vec    = [1 2 5 10 20 50 100 150 200 250]      # Values of Np.
+    t_s_vec   = [0.01 0.05 0.1 0.2 0.5 1.0 2.0 5.0]   # Values of t_s.
     σ_obs_vec = [0.001 0.01 0.1 0.2 0.5 1.0 2.0 5.0]  # Values of σ_obs.
 
     MSE_Np    = zeros(length(Np_vec), M)    # MSE for different values of Np.
@@ -147,6 +161,7 @@ function save_plot()
     MSE_t_s_y   = zeros(length(t_s_vec), M)   # MSE of observations.
     MSE_σ_obs_y = zeros(length(σ_obs_vec), M) # MSE of observations.
 
+    # Compute the MSE for the values of Np.
     for Np ∈ Np_vec
         param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
         for m ∈ 1:M
@@ -157,8 +172,8 @@ function save_plot()
             [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
             """
 
-            MSE_Np[index, m] = MSE(x, x_est)
-            MSE_Np_y[index, m] = MSE(x, y)
+            MSE_Np[index, m] = MSE(x, x_est)  # MSE with filtered estimate.
+            MSE_Np_y[index, m] = MSE(x, y)    # MSE with observations.
         end
         index += 1
     end
@@ -168,6 +183,7 @@ function save_plot()
 
     index = 1
 
+    # Compute the MSE for the values of t_s.
     for t_s ∈ t_s_vec
         param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
         for m ∈ 1:M
@@ -178,8 +194,8 @@ function save_plot()
             [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
             """
 
-            MSE_t_s[index, m] = MSE(x, x_est)
-            MSE_t_s_y[index, m] = MSE(x, y)
+            MSE_t_s[index, m] = MSE(x, x_est)  # MSE with filtered estimate.
+            MSE_t_s_y[index, m] = MSE(x, y)    # MSE with observations.
         end
         index += 1
     end
@@ -189,6 +205,7 @@ function save_plot()
 
     index = 1
 
+    # Compute the MSE for the values of σ_obs.
     for σ_obs ∈ σ_obs_vec
         param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
         for m ∈ 1:M
@@ -199,8 +216,8 @@ function save_plot()
             [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
             """
 
-            MSE_σ_obs[index, m] = MSE(x, x_est)
-            MSE_σ_obs_y[index, m] = MSE(x, y)
+            MSE_σ_obs[index, m] = MSE(x, x_est)  # MSE with filtered estimate.
+            MSE_σ_obs_y[index, m] = MSE(x, y)    # MSE with observations.
         end
         index += 1
     end

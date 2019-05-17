@@ -62,7 +62,7 @@ function EstimateGamma(obs::Array{Float64, 2})
 	ts = 0.1 # Time step [s].
 	_, n = size(obs)
 
-	v = .√((obs[1, 2:n] - obs[1, 1:n-1]).^2 + (obs[2, 2:n] - obs[2, 1:n-1]).^2) / ts # Compute the speeds.
+	v = .√((obs[1, 2:n] - obs[1, 1:n-1]).^2 + (obs[2, 2:n] - obs[2, 1:n-1]).^2) / ts # Compute the speeds as explained in the report.
 
 	return ml(v)
 end
