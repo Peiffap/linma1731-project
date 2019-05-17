@@ -472,7 +472,7 @@ with \(\bm{n}_p(i) \sim \mathcal{N}(0, \sigma^2_{\textnormal{obs}})\) an additiv
 Using the estimation techniques of Section~\ref{sec:joint}, one can get estimators of the two parameters of the Gamma distribution of the speed, \(\hat{k}\) and \(\hat{s}\), based on the observed speeds.
 The values found with this method are \(\hat{k} = 3.9541\) and \(\hat{s} = 0.3028\).
 
-We can the that the zero-mean white noise has no effect on our estimators. Indeed, as shown in \eqref{eq:speed}, the white-noise from time \(i+1\) is "cancelled" with the white-noise from time \(i\). We hence subtract the bias (which follows the same distribution) of two biased measurements of the position, and it is then "cancelled".
+We can see that the zero-mean white noise seems to have no effect on our estimators of the speed. Indeed, as shown in \eqref{eq:speed}, the white noise at time \(t+1\) is subtracted by the white noise at time \(t\); and both have the same distribution. On average, the noise is then cancelled, and the measurements we get for the speed tends to be unbiased.
 
 \section{Sequential Monte Carlo method}
 \label{sec:mcfilter}
@@ -483,12 +483,12 @@ as explained in \cite{liujs, anuj}.
 The SMC method does not require us to compute those samples at each time step.
 The following notations will be used: \(\pdf(x_t \mid y_1, \ldots ,y_t)\) is the posterior density function at time $t$, and \(x_t^i\) is a sample from this posterior density.
 We also define the sample set \(\sset_t = \{x_t^i\}\), for \(i = 1,2,\ldots,\np\).
-Our goal is to use the observations in \(\sset_t\) and the noisy measurements of the position, \(y_{t+1}^p\) to compute the sample set \(\sset_{t+1}\).
+Our goal is to use the observations in \(\sset_t\) and the noisy measurements of the position, \(y_{t+1}\) to compute the sample set \(\sset_{t+1}\).
 After doing so, we first create the new sample set then correct its values using the noisy measurements.
 
 \begin{step}[Initialization]
 	When one first calls the function, the initial sample set \(\sset_1\) is empty.
-	It is then filled using noisy observations \(y_1^p\), together with an additive zero-mean white-noise for each particle.
+	It is then filled using noisy observations \(y_1\), together with an additive zero-mean white-noise for each particle.
 	This intial guess allows us to start from the only approximation of the position we know (that is, its observed value).
 	To compute the initial orientation of the \(p\)th fish, we use again the noisy measurements from \(y_2^p\) and \(y_1^p\). Throughout the computation, we keep in memory all the sample sets, for each time step, and for each fish and predator. Since we work in a subset of \(\mathbb{R}^2\), each sample \(x_{t}^i\) is a 2-dimensional vector, that is: \(x_{t}^i = \begin{pmatrix}
 	\xi & \upsilon
