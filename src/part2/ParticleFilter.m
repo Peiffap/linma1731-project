@@ -48,43 +48,19 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
         % Prediction step.
         % In order to improve performance, we compute the means,
         % and run the simulations with the meaned values.
-        meaned = zeros(P,2);
-        for fish = 1:P
-            meaned(fish,1) = mean(X(fish,1,:,t+1));
-            meaned(fish,2) = mean(X(fish,2,:,t+1));
-        end
-        meanede = zeros(1,2);
-        meanede(1,1) = mean(Xe(1,1,:,t+1));
-        meanede(1,2) = mean(Xe(1,2,:,t+1));
-
-        meano = zeros(fish, 2, Np);
-        meanoe = zeros(1, 2, Np);
-
         for i = 1:Np
-            % Compute the next state for
-            [next_x,next_o,next_xe,next_oe] = StateUpdate(X(:,:,i,t +1),o,Xe(1,:,i,t +1),oe,ts,k,s,w, meaned, meanede);
-            meano(:,:,i) = next_o;
-            Xtilde(:,:,i,t+1 +1) = next_x;
-            
-            meanoe(1,:,i) = next_oe;
-            Xtildee(1,:,i, t+1 +1) = next_xe;
+        % Compute the next state for
+        [next_x,next_o,next_xe,next_oe] = StateUpdate(X(:,:,i,t +1),o,Xe(1,:,i,t +1),oe,ts,k,s,w);
+        o = next_o;
+        Xtilde(:,:,i,t+1 +1) = next_x;
+
+        oe = next_oe;
+        Xtildee(1,:,i, t+1 +1) = next_xe;
         end
-        for fish = 1:P
-            o(fish,1) = mean(meano(fish,1,:));
-            o(fish,2) = mean(meano(fish,2,:));
-            norm_o = sqrt(o(:,1).^2 + o(:,2).^2);
-            o(:,1) = o(:,1) ./ norm_o;
-            o(:,2) = o(:,2) ./ norm_o;
-        end
-        oe(1,1) = mean(meanoe(1,1,:));
-        oe(1,2) = mean(meanoe(1,2,:));
-        norm_oe = sqrt(oe(:,1).^2 + oe(:,2).^2);
-        oe(:,1) = oe(:,1) ./ norm_oe;
-        oe(:,2) = oe(:,2) ./ norm_oe;
 
         % Correction step.
         % Compute the weights for resampling.
-        weights  = zeros(P,1,Np);
+        weights  = zeros(P,2,Np);
         weightse = zeros(1,2,Np);
         for i=1:Np
             for fish = 1:P
@@ -128,7 +104,7 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
                 X(fish,2,i,t+1 +1) = Xtilde(fish,2,ind_sample(fish,i,2),t+1 +1);
             end
             Xe(1,1,i,t+1 +1) = Xtildee(1,1,ind_samplee(1,i,1),t+1 +1);
-            Xe(1,2,i,t+1 +1) = Xtildee(1,2,ind_samplee(1,i,1),t+1 +1);
+            Xe(1,2,i,t+1 +1) = Xtildee(1,2,ind_samplee(1,i,2),t+1 +1);
         end
     end
 
