@@ -21,17 +21,22 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
     % Predictions are stored in Xtilde(e).
     Xtilde  = zeros(P,2,Np,N +1);
     Xtildee = zeros(1,2,Np,N +1);
+    % Orientation for each particle
+    o  = zeros(P,2,Np);
+    oe = zeros(1,2,Np);
 
     % The initial orientation is computed as the difference between the first two observations, to which we add some noise.
     % This is a heuristic we found works pretty well.
-    o = y(:, :, 2) - y(:, :, 1) + normrnd(mu_w, sigma_obs, P, 2);
-    norm_o = sqrt(o(:,1).^2 + o(:,2).^2);
-    o(:,1) = o(:,1) ./ norm_o;
-    o(:,2) = o(:,2) ./ norm_o;
-    oe = ye(:, :, 2) - ye(:, :, 1) + normrnd(mu_w, sigma_obs, 1, 2);
-    norm_oe = sqrt(oe(:,1).^2 + oe(:,2).^2);
-    oe(:,1) = oe(:,1) ./ norm_oe;
-    oe(:,2) = oe(:,2) ./ norm_oe;
+    for i = 1:Np
+        o(:,:,i) = y(:, :, 2) - y(:, :, 1) + normrnd(mu_w, sigma_obs, P, 2);
+        norm_o = sqrt(o(:,1).^2 + o(:,2).^2);
+        o(:,1,i) = o(:,1) ./ norm_o;
+        o(:,2,i) = o(:,2) ./ norm_o;
+        oe(1,:,i) = ye(:, :, 2) - ye(:, :, 1) + normrnd(mu_w, sigma_obs, 1, 2);
+        norm_oe = sqrt(oe(:,1).^2 + oe(:,2).^2);
+        oe(1,1,i) = oe(:,1) ./ norm_oe;
+        oe(1,2,i) = oe(:,2) ./ norm_oe;
+    end
 
     % The initial position is guessed by adding a random noise to the observations.
     t = 0;
@@ -50,11 +55,11 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
         % and run the simulations with the meaned values.
         for i = 1:Np
         % Compute the next state for
-        [next_x,next_o,next_xe,next_oe] = StateUpdate(X(:,:,i,t +1),o,Xe(1,:,i,t +1),oe,ts,k,s,w);
-        o = next_o;
+        [next_x,next_o,next_xe,next_oe] = StateUpdate(X(:,:,i,t +1),o(:,:,i),Xe(1,:,i,t +1),oe(:,:,i),ts,k,s,w);
+        o(:,:,i) = next_o;
         Xtilde(:,:,i,t+1 +1) = next_x;
 
-        oe = next_oe;
+        oe(:,:,i) = next_oe;
         Xtildee(1,:,i, t+1 +1) = next_xe;
         end
 
