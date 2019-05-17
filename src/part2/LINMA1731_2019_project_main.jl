@@ -78,7 +78,6 @@ t_s   = 0.1
 data = MatFile("noisy_observations.mat") # Open MAT file and return handle.
 noisy_observations = get_variable(data, "noisy_observations") # Put in array.
 close(data) # Close MAT file.
-
 k̂, ŝ = EstimateGamma(noisy_observations) # TO DEFINE! (keep the same inputs/outputs!)
 
 param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
