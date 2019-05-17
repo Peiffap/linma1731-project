@@ -459,6 +459,7 @@ More precisely, a sequential Monte Carlo method is used to extract the real posi
 In order to do this, one can play with various parameters, such as the number of fish, the number of particles per fish in the simulation, the time step between observations or the standard deviation of the noise which is added to the position to obtain the observations.
 
 \section{Estimation of the parameters from noisy measurements}
+\label{sec:speed}
 Recall that the speed of the fish follows a Gamma distribution (\(V_i \sim \Gamma(k, s)\)).
 Here, one gets noisy observations of the position of a fish at given instants in time.
 It is rather straightforward to transform a noisy observation of the speed from these positions measurement, knowing the sampling period \(\ts\).
@@ -530,17 +531,18 @@ One can get these approximations, for time \(t\) and fish \(p\), by computing th
 \end{step}
 
 \section{Mean squared error analysis}
+\label{sec:mseanalysis}
 Using the particle filter of Section~\ref{sec:mcfilter}, one can perform several experiments in order to determine its robustness and dependance on various parameters of the model.
 In order to quantify this, we use the mean square error, defined as
 \begin{align}
 E_{\textnormal{MSE}} = \frac{1}{NP} \sum_{p=1}^P \sum_{i=1}^N \norm{\bm{x}_p(i) - \hat{\bm{x}}_p(i)}_{2}^2\,.
 \end{align}
 Experiments were conducted for different values of three parameters.
-The default values were \(w = 20\), \(P = 3\), \(N = 100\),  \(\np = 200\), \(\ts = 0.1\) and \(\sigma_{\textnormal{obs}} = 0.2\).
-All experiments were repeated \(M = 100\) times.
+The default values were \(w = 20\), \(P = 3\), \(N = 100\),  \(\np = 100\), \(\ts = 0.1\) and \(\sigma_{\textnormal{obs}} = 0.2\).
+All experiments were repeated \(M = 15\) times.
 
 First, the effect of varying the number of particles per fish was studied.
-Simulations were run with \(\np = 10, 20, 50, 100, 200, 500, 1000\).
+Simulations were run with \(\np = 1, 2, 5, 10, 20, 50, 100, 150, 200, 250\).
 The results are shown on Figure~\ref{fig:Np}.
 \begin{figure}[!htbp]
 	\centering
@@ -552,7 +554,7 @@ The figure shows that the mean squared error barely depends on the value of \(\n
 We can also observe that the mean squared error resulting from simply passing the observed positions as estimates is lower than the error with the particle filter.
 
 Next, we studied the influence of the sampling period \(\ts\).
-Simulations were run with \(\ts = 0.05, 0.1, 0.2, 0.5, 1, 2, 5\).
+Simulations were run with \(\ts = 0.01, 0.05, 0.1, 0.2, 0.5, 1, 2, 5\).
 The results are shown on Figure~\ref{fig:t_s}.
 \begin{figure}[!htbp]
 	\centering
@@ -565,7 +567,7 @@ A sampling period of \(\ts = \SI{0.2}{\second}\) is the maximum acceptable value
 Again, we observe that simply passing the positional observations as estimated positions yields better results than using the conventional filter.
 
 Finally, the last parameter whose influence was examined is the standard deviation on the observed values, \(\sigma_\textnormal{obs}\).
-Simulations were run with \(\sigma_{\textnormal{obs}} = 0.01, 0.1, 0.2, 0.5, 1, 2, 5\).
+Simulations were run with \(\sigma_{\textnormal{obs}} = 0.001, 0.01, 0.1, 0.2, 0.5, 1, 2, 5\).
 The results are shown on Figure~\ref{fig:sigma_obs}.
 \begin{figure}[!htbp]
 	\centering
@@ -573,6 +575,10 @@ The results are shown on Figure~\ref{fig:sigma_obs}.
 	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\sigma_\textnormal{obs}\).}
 	\label{fig:sigma_obs}
 \end{figure}
+
+\section{Theoretical improvements for the filter}
+\label{sec:improvements}
+
 \section{Conclusion}
 In Section~\ref{sec:s_est}, we looked at maximum likelihood estimation for the scale parameter of a Gamma distribution, \(s\).
 We found the result to be \(\hat{s}_{\textnormal{ML}} = \frac{\widebar{V}}{k}\) in \eqref{eq:mlestimator}.
@@ -581,7 +587,12 @@ After establishing this, in Section~\ref{sec:joint}, we looked into estimating b
 This led us to find that \(\hat{k}_{\textnormal{ML}}\) is the solution of \eqref{eq:mlk}.
 This estimator has no closed form, hence in Section~\ref{sec:est_code} we turned to numerical methods to estimate it; comparing the maximum likelihood estimators with the method of moments estimators showed that both are unbiased (for both parameters), with the former generally having lower variance, while the latter can be useful as an initial guess for the maximum likelihood estimator.
 Section~\ref{sec:fisher}, together with Appendix~\ref{app:fisher_information}, details an analytical derivation of the bound given by the Cramér--Rao inequality of Theorem~\ref{theo:CR}.
-Finally, in Section~\ref{sec:ratio}, empirical evidence of the efficiency of the maximum likelihood estimator was found.
+The simulation in Section~\ref{sec:ratio} showed empirical evidence of the efficiency of the maximum likelihood estimator.
+
+In Section~\ref{sec:speed}, we established how to extract speed measurements from noisy observations of a fish's position, then applied the estimation techniques defined previously to parameterize this speed as a gamma-distributed random variable.
+Section~\ref{sec:mcfilter} explains the theoretical base for particle filters, and links this to our practical implementation for this particular project.
+Using this particular implementation, we were able to provide a simulation using both Matlab and Julia, whose results are summarized, interpreted and discussed in Section~\ref{sec:mseanalysis}.
+Finally, in Section~\ref{sec:improvements}, we reflected on the shortcomings of the current implementation as pointed out in the previous section, and suggested an improved version of the SMC method.
 
 \clearpage
 \appendix
