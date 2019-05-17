@@ -9,10 +9,43 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
 %  the predator, based on the noisy measurements y (for the fish) and ye
 %  (for the predator).
 %
+% Inputs:
+%  * y: matrix of size Px2xN containing the noisy positions of the fish at
+%        every time snapshot.
+%  * ye: matrix of size 1x2xN containing the noisy positions of the enemy at
+%        every time snapshot.
+%  * param: Matlab structure containing the following fields:
+%    - w:         scalar > 0. parameter of the size of the FOV (coordinates
+%                 of the  corners of the rectangle: (-w,-w),(-w,w),(w,-w),(w,w)).
+%    - P:         scalar (integer) > 0. Number of fish.
+%    - N:         scalar (integer) > 0. Number of time snapshots.
+%    - ts:        scalar > 0. Time-step [s].
+%    - k:         scalar > 0. Shape parameter of the Gamma distribution for the fish speed.
+%    - s:         scalar > 0. Scale parameter of the Gamma distribution for the fish speed.
+%    - sigma_obs: scalar > 0. Std of the observation noise on fish and enemy/predator trajectories
+%
+% Outputs:
+%  * x_est:  matrix of size Px2xN containing the approximate positions of the fish at
+%        every time snapshot.
+%  * xe_est: matrix of size 1x2xN containing the approximate positions of the enemy/predator at
+%        every time snapshot.
+%
+% Requirements:
+%  * StateUpdate: function provided by the TA and called by
+%    GenerateObservations. Useful to update the state vector of the fish and
+%    the enemy. It implements the state model found in [1].
+%
+% Reference:
+%
+%  [1] Huth, A., and Wissel, C. The Simulation of the Movement of Fish
+%      Schools. Journal of Theoretical Biology 156, 3 (1992), 365--385.
+%
 % Authors: Louis Navarre and Gilles Peiffer.
 % Creation: 07-May-2019. Last update: 17-May-2019.
 % Developed: R2017a
 
+
+% Parameters
 w = param.w;         % Parameter of the size of the FOV.
 P = param.P;         % Number of fish.
 N = param.N;         % Number of time snapshots.
