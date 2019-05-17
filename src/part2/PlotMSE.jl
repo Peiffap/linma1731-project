@@ -2,16 +2,92 @@ using JLD2
 using PGFPlotsX
 using LaTeXStrings
 
-@load "MSEArray.jld2" MSE_Np MSE_t_s MSE_σ_obs
+@load "data/np.jld2" MSE_Np Np_vec
+# @load "data/t_s.jld2" MSE_t_s t_s_vec
+# @load "data/sigma_obs.jld2" MSE_σ_obs σ_obs_vec
 
-@pgf p_ratio = Axis(
+M = 100                        # Number of repetitions.
+Np_len = length(Np_vec)        # Number of tested values for Np.
+# t_s_len = length(t_s_vec)      # Number of tested values for t_s.
+# σ_obs_len = length(σ_obs_vec)  # Number of tested values for σ_obs.
+
+Np_mean    = mean(MSE_Np[:, i] for i ∈ 1:M)
+# t_s_mean   = mean(MSE_t_s[:, i] for i ∈ 1:M)
+# σ_obs_mean = mean(MSE_σ_obs[:, i] for i ∈ 1:M)
+
+Np_std     = zeros(Np_len)
+# t_s_std    = zeros(t_s_len)
+# σ_obs_std  = zeros(σ_obs_len)
+
+for i ∈ 1:Np_len
+    Np_std[i]    = std(MSE_Np[i, :])
+end
+
+"""
+for i ∈ 1:t_s_len
+    t_s_std[i]   = std(MSE_t_s[i, :])
+end
+
+for i ∈ 1:σ_obs_len
+    σ_obs_std[i] = std(MSE_σ_obs[i, :])
+end
+"""
+
+@pgf p_mse_np = Axis(
 {
     grid="major",
-    title="\\Large Mean square error",
-    xlabel=L"\footnotesize Number of particles per fish, \(N_\textnormal{p}\)",
-    ylabel=L"\footnotesize Mean square error $",
+    title=L"\Large Influence of $N_\textnormal{p}$ on the mean squared error",
+    xlabel=L"\footnotesize Number of particles per fish, $N_\textnormal{p}$",
+    ylabel="\\footnotesize Mean squared error",
     xmode="log"
 },
-Plot(Table([:x => N, :y => ratio]))
+PlotInc({"blue, only marks, error bars/.cd, y dir=both,y explicit,
+error bar style={line width=1pt},
+error mark options={
+    rotate=90,
+    blue,
+    mark size=4pt,
+    line width=1pt
+}"}, Table({"y error=error"}, [:x => Np_vec', :y => Np_mean, :error => Np_std])),
 )
-pgfsave("ratio.tex", p_ratio, include_preamble = false)
+pgfsave("mse_np.tex", p_mse_np, include_preamble = false)
+
+"""
+@pgf p_mse_t_s = Axis(
+{
+    grid="major",
+    title=L"\Large Influence of $t_\textnormal{s}$ on the mean squared error",
+    xlabel=L"\footnotesize Number of particles per fish, $N_\textnormal{p}$",
+    ylabel="\\footnotesize Mean squared error",
+    xmode="log"
+},
+PlotInc({"blue, only marks, error bars/.cd, y dir=both,y explicit,
+error bar style={line width=1pt},
+error mark options={
+    rotate=90,
+    blue,
+    mark size=4pt,
+    line width=1pt
+}"}, Table({"y error=error"}, [:x => t_s_vec', :y => t_s_mean, :error => t_s_std])),
+)
+pgfsave("mse_t_s.tex", p_mse_t_s, include_preamble = false)
+
+@pgf p_mse_σ_obs = Axis(
+{
+    grid="major",
+    title=L"\Large Influence of $\sigma_\textnormal{obs}$ on the mean squared error",
+    xlabel=L"\footnotesize Number of particles per fish, $N_\textnormal{p}$",
+    ylabel="\\footnotesize Mean squared error",
+    xmode="log"
+},
+PlotInc({"blue, only marks, error bars/.cd, y dir=both,y explicit,
+error bar style={line width=1pt},
+error mark options={
+    rotate=90,
+    blue,
+    mark size=4pt,
+    line width=1pt
+}"}, Table({"y error=error"}, [:x => σ_obs_vec', :y => σ_obs_mean, :error => σ_obs_std])),
+)
+pgfsave("mse_sigma_obs.tex", p_mse_σ_obs, include_preamble = false)
+"""
