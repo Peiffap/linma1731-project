@@ -53,7 +53,7 @@ Np = param.Np;       % Number of particles per animal.
 ts = param.ts;       % Time-step [s].
 sigma_obs = param.sigma_obs; % Sd and mean of the observation noise
                              % on fish and enemy trajectories.
-mu_w = 0;                    %
+mu_w = 0;                    % Mean of the noise.
 k = param.k;         % Shape parameter.
 s = param.s;         % Scale parameter
 d_y = 1;  % Dimension of output space; must be 1 in this script.

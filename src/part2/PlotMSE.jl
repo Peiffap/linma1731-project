@@ -9,7 +9,7 @@ using LaTeXStrings
 @load "data/sigma_obs.jld2" MSE_σ_obs σ_obs_vec
 @load "data/sigma_obs_y.jld2" MSE_σ_obs_y
 
-M = 100                        # Number of repetitions.
+M = 15                         # Number of repetitions.
 Np_len = length(Np_vec)        # Number of tested values for Np.
 t_s_len = length(t_s_vec)      # Number of tested values for t_s.
 σ_obs_len = length(σ_obs_vec)  # Number of tested values for σ_obs.
@@ -50,7 +50,7 @@ end
     xlabel=L"\footnotesize Number of particles per fish, $N_\textnormal{p}$",
     ylabel="\\footnotesize Mean squared error",
     xmode="log",
-    "legend pos=outer north east",
+    "legend pos=north east",
 },
 PlotInc({"blue, error bars/.cd, y dir=both,y explicit,
 error bar style={line width=1pt},
@@ -68,7 +68,7 @@ error mark options={
     mark size=4pt,
     line width=1pt
 }"}, Table({"y error=error"}, [:x => Np_vec', :y => Np_y_mean, :error => Np_y_std])),
-Legend([L"$E_\textnormal{MSE}\big(\widebar{\hat{\bm{x}}}\big)$", L"$E_\textnormal{MSE}\big(\widebar{\bm{y}}\big)$"])
+Legend([L"$E_\textnormal{MSE}\big(\hat{\bm{x}}\big)$", L"$E_\textnormal{MSE}\big(\bm{y}\big)$"])
 )
 pgfsave("../../report/img/mse_np.tex", p_mse_np, include_preamble = false)
 
@@ -97,7 +97,7 @@ error mark options={
     mark size=4pt,
     line width=1pt
 }"}, Table({"y error=error"}, [:x => t_s_vec', :y => t_s_y_mean, :error => t_s_y_std])),
-Legend([L"$E_\textnormal{MSE}\big(\widebar{\hat{\bm{x}}}\big)$", L"$E_\textnormal{MSE}\big(\widebar{\bm{y}}\big)$"])
+Legend([L"$E_\textnormal{MSE}\big(\hat{\bm{x}}\big)$", L"$E_\textnormal{MSE}\big(\bm{y}\big)$"])
 )
 pgfsave("../../report/img/mse_t_s.tex", p_mse_t_s, include_preamble = false)
 
@@ -126,6 +126,6 @@ error mark options={
     mark size=4pt,
     line width=1pt
 }"}, Table({"y error=error"}, [:x => σ_obs_vec', :y => σ_obs_y_mean, :error => σ_obs_y_std])),
-Legend([L"$E_\textnormal{MSE}\big(\widebar{\hat{\bm{x}}}\big)$", L"$E_\textnormal{MSE}\big(\widebar{\bm{y}}\big)$"])
+Legend([L"$E_\textnormal{MSE}\big(\hat{\bm{x}}\big)$", L"$E_\textnormal{MSE}\big(\bm{y}\big)$"])
 )
 pgfsave("../../report/img/mse_sigma_obs.tex", p_mse_σ_obs, include_preamble = false)

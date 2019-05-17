@@ -1,5 +1,6 @@
 using JLD2
 
-@load "data/np.jld2" MSE_Np
+@load "data/t_s.jld2" MSE_t_s
 
-println(MSE_Np)
+println(MSE_t_s)
+println(maximum(MSE_t_s[1, :]))
