@@ -452,6 +452,13 @@ Recall that the speed of the fished follows a Gamma distribution (\( V_i \sim \G
 \end{align}
 With $t_s$ being the the sampling period, and $\textbf{n}_p \sim \mathcal{N}(0, \sigma_{obs})$ a white noise. As said before, using the function computed and explained earlier in the document, we can get approximations of the two parameters of the Gamma distribution of the speed, \((\hat{k}, \hat{s})\).
 
+\begin{figure}[!htbp]
+	\centering
+	\scalebox{1.}{\input{img/speed.tex}}
+	\caption{Histogram of the noisy measurements of the speed from the noisy data of the positions of a fish.}
+	\label{fig:speed}
+\end{figure}
+
 \section{Conclusion}
 In Section~\ref{sec:s_est}, we looked at maximum likelihood estimation for the scale parameter of a Gamma distribution, \(s\).
 We found the result to be \(\hat{s}_{\textnormal{ML}} = \frac{\widebar{V}}{k}\) in \eqref{eq:mlestimator}.
