@@ -451,7 +451,6 @@ Finally, the matrix was centered, and its spectral norm was computed.
 \end{figure}
 
 \part{Particle filtering}
-
 \section{Introduction}
 For the second part of the project, the task is to use noisy observations of the position of a fish in order to compute the parameters of the Gamma distribution governing its speed.
 With these parameters, a simulation is then completed which models the reaction and movement of the fish to a nearby predator.
@@ -532,7 +531,7 @@ E_{\textnormal{MSE}} = \frac{1}{NP} \sum_{p=1}^P \sum_{i=1}^N \norm{\bm{x}_p(i) 
 \end{align}
 Experiments were conducted for different values of three parameters.
 The default values were \(w = 20\), \(P = 3\), \(N = 100\),  \(\np = 100\), \(\ts = 0.1\) and \(\sigma_{\textnormal{obs}} = 0.2\).
-All experiments were repeated \(M = 15\) times.
+All experiments were repeated \(M = 15\) times, in order to get a decent amount of data.
 
 First, the effect of varying the number of particles per fish was studied.
 Simulations were run with \(\np = 1, 2, 5, 10, 20, 50, 100, 150, 200, 250\).
@@ -543,8 +542,7 @@ The results are shown on Figure~\ref{fig:Np}.
 	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\np\).}
 	\label{fig:Np}
 \end{figure}
-The figure shows that the mean squared error barely depends on the value of \(\np\), if the parameter is sufficiently big (\(\np \ge 10\) seems to work).
-We can also observe that the mean squared error resulting from simply passing the observed positions as estimates is lower than the error with the particle filter.
+
 
 Next, we studied the influence of the sampling period \(\ts\).
 Simulations were run with \(\ts = 0.01, 0.05, 0.1, 0.2, 0.5, 1, 2, 5\).
@@ -555,9 +553,7 @@ The results are shown on Figure~\ref{fig:t_s}.
 	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\ts\).}
 	\label{fig:t_s}
 \end{figure}
-In line with physical intuition, the larger the sampling period, the less accurate the results become.
-A sampling period of \(\ts = \SI{0.2}{\second}\) is the maximum acceptable value, with an average error around \(1\).
-Again, we observe that simply passing the positional observations as estimated positions yields better results than using the conventional filter.
+
 
 Finally, the last parameter whose influence was examined is the standard deviation on the observed values, \(\sigma_\textnormal{obs}\).
 Simulations were run with \(\sigma_{\textnormal{obs}} = 0.001, 0.01, 0.1, 0.2, 0.5, 1, 2, 5\).
