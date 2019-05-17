@@ -481,18 +481,18 @@ In this case, one must exlude a linear evolution, hence using a Kalman filter wo
 At each time step, we must generate a large number of samples from the posterior distribution, and use those samples to generate the next state,
 as explained in \cite{filter}.
 The SMC method does not require us to compute those samples at each time step.
-The following notations will be used \(\pdf(x_t \mid y_1, \ldots ,y_t)\) is the posterior density function at time $t$, and \(x_t^i\) is a sample from this posterior density.
-We can define the sample set: \(\sset_t = \{x_t^i\}\), for \(i = 1,2,\ldots,\np\).
+The following notations will be used: \(\pdf(x_t \mid y_1, \ldots ,y_t)\) is the posterior density function at time $t$, and \(x_t^i\) is a sample from this posterior density.
+We also define the sample set \(\sset_t = \{x_t^i\}\), for \(i = 1,2,\ldots,\np\).
 Our goal is to use the observations in \(\sset_t\) and the noisy measurements of the position, \(y_{t+1}^i\) to compute the sample set \(\sset_{t+1}\).
-After doing so, we can then first create the new sample set, and then correct those values using the noisy measurements.
+After doing so, we first create the new sample set then correct its values using the noisy measurements.
 
 \begin{step}[Initialization]
 	When one first calls the function, the initial sample set \(\sset_1\) is empty.
 	It is then filled using noisy observations \(y_1^i\), together with an additive zero-mean white-noise for each particle.
 	This intial guess allows us to start from the only approximation of the position we know (that is, its observed value).
-	To compute the initial orientation of the fish, we use again the noisy measurements from \(y_2^i\) and \(y_1^i\). Though all the computation, we keep in memory all the sample sets, for each time step, and for each fish and predator. Since we work in a 2-D space area, each sample \(x_{t}^i\) is a 2-D vector, that is: \(x_{t}^i = \begin{bmatrix}
-	x & y
-	\end{bmatrix}^{T}\).
+	To compute the initial orientation of the \(p\)th fish, we use again the noisy measurements from \(y_{p, 2}\) and \(y_{p, 1}\). Throughout the computation, we keep in memory all the sample sets, for each time step, and for each fish and predator. Since we work in a subset of \(\mathbb{R}^2\), each sample \(x_{t}^i\) is a 2-dimensional vector, that is: \(x_{t}^i = \begin{pmatrix}
+	\xi & \upsilon
+	\end{pmatrix}^{T}\).
 \end{step}
 
 \begin{step}[Prediction]
@@ -501,13 +501,6 @@ After doing so, we can then first create the new sample set, and then correct th
 	One can show that these last samples are samples from \(\pdf(x_{t+1} \mid y_1,\ldots,y_t)\). \cite{anuj ref 5}
 	
 	In our case, we use the \mintinline{matlab}{StateUpdate} function to generate the samples at time \(t+1\), which gives the state model update of the position.
-	
-	The basic idea comes from \eqref{eq:prediction}.
-	\begin{align}
-	\pdf(x_{t+1} \mid y_1, \ldots, y_t) &= \int_{x_t}  \pdf(x_{t+1} \mid y_1, \ldots, y_t) \pdf(x_t \mid y_1,\ldots,y_t) \dif x_t\,,
-	\label{eq:prediction}
-	\end{align}
-	Since \(x_t^i\) is a sample from \(\pdf(x_t \mid y_1, \ldots, y_t)\), we can use a sample from the conditional density \(\pdf(x_{t+1} \mid x_t^i)\).
 \end{step}
 
 \begin{step}[Correction]
