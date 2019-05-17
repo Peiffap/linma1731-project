@@ -1,0 +1,45 @@
+\begin{tikzpicture}
+\begin{axis}[grid={major}, title={\Large Influence of $\sigma_\textnormal{obs}$ on the mean squared error}, xlabel={\footnotesize Standard deviation of the noise on the observations, $\sigma_\textnormal{obs}$}, ylabel={\footnotesize Mean squared error}, xmode={log}, legend pos=north west]
+    \addplot+[blue, error bars/.cd, y dir=both,y explicit,
+    error bar style={line width=1pt},
+    error mark options={
+        rotate=90,
+        blue,
+        mark size=4pt,
+        line width=1pt
+    }]
+        table[row sep={\\}, y error=error]
+        {
+            x  y  error  \\
+            0.01  1.8609968907935548  0.9091808540691005  \\
+            0.1  0.648048004424502  0.15867374153652802  \\
+            0.2  0.4257990127833975  0.0896856474098547  \\
+            0.5  0.3630411863226414  0.023617297867061682  \\
+            1.0  0.7481662882658001  0.030026857130390775  \\
+            2.0  1.7773926986334947  0.06462240204028206  \\
+            5.0  5.267753125634107  0.16249257275197423  \\
+        }
+        ;
+    \addplot+[red, error bars/.cd, y dir=both,y explicit,
+    error bar style={line width=1pt},
+    error mark options={
+        rotate=90,
+        red,
+        mark size=4pt,
+        line width=1pt
+    }]
+        table[row sep={\\}, y error=error]
+        {
+            x  y  error  \\
+            0.01  0.01248029215491158  0.00038422065007394927  \\
+            0.1  0.12550600856089306  0.003733429821214018  \\
+            0.2  0.2509256974565311  0.00804859799343065  \\
+            0.5  0.6278783998829698  0.018681982890647736  \\
+            1.0  1.25161559968359  0.037350149390376786  \\
+            2.0  2.5228097929188085  0.07407879218692875  \\
+            5.0  6.266012706646439  0.18457933608046537  \\
+        }
+        ;
+    \legend{{$E_\textnormal{MSE}\big(\widebar{\hat{\bm{x}}}\big)$},{$E_\textnormal{MSE}\big(\widebar{\bm{y}}\big)$}}
+\end{axis}
+\end{tikzpicture}

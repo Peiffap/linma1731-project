@@ -1,6 +1,6 @@
 \begin{tikzpicture}
-\begin{axis}[grid={major}, title={\Large Influence of $N_\textnormal{p}$ on the mean squared error}, xlabel={\footnotesize Number of particles per fish, $N_\textnormal{p}$}, ylabel={\footnotesize Mean squared error}, xmode={log}]
-    \addplot+[blue, only marks, error bars/.cd, y dir=both,y explicit,
+\begin{axis}[grid={major}, title={\Large Influence of $N_\textnormal{p}$ on the mean squared error}, xlabel={\footnotesize Number of particles per fish, $N_\textnormal{p}$}, ylabel={\footnotesize Mean squared error}, xmode={log}, legend pos=outer north east]
+    \addplot+[blue, error bars/.cd, y dir=both,y explicit,
     error bar style={line width=1pt},
     error mark options={
         rotate=90,
@@ -20,5 +20,26 @@
             1000.0  0.4473506027359681  0.11559196851775393  \\
         }
         ;
+    \addplot+[red, error bars/.cd, y dir=both,y explicit,
+    error bar style={line width=1pt},
+    error mark options={
+        rotate=90,
+        red,
+        mark size=4pt,
+        line width=1pt
+    }]
+        table[row sep={\\}, y error=error]
+        {
+            x  y  error  \\
+            10.0  0.25036677012539404  0.007588236347315602  \\
+            20.0  0.24969007285700726  0.007484194616541007  \\
+            50.0  0.2493207827984284  0.008635454605341344  \\
+            100.0  0.2511740383618522  0.008955502747031467  \\
+            200.0  0.2512489581508033  0.008127243230831643  \\
+            500.0  0.25100978613159564  0.007477001992601876  \\
+            1000.0  0.2501891914166213  0.007379458495834837  \\
+        }
+        ;
+    \legend{{$E_\textnormal{MSE}\big(\widebar{\hat{\bm{x}}}\big)$},{$E_\textnormal{MSE}\big(\widebar{\bm{y}}\big)$}}
 \end{axis}
 \end{tikzpicture}

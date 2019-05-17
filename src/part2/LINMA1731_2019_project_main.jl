@@ -63,8 +63,8 @@ struct Param
     s::Float64          # Scale parameter
 end
 
-disp  = false  # Display trajectories.
-plot  = true   # Generate arrays needed for plotting (SLOW!)
+disp  = true  # Display trajectories.
+plot  = false  # Generate arrays needed for plotting (SLOW!)
 w     = 20.0
 P     = 3
 N     = 100
@@ -89,14 +89,14 @@ mat"""
 
 function test()
     @time mat"""
-    ParticleFilter($y, $ye, $param)
+    ParticleFilter($y, $ye, $param);
     """
 end
 
 if disp
     # Particle filtering -------------------------------------------------------
     mat"""
-    $x_est, $xe_est = ParticleFilter($y, $ye, $param)
+    $x_est, $xe_est = ParticleFilter($y, $ye, $param);
     """
 
     # Example to display the trajectories. Do not hesitate to adapt it :-)
@@ -143,24 +143,28 @@ function save_plot()
     MSE_t_s   = zeros(length(t_s_vec), M)   # MSE for different values of t_s.
     MSE_σ_obs = zeros(length(σ_obs_vec), M) # MSE for different values of σ_obs.
 
-    """
+    MSE_Np_y    = zeros(length(Np_vec), M)    # MSE of observations.
+    MSE_t_s_y   = zeros(length(t_s_vec), M)   # MSE of observations.
+    MSE_σ_obs_y = zeros(length(σ_obs_vec), M) # MSE of observations.
+
     for Np ∈ Np_vec
         param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
         for m ∈ 1:M
             println("Np = ", Np, "; m = ", m)
             # Generate observations --------------------------------------------
             mat"""
-            #[$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
-            #[$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
+            [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
+            [$x_est, $xe_est = ParticleFilter($y, $ye, $param);
             """
 
             MSE_Np[index, m] = MSE(x, x_est)
+            MSE_Np_y[index, m] = MSE(x, y)
         end
         index += 1
     end
 
     @save "data/np.jld2" Np_vec MSE_Np
-    """
+    @save "data/np_y.jld2" MSE_Np_y
 
     index = 1
 
@@ -171,15 +175,17 @@ function save_plot()
             # Generate observations --------------------------------------------
             mat"""
             [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
-            [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
+            [$x_est, $xe_est = ParticleFilter($y, $ye, $param);
             """
 
             MSE_t_s[index, m] = MSE(x, x_est)
+            MSE_t_s_y[index, m] = MSE(x, y)
         end
         index += 1
     end
 
     @save "data/t_s.jld2" t_s_vec MSE_t_s
+    @save "data/t_s_y.jld2" MSE_t_s_y
 
     index = 1
 
@@ -190,15 +196,17 @@ function save_plot()
             # Generate observations --------------------------------------------
             mat"""
             [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
-            [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
+            [$x_est, $xe_est = ParticleFilter($y, $ye, $param);
             """
 
             MSE_σ_obs[index, m] = MSE(x, x_est)
+            MSE_σ_obs_y[index, m] = MSE(x, y)
         end
         index += 1
     end
 
     @save "data/sigma_obs.jld2" σ_obs_vec MSE_σ_obs
+    @save "data/sigma_obs_y.jld2" MSE_σ_obs_y
 end
 
 if plot
