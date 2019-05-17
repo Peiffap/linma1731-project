@@ -63,12 +63,12 @@ struct Param
     s::Float64          # Scale parameter
 end
 
-disp  = true  # Display trajectories.
-plot  = false  # Generate arrays needed for plotting (SLOW!)
+disp  = false  # Display trajectories.
+plot  = true   # Generate arrays needed for plotting (SLOW!)
 w     = 20.0
 P     = 3
 N     = 100
-Np    = 200
+Np    = 150
 t_s   = 0.1
 σ_obs = 0.2
 
@@ -132,12 +132,12 @@ function save_plot()
         return (1. /(param.N * param.P) * sum(sum(.√(sum((x - x̂).^2, dims=2)), dims=1), dims=3))[1]
     end
 
-    M = 100  # Number of repetitions.
+    M = 15  # Number of repetitions.
     index = 1
 
-    Np_vec    = [10 20 50 100 200 500 1000]     # Values of Np.
-    t_s_vec   = [0.05 0.1 0.2 0.5 1.0 2.0 5.0]  # Values of t_s.
-    σ_obs_vec = [0.01 0.1 0.2 0.5 1.0 2.0 5.0]  # Values of σ_obs.
+    Np_vec    = [1 2 5 10 20 50 100 150 200 250]     # Values of Np.
+    t_s_vec   = [0.01 0.05 0.1 0.2 0.5 1.0 2.0 5.0]  # Values of t_s.
+    σ_obs_vec = [0.001 0.01 0.1 0.2 0.5 1.0 2.0 5.0]  # Values of σ_obs.
 
     MSE_Np    = zeros(length(Np_vec), M)    # MSE for different values of Np.
     MSE_t_s   = zeros(length(t_s_vec), M)   # MSE for different values of t_s.
@@ -154,7 +154,7 @@ function save_plot()
             # Generate observations --------------------------------------------
             mat"""
             [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
-            [$x_est, $xe_est = ParticleFilter($y, $ye, $param);
+            [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
             """
 
             MSE_Np[index, m] = MSE(x, x_est)
@@ -175,7 +175,7 @@ function save_plot()
             # Generate observations --------------------------------------------
             mat"""
             [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
-            [$x_est, $xe_est = ParticleFilter($y, $ye, $param);
+            [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
             """
 
             MSE_t_s[index, m] = MSE(x, x_est)
@@ -196,7 +196,7 @@ function save_plot()
             # Generate observations --------------------------------------------
             mat"""
             [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
-            [$x_est, $xe_est = ParticleFilter($y, $ye, $param);
+            [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
             """
 
             MSE_σ_obs[index, m] = MSE(x, x_est)

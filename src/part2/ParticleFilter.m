@@ -77,6 +77,7 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
         end
 
         % Sampling.
+        % We must take into account the possibility of rounding error on the sample weights leading to a zero vector.
         ind_sample  = zeros(P,Np,2);
         ind_samplee = zeros(1,Np,2);
         for fish = 1:P
