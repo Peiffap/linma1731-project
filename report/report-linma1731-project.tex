@@ -87,6 +87,7 @@
 \newcommand{\trig}{\psi_1}
 \newcommand{\imagj}{\mathrm{j}\mkern1mu} % Imaginary unit but with 100% more engineering
 \newcommand{\ts}{t_\textnormal{s}}
+\newcommand{\np}{N_\textnormal{p}}
 
 \renewcommand{\epsilon}{\varepsilon}
 \renewcommand{\theta}{\vartheta}
@@ -447,12 +448,6 @@ Finally, the matrix was centered, and its spectral norm was computed.
 
 \part{Particle filtering}
 
-\begin{figure}[!htbp]
-	\centering
-	\scalebox{0.75}{\input{img/mse_np.tex}}
-	\caption{}
-\end{figure}
-
 \section{Estimation of the parameters from noisy measurements}
 Recall that the speed of the fish follows a Gamma distribution (\(V_i \sim \Gamma(k, s)\)).
 Here, one gets noisy observations of the position of a fish at given instants in time.
@@ -461,16 +456,55 @@ Once we have extracted a noisy approximation of the speed from this set of data,
 
 We begin by defining the formula for the speed more rigorously: from \(x_p(i)\), the noisy measurement of the position of fish \(p\) at time $t=\ts i$, one can get \(v_p(i)\), the noisy observation of the speed of that fish at that time, by
 \begin{align}
-	\bm{v}_p(i) &= \frac{\norm{\bm{x}_p(i+1) + \bm{n}_p - \big(\bm{x}_p(i) + \bm{n}_p\big)} }{\ts}\,, \quad \forall p\,,
+	\bm{v}_p(i) &= \frac{\norm{\bm{x}_p(i+1) + \bm{n}_p(i+1) - \big(\bm{x}_p(i) + \bm{n}_p(i)\big)}}{\ts}\,, \quad \forall p\,,
 \end{align}
-with \(\bm{n}_p \sim \mathcal{N}(0, \sigma^2_{\textnormal{obs}})\) an additive white noise.
+with \(\bm{n}_p(i) \sim \mathcal{N}(0, \sigma^2_{\textnormal{obs}})\) an additive white noise.
 Using the estimation techniques of Section~\ref{sec:joint}, one can get estimators of the two parameters of the Gamma distribution of the speed, \(\hat{k}\) and \(\hat{s}\), based on the observed speeds.
 
+
+\section{Mean squared error analysis}
+Using the particle filter of Section \textcolor{red}{TODO}, one can perform several experiments in order to determine the quality of the filter.
+In order to do this, we use the mean square error, defined as
+\begin{align}
+E_{\textnormal{MSE}} = \frac{1}{NP} \sum_{p=1}^P \sum_{i=1}^N \norm{\bm{x}_p(i) - \hat{\bm{x}}_p(i)}_{2}^2\,.
+\end{align}
+Experiments were conducted for different values of three parameters.
+The default values were \(w = 20\), \(P = 3\), \(N = 100\),  \(\np = 200\), \(\ts = 0.1\) and \(\sigma_{\textnormal{obs}} = 0.2\).
+All experiments were repeated \(M = 100\) times.
+
+First, the effect of varying the number of particles per fish was studied.
+Simulations were run with \(\np = 10, 20, 50, 100, 200, 500, 1000\).
+The results are shown on Figure~\ref{fig:Np}.
 \begin{figure}[!htbp]
 	\centering
-	\scalebox{1.}{\input{img/speed.tex}}
-	\caption{Histogram of the noisy measurements of the speed from the noisy data of the positions of a fish.}
-	\label{fig:speed}
+	\scalebox{0.75}{\input{img/mse_np.tex}}
+	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\np\).}
+	\label{fig:Np}
+\end{figure}
+The figure shows that the mean squared error barely depends on the value of \(\np\), if the parameter is sufficiently big (\(\np \ge 10\) seems to work).
+We can also observe that the mean squared error resulting from simply passing the observed positions as estimates is lower than the error with the particle filter.
+
+Next, we studied the influence of the sampling period \(\ts\).
+Simulations were run with \(\ts = 0.05, 0.1, 0.2, 0.5, 1, 2, 5\).
+The results are shown on Figure~\ref{fig:t_s}.
+\begin{figure}[!htbp]
+	\centering
+	\scalebox{0.75}{\input{img/mse_t_s.tex}}
+	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\ts\).}
+	\label{fig:t_s}
+\end{figure}
+In line with physical intuition, the larger the sampling period, the less accurate the results become.
+A sampling period of \(\ts = \SI{0.2}{\second}\) is the maximum acceptable value, with an average error around \(1\).
+Again, we observe that simply passing the positional observations as estimated positions yields better results than using the conventional filter.
+
+Finally, the last parameter whose influence was examined is the standard deviation on the observed values, \(\sigma_\textnormal{obs}\).
+Simulations were run with \(\sigma_{\textnormal{obs}} = 0.01, 0.1, 0.2, 0.5, 1, 2, 5\).
+The results are shown on Figure~\ref{fig:sigma_obs}.
+\begin{figure}[!htbp]
+	\centering
+	\scalebox{0.75}{\input{img/mse_sigma_obs.tex}}
+	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\sigma_\textnormal{obs}\).}
+	\label{fig:sigma_obs}
 \end{figure}
 
 \section{Conclusion}
