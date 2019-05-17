@@ -1,8 +1,6 @@
 using Compat
-using Random, Distributions
+using Random, Distributions, StatsBase
 using JuMP, Ipopt, SpecialFunctions, LinearAlgebra
-using StatsBase: Histogram, fit
-using PGFPlotsX
 
 """
 	mom(V::Array{Float64, 1})
@@ -60,27 +58,11 @@ end
 Computes the maximum likelihood estimators of the distribution of speeds
 while taking as argument the vector of 2D positions.
 """
-function EstimateGamma(obs::Array{Float64, 2}; ts = 0.1)
+function EstimateGamma(obs::Array{Float64, 2})
+	ts = 0.1 # Time step [s].
 	_, n = size(obs)
 
 	v = .√((obs[1, 2:n] - obs[1, 1:n-1]).^2 + (obs[2, 2:n] - obs[2, 1:n-1]).^2) / ts # Compute the speeds.
-
-	@pgf p = Axis(
-    {
-        "ybar interval",
-		"xticklabel interval boundaries",
-		title="Distribution of the noisy measurements of the speed",
-		xlabel="\\footnotesize Value of the speed \si{\metre \per \second}",
-		ylabel="\\footnotesize Occurence",
-        xmajorgrids = false,
-        xticklabel = raw"$[\pgfmathprintnumber\tick,\pgfmathprintnumber\nexttick)$",
-        "xticklabel style" =
-        {
-            font = raw"\tiny"
-        },
-    },
-	Plot(Table(fit(Histogram, v))))
-	pgfsave("speed.tex", p, include_preamble = false)
 
 	return ml(v)
 end
