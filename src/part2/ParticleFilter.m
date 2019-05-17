@@ -57,15 +57,30 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
         meanede(1,1) = mean(Xe(1,1,:,t+1));
         meanede(1,2) = mean(Xe(1,2,:,t+1));
 
-        [next_x,next_o,next_xe,next_oe] = StateUpdate(meaned,o,meanede,oe,ts,k,s,w);
-        o = next_o;
-        oe = next_oe;
+        meano = zeros(fish, 2, Np);
+        meanoe = zeros(1, 2, Np);
+
         for i = 1:Np
-            for fish = 1:P
-                Xtilde(fish,:,i,t+1 +1) = next_x(fish,:) + normrnd(mu_w, sigma_obs,1,2);
-            end
-            Xtildee(1,:,i, t+1 +1) = next_xe(1,:) + normrnd(mu_w, sigma_obs,1,2);
+            % Compute the next state for
+            [next_x,next_o,next_xe,next_oe] = StateUpdate(X(:,:,i,t +1),o,Xe(1,:,i,t +1),oe,ts,k,s,w, meaned, meanede);
+            meano(:,:,i) = next_o;
+            Xtilde(:,:,i,t+1 +1) = next_x;
+            
+            meanoe(1,:,i) = next_oe;
+            Xtildee(1,:,i, t+1 +1) = next_xe;
         end
+        for fish = 1:P
+            o(fish,1) = mean(meano(fish,1,:));
+            o(fish,2) = mean(meano(fish,2,:));
+            norm_o = sqrt(o(:,1).^2 + o(:,2).^2);
+            o(:,1) = o(:,1) ./ norm_o;
+            o(:,2) = o(:,2) ./ norm_o;
+        end
+        oe(1,1) = mean(meanoe(1,1,:));
+        oe(1,2) = mean(meanoe(1,2,:));
+        norm_oe = sqrt(oe(:,1).^2 + oe(:,2).^2);
+        oe(:,1) = oe(:,1) ./ norm_oe;
+        oe(:,2) = oe(:,2) ./ norm_oe;
 
         % Correction step.
         % Compute the weights for resampling.
