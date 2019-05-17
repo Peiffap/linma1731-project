@@ -103,13 +103,13 @@ noisy_observations = get_variable(data, "noisy_observations") # Put in array.
 close(data) # Close MAT file.
 k̂, ŝ = EstimateGamma(noisy_observations) # TO DEFINE! (keep the same inputs/outputs!)
 
-param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ
+param = Param(w, P, N, Np, t_s, σ_obs, k̂, ŝ)
 
 if disp
     # Generate observations, particle filtering and display --------------------
     mat"""
     [$x, $xe, $o, $oe, $y, $ye] = GenerateObservations($param);
-    $x_est, $xe_est = ParticleFilter($y, $ye, $param);
+    [$x_est, $xe_est] = ParticleFilter($y, $ye, $param);
     for i = 1:$param.N
         cla; hold on
         quiver($x(:,1,i),$x(:,2,i),$o(:,1,i),$o(:,2,i),0,'Marker','o');

@@ -470,6 +470,7 @@ We begin by defining the formula for the speed more rigorously: from \(x_p(i)\),
 \end{align}
 with \(\bm{n}_p(i) \sim \mathcal{N}(0, \sigma^2_{\textnormal{obs}})\) an additive white noise.
 Using the estimation techniques of Section~\ref{sec:joint}, one can get estimators of the two parameters of the Gamma distribution of the speed, \(\hat{k}\) and \(\hat{s}\), based on the observed speeds.
+The values found with this method are \(\hat{k} = 3.9541\) and \(\hat{s} = 0.3028\).
 
 We can the that the zero-mean white noise has no effect on our estimators. Indeed, as shown in \eqref{eq:speed}, the white-noise from time \(i+1\) is "cancelled" with the white-noise from time \(i\). We hence subtract the bias (which follows the same distribution) of two biased measurements of the position, and it is then "cancelled".
 
@@ -533,7 +534,7 @@ In order to quantify this, we use the mean square error, defined as
 E_{\textnormal{MSE}} = \frac{1}{NP} \sum_{p=1}^P \sum_{i=1}^N \norm{\bm{x}_p(i) - \hat{\bm{x}}_p(i)}_{2}^2\,.
 \end{align}
 Experiments were conducted for different values of three parameters.
-The default values were \(w = 20\), \(P = 3\), \(N = 100\),  \(\np = 100\), \(\ts = 0.1\) and \(\sigma_{\textnormal{obs}} = 0.2\).
+The default values were \(w = 20\), \(P = 3\), \(N = 100\),  \(\np = 150\), \(\ts = 0.1\) and \(\sigma_{\textnormal{obs}} = 0.2\).
 All experiments were repeated \(M = 15\) times, in order to get a decent amount of data.
 
 First, the effect of varying the number of particles per fish was studied.
