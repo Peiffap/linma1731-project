@@ -86,6 +86,7 @@
 \newcommand{\dig}{\psi_0}
 \newcommand{\trig}{\psi_1}
 \newcommand{\imagj}{\mathrm{j}\mkern1mu} % Imaginary unit but with 100% more engineering
+\newcommand{\ts}{t_\textnormal{s}}
 
 \renewcommand{\epsilon}{\varepsilon}
 \renewcommand{\theta}{\vartheta}
@@ -452,12 +453,18 @@ Finally, the matrix was centered, and its spectral norm was computed.
 	\caption{}
 \end{figure}
 
-\section{Estimation of the speed}
-Recall that the speed of the fished follows a Gamma distribution (\( V_i \sim \Gamma(k,s) \)). Here, we get noisy measurements of the position of a fish through time. Once we have extracted a noisy approximation of the speed from this set of data, we can repeat what we explained earlier in the document (\ref{sec:est_code}). Hence, we still have to compute these approximations. To do so, some basic physical algebra does the work. From \(x(i)\), the noisy measurement of the position at time $t=i$, we can get \(v^i\), the noisy approximation of the speed of the fish at time $t=i$, by
+\section{Estimation of the parameters from noisy measurements}
+Recall that the speed of the fish follows a Gamma distribution (\(V_i \sim \Gamma(k, s)\)).
+Here, one gets noisy observations of the position of a fish at given instants in time.
+It is rather straightforward to transform a noisy observation of the speed from these positions measurement, knowing the sampling period \(\ts\).
+Once we have extracted a noisy approximation of the speed from this set of data, we can repeat what we explained earlier in the document, in Section~\ref{sec:est_code}, to estimate the parameters of the distribution.
+
+We begin by defining the formula for the speed more rigorously: from \(x_p(i)\), the noisy measurement of the position of fish \(p\) at time $t=\ts i$, one can get \(v_p(i)\), the noisy observation of the speed of that fish at that time, by
 \begin{align}
-	\textbf{v}^i & = \frac{\big|\big| \textbf{x}^{i+1} + \textbf{n}_p - \big(\textbf{x}^{i+1} + \textbf{n}_p(i)\big)\big|\big| }{t_s},
+	\bm{v}_p(i) &= \frac{\norm{\bm{x}_p(i+1) + \bm{n}_p - \big(\bm{x}_p(i) + \bm{n}_p\big)} }{\ts}\,, \quad \forall p\,,
 \end{align}
-With $t_s$ being the the sampling period, and $\textbf{n}_p \sim \mathcal{N}(0, \sigma_{obs})$ a white noise. As said before, using the function computed and explained earlier in the document, we can get approximations of the two parameters of the Gamma distribution of the speed, \((\hat{k}, \hat{s})\).
+with \(\bm{n}_p \sim \mathcal{N}(0, \sigma^2_{\textnormal{obs}})\) an additive white noise.
+Using the estimation techniques of Section~\ref{sec:joint}, one can get estimators of the two parameters of the Gamma distribution of the speed, \(\hat{k}\) and \(\hat{s}\), based on the observed speeds.
 
 \section{Conclusion}
 In Section~\ref{sec:s_est}, we looked at maximum likelihood estimation for the scale parameter of a Gamma distribution, \(s\).
