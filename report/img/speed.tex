@@ -1,5 +1,5 @@
 \begin{tikzpicture}
-\begin{axis}[ybar interval, title={Distribution of the noisy measurements of the speed}, xlabel={\footnotesize Value of the speed [m/s]}, ylabel={\footnotesize Occurence}, xmajorgrids={false}, xticklabel style={font={\tiny}}, area style,]
+\begin{axis}[ybar interval, xticklabel interval boundaries, title={Distribution of the noisy measurements of the speed}, xlabel={\footnotesize Value of the speed (m/s)}, ylabel={\footnotesize Occurence}, xmajorgrids={false}, xticklabel={$[\pgfmathprintnumber\tick,\pgfmathprintnumber\nexttick)$}, xticklabel style={font={\tiny}}]
     \addplot
         table[row sep={\\}]
         {
