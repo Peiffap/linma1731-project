@@ -1,0 +1,45 @@
+\begin{tikzpicture}
+\begin{axis}[grid={major}, title={\Large Influence of $t_\textnormal{s}$ on the mean squared error}, xlabel={\footnotesize Sampling period, $t_\textnormal{s}$}, ylabel={\footnotesize Mean squared error}, xmode={log}, legend pos=north west]
+    \addplot+[blue, error bars/.cd, y dir=both,y explicit,
+    error bar style={line width=1pt},
+    error mark options={
+        rotate=90,
+        blue,
+        mark size=4pt,
+        line width=1pt
+    }]
+        table[row sep={\\}, y error=error]
+        {
+            x  y  error  \\
+            0.05  0.22751449672319837  0.0372904892748762  \\
+            0.1  0.4291979698803  0.12015294316145027  \\
+            0.2  0.818936404552947  0.17350315736218114  \\
+            0.5  2.7387149590841675  0.978821141922967  \\
+            1.0  9.48130237144819  3.2420604383133163  \\
+            2.0  17.320915607426315  2.9912865684180256  \\
+            5.0  22.68281399362274  1.6777628813848036  \\
+        }
+        ;
+    \addplot+[red, error bars/.cd, y dir=both,y explicit,
+    error bar style={line width=1pt},
+    error mark options={
+        rotate=90,
+        red,
+        mark size=4pt,
+        line width=1pt
+    }]
+        table[row sep={\\}, y error=error]
+        {
+            x  y  error  \\
+            0.05  0.25041919769279575  0.006703732171609166  \\
+            0.1  0.24948136689254205  0.006642257760128406  \\
+            0.2  0.25036641583421226  0.008329122937952084  \\
+            0.5  0.25028990947098306  0.008108914332596287  \\
+            1.0  0.25070891363824666  0.00772075233374811  \\
+            2.0  0.25141831797798175  0.0077794683469016475  \\
+            5.0  0.2496710646427715  0.006932333834323204  \\
+        }
+        ;
+    \legend{{$E_\textnormal{MSE}\big(\widebar{\hat{\bm{x}}}\big)$},{$E_\textnormal{MSE}\big(\widebar{\bm{y}}\big)$}}
+\end{axis}
+\end{tikzpicture}
