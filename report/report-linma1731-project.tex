@@ -452,6 +452,12 @@ Finally, the matrix was centered, and its spectral norm was computed.
 
 \part{Particle filtering}
 
+\section{Introduction}
+For the second part of the project, the task is to use noisy observations of the position of a fish in order to compute the parameters of the Gamma distribution governing its speed.
+With these parameters, a simulation is then completed which models the reaction and movement of the fish to a nearby predator.
+More precisely, a sequential Monte Carlo method is used to extract the real positions from the noisy measurements.
+In order to do this, one can play with various parameters, such as the number of fish, the number of particles per fish in the simulation, the time step between observations or the standard deviation of the noise which is added to the position to obtain the observations.
+
 \section{Estimation of the parameters from noisy measurements}
 Recall that the speed of the fish follows a Gamma distribution (\(V_i \sim \Gamma(k, s)\)).
 Here, one gets noisy observations of the position of a fish at given instants in time.
