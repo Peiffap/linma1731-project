@@ -21,17 +21,22 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
     % Predictions are stored in Xtilde(e).
     Xtilde  = zeros(P,2,Np,N +1);
     Xtildee = zeros(1,2,Np,N +1);
+    % Orientation for each particle
+    o  = zeros(P,2,Np);
+    oe = zeros(1,2,Np);
 
     % The initial orientation is computed as the difference between the first two observations, to which we add some noise.
     % This is a heuristic we found works pretty well.
-    o = y(:, :, 2) - y(:, :, 1) + normrnd(mu_w, sigma_obs, P, 2);
-    norm_o = sqrt(o(:,1).^2 + o(:,2).^2);
-    o(:,1) = o(:,1) ./ norm_o;
-    o(:,2) = o(:,2) ./ norm_o;
-    oe = ye(:, :, 2) - ye(:, :, 1) + normrnd(mu_w, sigma_obs, 1, 2);
-    norm_oe = sqrt(oe(:,1).^2 + oe(:,2).^2);
-    oe(:,1) = oe(:,1) ./ norm_oe;
-    oe(:,2) = oe(:,2) ./ norm_oe;
+    for i = 1:Np
+        o(:,:,i) = y(:, :, 2) - y(:, :, 1) + normrnd(mu_w, sigma_obs, P, 2);
+        norm_o = sqrt(o(:,1).^2 + o(:,2).^2);
+        o(:,1,i) = o(:,1) ./ norm_o;
+        o(:,2,i) = o(:,2) ./ norm_o;
+        oe(1,:,i) = ye(:, :, 2) - ye(:, :, 1) + normrnd(mu_w, sigma_obs, 1, 2);
+        norm_oe = sqrt(oe(:,1).^2 + oe(:,2).^2);
+        oe(1,1,i) = oe(:,1) ./ norm_oe;
+        oe(1,2,i) = oe(:,2) ./ norm_oe;
+    end
 
     % The initial position is guessed by adding a random noise to the observations.
     t = 0;
@@ -48,28 +53,19 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
         % Prediction step.
         % In order to improve performance, we compute the means,
         % and run the simulations with the meaned values.
-        meaned = zeros(P,2);
-        for fish = 1:P
-            meaned(fish,1) = mean(X(fish,1,:,t+1));
-            meaned(fish,2) = mean(X(fish,2,:,t+1));
-        end
-        meanede = zeros(1,2);
-        meanede(1,1) = mean(Xe(1,1,:,t+1));
-        meanede(1,2) = mean(Xe(1,2,:,t+1));
-
-        [next_x,next_o,next_xe,next_oe] = StateUpdate(meaned,o,meanede,oe,ts,k,s,w);
-        o = next_o;
-        oe = next_oe;
         for i = 1:Np
-            for fish = 1:P
-                Xtilde(fish,:,i,t+1 +1) = next_x(fish,:) + normrnd(mu_w, sigma_obs,1,2);
-            end
-            Xtildee(1,:,i, t+1 +1) = next_xe(1,:) + normrnd(mu_w, sigma_obs,1,2);
+        % Compute the next state for
+        [next_x,next_o,next_xe,next_oe] = StateUpdate(X(:,:,i,t +1),o(:,:,i),Xe(1,:,i,t +1),oe(:,:,i),ts,k,s,w);
+        o(:,:,i) = next_o;
+        Xtilde(:,:,i,t+1 +1) = next_x;
+
+        oe(:,:,i) = next_oe;
+        Xtildee(1,:,i, t+1 +1) = next_xe;
         end
 
         % Correction step.
         % Compute the weights for resampling.
-        weights  = zeros(P,1,Np);
+        weights  = zeros(P,2,Np);
         weightse = zeros(1,2,Np);
         for i=1:Np
             for fish = 1:P
@@ -113,7 +109,7 @@ function [x_est,xe_est]= ParticleFilter(y,ye,param)
                 X(fish,2,i,t+1 +1) = Xtilde(fish,2,ind_sample(fish,i,2),t+1 +1);
             end
             Xe(1,1,i,t+1 +1) = Xtildee(1,1,ind_samplee(1,i,1),t+1 +1);
-            Xe(1,2,i,t+1 +1) = Xtildee(1,2,ind_samplee(1,i,1),t+1 +1);
+            Xe(1,2,i,t+1 +1) = Xtildee(1,2,ind_samplee(1,i,2),t+1 +1);
         end
     end
 
