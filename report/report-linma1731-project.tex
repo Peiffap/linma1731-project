@@ -509,6 +509,9 @@ After doing so, we first create the new sample set then correct its values using
 	Hence, the particles which are further from the true value will have a lower weight.
 	These weights are then normalized, which gives \(\tilde{w}_{t+1}^i\).
 	One can show that if we resample from the set \(\tilde{\sset}_{t+1}\) with probabilities given by \( \{ \tilde{w}_{t+1}^1, \ldots, \tilde{w}_{t+1}^{\np} \} \), then the resulting values are samples from the posterior.
+	In this case, because the system is very well-modeled, one should be wary of using weights blindly.
+	In order to avoid having an all-zero weight vector due to floating point inaccuracies, one should check for such errors and if needed, replace all weights with the same value, say one.
+	A more intelligent technique for this is explained in Section~\ref{sec:improvements}.
 	Generating \(\np\) resamples, which we call \(x_{t+1}^i\), gives the sample set
 	\begin{align}
 	\sset_{t+1} &= \{ x_{t+1}^1, x_{t+1}^2, \ldots ,x_{t+1}^{\np} \}\,,
@@ -539,10 +542,16 @@ The results are shown on Figure~\ref{fig:Np}.
 \begin{figure}[!htbp]
 	\centering
 	\scalebox{0.75}{\input{img/mse_np.tex}}
-	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\np\).}
+	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\np\).
+	Values were chosen so as to make sure the asymptotic decrease in mean squared error is clearly visible.}
 	\label{fig:Np}
 \end{figure}
-
+On this figure, we see that the mean squared error decreases as the number of particles gets bigger.
+The filter also becomes more confident about the spread of the value, as seen by the increasingly shorter bars.
+This is what one would expect, when thinking about the underlying mechanism at work: an increase in the number of particles means a higher chance of one of those particles having a high likelihood function, hence being a good estimate for the position.
+This can also explain the lower standard deviation: more particles are likely to have a high likelihood.
+We can also note that the value seems to converge towards a value of approximately \(0.3\).
+Another interesting observation is the fact that the value found by simply returning the observed positions, that is, the \(y\) vector, one gets a better result than with the filter.
 
 Next, we studied the influence of the sampling period \(\ts\).
 Simulations were run with \(\ts = 0.01, 0.05, 0.1, 0.2, 0.5, 1, 2, 5\).
@@ -550,9 +559,19 @@ The results are shown on Figure~\ref{fig:t_s}.
 \begin{figure}[!htbp]
 	\centering
 	\scalebox{0.75}{\input{img/mse_t_s.tex}}
-	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\ts\).}
+	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\ts\).
+	Values were chosen so as to both illustrate the strong increase in performance as the sampling period goes down, while also showing the apparent randomness once it reaches ``ridiculously high'' values, on the order of multiple seconds.}
 	\label{fig:t_s}
 \end{figure}
+As one would expect, lowering the sampling period leads to more accurate results.
+To visualize why this must be true, one can simply imagine the probability density function's shape: as the sampling period goes down, the number of positions that can be reached within that duration also goes down.
+This means that the shape tends to that of a Dirac distribution, i.e. a deterministic value, as \(\ts\) goes to zero.
+However, one must be careful to use enough particles: if the probable positions are very close, there is a non-negligible chance of not having any particles fall in the region, leading to bad results.
+For very large values of \(\ts\), e.g. multiple seconds, we observe an almost constant evolution of the mean squared error.
+This also makes sense, with a similar argument to the one used to justify the good performance for small sampling periods.
+As the sampling period goes up, the range of distances that could be reached also widens.
+This means that a large range of positions are almost equiprobable, meaning the random number generator decides, for a big part, which estimates are chosen.
+This analysis was tested by running the same simulation multiple times, with the expected results.
 
 Finally, the last parameter whose influence was examined is the standard deviation on the observed values, \(\sigma_\textnormal{obs}\).
 Simulations were run with \(\sigma_{\textnormal{obs}} = 0.001, 0.01, 0.1, 0.2, 0.5, 1, 2, 5\).
@@ -560,12 +579,34 @@ The results are shown on Figure~\ref{fig:sigma_obs}.
 \begin{figure}[!htbp]
 	\centering
 	\scalebox{0.75}{\input{img/mse_sigma_obs.tex}}
-	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\sigma_\textnormal{obs}\).}
+	\caption{Mean squared error resulting from the filtered position estimates, for varying values of \(\sigma_\textnormal{obs}\).
+	Values were chosen so as to visualize the expected low value near \(\sigma_\textnormal{obs} = 0\) and the gain over simply using observations as estimates when the standard deviation increases.}
 	\label{fig:sigma_obs}
 \end{figure}
+With this last plot, we can observe that when the added observation noise function tends to a centered Dirac distribution, the filtered estimates, as well as the observations, are almost perfectly equal to the true value of the position, with a very small spread.
+However, when the noise's standard deviation is increased, the spread increases and the mean squared error increases.
+To explain this phenomenon, one has to remember that the filter will use this value of the standard deviation to place its particles, and that a very low variance means these particles will all be clustered around the true value.
+When the variance goes up, the filter is much better than simply taking the raw observations, as it eliminates part of the noise by using the Monte Carlo technique.
 
 \section{Theoretical improvements for the filter}
 \label{sec:improvements}
+As we observed in the previous section, the filter is by no means perfect already.
+Some simple ways to improve its performance exist.
+We give a (non-exhaustive) list:
+\begin{itemize}
+	\item Simulations are only as good as the data/observations they work with, hence if possible, computing some dimensions of the filter analytically should always be preferred.
+	This will not only provide a considerable improvement in the precision of the results, but will also drastically reduce the computation time.
+	In the literature, this is referred to as Rao--Blackwellization. \cite{raoblackwell}
+	\item When working with increasingly narrow density functions, one needs to be careful to use a sufficient amount of particles.
+	If not, there is a non-negligible chance that no particles will fall in the probable region.
+	This is the same phenomenon as the one causing issues with weighted sampling in Section~\ref{sec:mcfilter}.
+	To handle this better, one could compute weights using the \(c\)th power of the likelihood returned by the observation model, with \(0 < c < 1\).
+	A good value of \(c\) in most cases is \(\frac{1}{M}\), where \(M\) is the dimensionality of the observation model (i.e. \(M = 2\), in this case).
+	Other solutions include using a low-pass filter, or convoluting with a Gaussian, in order to ``blur'' the sharpness of the likelihood. \cite{stattech}
+	\item Repeated resampling in the absence of any actual sensory observations could lead to loss of diversity.
+	In order to avoid this, one should only resample when necessary (for example, if some weights are too far apart),
+	and if one does decide to resample, use low variance resampling. \cite{stachniss}
+\end{itemize}
 
 \section{Conclusion}
 In Section~\ref{sec:s_est}, we looked at maximum likelihood estimation for the scale parameter of a Gamma distribution, \(s\).
